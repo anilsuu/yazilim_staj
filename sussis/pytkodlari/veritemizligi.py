@@ -42,10 +42,7 @@ print("Duplicate gruplarındaki toplam satır:",
       df.duplicated(keep=False).sum())
 df = df.drop_duplicates()
 
-
-
 # print(df.describe())
-
 # std=np.std()
 # print(std)
 
@@ -76,12 +73,12 @@ print("ph Medyan değeri:", df["ph"].median())
 print("Doldurma sonrası 'ph' eksik değer sayısı:", df["ph"].isna().sum())
 
 plt.hist(df["ph"], bins=20)
-
 plt.xlabel("pH")
 plt.ylabel("Frekans")
 plt.title("pH Değerlerinin Dağılımı")
-
 plt.show()
+
+
 print("-----------------------------")
 
 
@@ -95,8 +92,8 @@ plt.hist(df["Hardness"],bins=20)
 plt.xlabel("Hardness")
 plt.ylabel("frekans")
 plt.title("Hardness değerlerinin Dağılımı")
-
 plt.show()
+
 
 print("-----------------------------")
 
@@ -108,32 +105,31 @@ print("Eksik değerler:", df[["Solids"]].isna().sum())
 print("Solids Medyan değeri:", df["Solids"].median())
 
 plt.hist(df["Solids"], bins=20)
-
 plt.xlabel("Solids")
 plt.ylabel("frekans")
 plt.title("Solids Değerlerinin Dağılımı")
-
 plt.show()
+
 
 print("-----------------------------")
 
 
-# Chloramines sütunundaki eksik değerlerin sayısı
-print("Eksik değerler:", df[["Chloramines"]].isna().sum())
+# # Chloramines sütunundaki eksik değerlerin sayısı
+# print("Eksik değerler:", df[["Chloramines"]].isna().sum())
 
-# Chloramines sütununun medyan değerinin gösterilmesi
-print("Chloramines Medyan değeri:", df["Chloramines"].median())
+# # Chloramines sütununun medyan değerinin gösterilmesi
+# print("Chloramines Medyan değeri:", df["Chloramines"].median())
 
-plt.hist(df["Chloramines"], bins=20)
-
-plt.xlabel("Chloramines")
-plt.ylabel("frekans")
-plt.title("Chloramines Değerlerinin Dağılımı")
-
-plt.show()
-
-print("-----------------------------")
+# plt.hist(df["Chloramines"], bins=20)
+# plt.xlabel("Chloramines")
+# plt.ylabel("frekans")
+# plt.title("Chloramines Değerlerinin Dağılımı")
 
 
-,
+# plt.show()
+
+# print("-----------------------------")
+
+
+
 
