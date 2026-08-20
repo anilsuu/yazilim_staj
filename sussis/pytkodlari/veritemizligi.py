@@ -34,10 +34,15 @@ print(df.head()) # İlk 5 satırı yazdır
 print("Veri boyutu:", df.shape)
 
 
-# Tüm sütunları baz alarak tamamen aynı olan satırları tespit eder
+# DUPLICATE(TEKRAR EDEN VERİ) KONTROLÜ
+print("Toplam duplicate kayıt:", df.duplicated().sum())
+
+# Tüm sütunları baz alarak tamamen aynı olan satırları tespit edip,siler.
 print("Duplicate gruplarındaki toplam satır:",
       df.duplicated(keep=False).sum())
 df = df.drop_duplicates()
+
+
 
 # print(df.describe())
 
@@ -46,18 +51,23 @@ df = df.drop_duplicates()
 
 # Tüm sayısal değişkenlerin standart sapmasını Series olarak döndürür
 print("-----------------------------")
-print("Tüm sütunların standart sapması:")
-std_values = df.std(numeric_only=True)
+
+
+# print("Tüm sütunların standart sapması:")
+# std_values = df.std(numeric_only=True)
+# print(std_values)
+
+print("Sütunların standart sapması:")
+std_values = df.drop(columns=["deney_id"]).std(numeric_only=True)
 print(std_values)
 
 print("-----------------------------")
 
-#ph sütunu için null değerlerin medyan ile doldurulması ve aykırı değer analizi
 
 #Eksik Verilerin analiz edilmelerine göre doldurulmaları.
 print("Eksik değerler:", df[["ph"]].isna().sum())
 
-# ph sütunundaki boşlukları 'ph'sütununu medyanı ile doldurur.
+# ph sütunundaki null değerleri 'ph'sütununu medyanı ile doldurur.
 df["ph"] = df["ph"].fillna(df["ph"].median())
 
 print("ph Medyan değeri:", df["ph"].median())
