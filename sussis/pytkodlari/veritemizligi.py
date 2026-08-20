@@ -33,8 +33,6 @@ print(df.head()) # İlk 5 satırı yazdır
 
 print("Veri boyutu:", df.shape)
 
-# DUPLICATE(TEKRAR EDEN VERİ) KONTROLÜ
-print("Toplam duplicate kayıt:", df.duplicated().sum())
 
 # Tüm sütunları baz alarak tamamen aynı olan satırları tespit eder
 print("Duplicate gruplarındaki toplam satır:",
