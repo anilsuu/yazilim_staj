@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Mar 25 20:17:06 2026
-
 @author: nilsu
 """
-#-*- coding: utf-8 -*-
 import os
 import pandas as pd
 import numpy as np
@@ -12,24 +9,43 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.preprocessing import LabelEncoder, MinMaxScaler, StandardScaler
 from sklearn.preprocessing import PowerTransformer
+import pyodbc
+from sqlalchemy import create_engine
+import urllib
+
+#Server ve database bilgisi
+server = 'LAPTOP-MNJN06EU\\NILSS'
+database = 'water_usability'
+
+#Bağlantı metni -> güvenilirliği için TrustedConnections=yes olmalı 
+conn_str = f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};Trusted_Connection=yes;'
+
+#Sql bağlantısı
+conn = pyodbc.connect(conn_str)
+
+# Bağlantı metnini URL formatına çevirip motoru (engine) oluştur
+params = urllib.parse.quote_plus(conn_str)
+engine = create_engine(f"mssql+pyodbc:///?odbc_connect={params}")
+
+# Sql'den tablo Python'a 
+sql_query = "SELECT * FROM Drinking_water1"
+df = pd.read_sql(sql_query, engine)
+
+print(df.head()) # İlk 5 satırı yazdır
+
+print("Veri boyutu:", df.shape)
 
 
-# ─────────────────────────────────────────────────────
-# 1 — VERİ YÜKLEME
-# ─────────────────────────────────────────────────────
+# DUPLICATE(TEKRAR EDEN VERİ) KONTROLÜ
 
-pd.read_csv("su_verisi.csv")
-from sklearn.impute import SimpleImputer
-imputer = SimpleImputer(missing_values=np.nan, strategy='mean')
+print("Toplam duplicate kayıt:", df.duplicated().sum())
+# Tüm sütunları baz alarak tamamen aynı olan satırları tespit eder
+print("Duplicate gruplarındaki toplam satır:",
+      df.duplicated(keep=False).sum())
+df = df.drop_duplicates()
 
-# 1. Veriyi başlıksız olarak okuyoruz
-df = pd.read_csv('su_verisi.csv', header=None)
 
-# 2. Çiftlenmiş fazladan 9 sütunu atıp, sadece gerçek verinin olduğu ilk 9 sütunu alıyoruz
-df = df.iloc[:, :9]
 
-# 3. Belirttiğiniz başlıkları sırasıyla atıyoruz (ilk sütun ph)
-headers = ['ph', 'Hardness', 'Solids', 'Chloramines', 'Sulfate', 'Conductivity', 'Organic_carbon', 'Trihalomethanes', 'Turbidity']
-df.columns = headers
+
 
 
