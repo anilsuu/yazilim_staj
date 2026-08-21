@@ -60,12 +60,16 @@ print(std_values)
 print("-----------------------------")
 
 #Histogram Grafiği
-plt.hist(df["ph"], bins=20)
+plt.hist(df["ph"].dropna(), bins=20)
 plt.xlabel("pH")
 plt.ylabel("Frekans")
 plt.title("pH Değerlerinin Dağılımı")
 plt.show()
+print("pH Ortalama:", df["ph"].mean())
+print("pH Medyan:", df["ph"].median())
 
+print("Sulfate Ortalama:", df["Sulfate"].mean())
+print("Sulfate Medyan:", df["Sulfate"].median())
 #Eksik Verilerin analiz edilmelerine göre doldurulmaları.
 print("Eksik değerler:", df["ph"].isna().sum())
 
@@ -124,7 +128,7 @@ print("-----------------------------")
 
 
 #Histogram Grafiği
-plt.hist(df["Sulfate"],bins=20)
+plt.hist(df["Sulfate"].dropna(),bins=20)
 plt.xlabel("Sulfate")
 plt.ylabel("frekans")
 plt.title("Sulfate değerlerinin Dağılımı")
