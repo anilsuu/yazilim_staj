@@ -52,23 +52,17 @@ def nansızsütuninfo(column) :
     print(f"Doldurma sonrası Standart Sapma:{column}",df[column].std())
     print(f"Doldurma sonrası Eksik değerler:{column}",df[column].isna().sum())
     
-    
-#Eksik Verilerin analiz edilmelerine göre doldurulmaları.
+
 # Tüm sütunları baz alarak tamamen aynı olan satırları tespit edip,siler.
 print("Duplicate gruplarındaki toplam satır:",
       df.duplicated(keep=False).sum())
 df = df.drop_duplicates()
-
-# print(df.describe())
-# std=np.std()
-# print(std)
 
 
 print("ph eksik oranı:", df["ph"].isna().mean() * 100)
 print("Sulfate eksik oranı:", df["Sulfate"].isna().mean() * 100)
 print("Trihalomethanes eksik oranı:", df["Trihalomethanes"].isna().mean() * 100)
 
-# Tüm sayısal değişkenlerin standart sapmasını Series olarak döndürür
 print("-----------------------------------------------------")
 
 # print("Tüm sütunların standart sapması:")
@@ -90,6 +84,7 @@ plt.show()
 
 
 hesaplamainfo("ph")
+
 # # ph sütunundaki null değerleri 'ph'sütununu medyanı ile doldurur.
 # df["ph"] = df["ph"].fillna(df["ph"].median())
 
@@ -97,13 +92,6 @@ medyanladoldurma("ph")
 
 
 nansızsütuninfo("ph")
-
-
-# # Eksik veri kalıp kalmadığının kontrolü
-# print("Doldurma sonrası pH Ortalama:", df["ph"].mean())
-# print("Doldurma sonrası pH Medyan:", df["ph"].median())
-# print("Doldurma sonrası pH Standart Sapma:", df["ph"].std())
-# print("Doldurma sonrası pH Eksik Değer:", df["ph"].isna().sum())
 
 
 #Histogram Grafiği
@@ -115,104 +103,89 @@ plt.show()
 
 print("-----------------------------------------------------")
 
+hesaplamainfo("Hardness")
 
-# #Null değerlerin sayısı ve medyan değerinin hesaplanması
-# print("Eksik değerler:" , df["Hardness"].isna().sum())
-# print("Medyan değeri:", df["Hardness"].median())
-
-# #Histogram Grafiği
-# plt.hist(df["Hardness"],bins=20)
-# plt.xlabel("Hardness")
-# plt.ylabel("frekans")
-# plt.title("Hardness değerlerinin Dağılımı")
-# plt.show()
+#Histogram Grafiği
+plt.hist(df["Hardness"],bins=20)
+plt.xlabel("Hardness")
+plt.ylabel("frekans")
+plt.title("Hardness değerlerinin Dağılımı")
+plt.show()
 
 
-# print("-----------------------------------------------------")
+print("-----------------------------------------------------")
+
+hesaplamainfo("Solids")
+
+#Histogram Grafiği
+plt.hist(df["Solids"], bins=20)
+plt.xlabel("Solids")
+plt.ylabel("frekans")
+plt.title("Solids Değerlerinin Dağılımı")
+plt.show()
 
 
-# print("Eksik değerler:", df["Solids"].isna().sum())
-# print("Medyan değeri:", df["Solids"].median())
+print("-----------------------------------------------------")
 
-# #Histogram Grafiği
-# plt.hist(df["Solids"], bins=20)
-# plt.xlabel("Solids")
-# plt.ylabel("frekans")
-# plt.title("Solids Değerlerinin Dağılımı")
-# plt.show()
+hesaplamainfo("Chloramines")
 
-
-# print("-----------------------------------------------------")
+#Histogram Grafiği
+plt.hist(df["Chloramines"], bins=20)
+plt.xlabel("Chloramines")
+plt.ylabel("frekans")
+plt.title("Chloramines Değerlerinin Dağılımı")
+plt.show()
 
 
-# print("Eksik değerler:", df["Chloramines"].isna().sum())
-# print("Medyan değeri:", df["Chloramines"].median())
+print("-----------------------------------------------------")
 
-# #Histogram Grafiği
-# plt.hist(df["Chloramines"], bins=20)
-# plt.xlabel("Chloramines")
-# plt.ylabel("frekans")
-# plt.title("Chloramines Değerlerinin Dağılımı")
-# plt.show()
+#Histogram Grafiği
+plt.hist(df["Sulfate"].dropna(),bins=20)
+plt.xlabel("Sulfate")
+plt.ylabel("frekans")
+plt.title("Sulfate değerlerinin Dağılımı")
+plt.show()
 
+hesaplamainfo("Sulfate")
 
-# print("-----------------------------------------------------")
+medyanladoldurma("Sulfate")
 
-
-
-# #Histogram Grafiği
-# plt.hist(df["Sulfate"].dropna(),bins=20)
-# plt.xlabel("Sulfate")
-# plt.ylabel("frekans")
-# plt.title("Sulfate değerlerinin Dağılımı")
-# plt.show()
-
-# hesaplamainfo("Sulfate")
-
-# df["Sulfate"]=df["Sulfate"].fillna(df["Sulfate"].median())
-
-# # Eksik veri kalıp kalmadığının kontrolü
-# print("Doldurma sonrası Sulfate Ortalama:", df["Sulfate"].mean())
-# print("Doldurma sonrası Sulfate Medyan:", df["Sulfate"].median())
-# print("Doldurma sonrası Sulfate Standart Sapma:", df["Sulfate"].std())
-# print("Doldurma sonrası Sulfate Eksik Değer:", df["Sulfate"].isna().sum())
-
- 
-# #Histogram Grafiği
-# plt.hist(df["Sulfate"],bins=20)
-# plt.xlabel("Sulfate")
-# plt.ylabel("frekans")
-# plt.title("Sulfate değerlerinin Dağılımı")
-# plt.show()
+nansızsütuninfo("Sulfate")
 
 
-# print("-----------------------------------------------------")
-
-# print("Eksik değerler:",df["Conductivity"].isna().sum())
-# print("Medyan Değeri:",df["Conductivity"].median())
-
-# #Histogram Grafiği
-# plt.hist(df["Conductivity"],bins=20)
-# plt.xlabel("Conductivity")
-# plt.ylabel("frekans")
-# plt.title("Conductivity değerlerinin Dağılımı")
-# plt.show()
+#Histogram Grafiği
+plt.hist(df["Sulfate"],bins=20)
+plt.xlabel("Sulfate")
+plt.ylabel("frekans")
+plt.title("Sulfate değerlerinin Dağılımı")
+plt.show()
 
 
-# print("-----------------------------------------------------")
+print("-----------------------------------------------------")
 
-# print("Eksik değerler:",df["Organic_carbon"].isna().sum())
-# print("Medyan Değeri:",df["Organic_carbon"].median())
+hesaplamainfo("Conductivity")
 
-# #Histogram Grafiği
-# plt.hist(df["Organic_carbon"],bins=20)
-# plt.xlabel("Organic_carbon")
-# plt.ylabel("frekans")
-# plt.title("Organic_carbon değerlerinin Dağılımı")
-# plt.show()
+#Histogram Grafiği
+plt.hist(df["Conductivity"],bins=20)
+plt.xlabel("Conductivity")
+plt.ylabel("frekans")
+plt.title("Conductivity değerlerinin Dağılımı")
+plt.show()
 
 
-# print("-----------------------------------------------------")
+print("-----------------------------------------------------")
+
+hesaplamainfo("Organic_carbon")
+
+#Histogram Grafiği
+plt.hist(df["Organic_carbon"],bins=20)
+plt.xlabel("Organic_carbon")
+plt.ylabel("frekans")
+plt.title("Organic_carbon değerlerinin Dağılımı")
+plt.show()
+
+
+print("-----------------------------------------------------")
 
 # #Histogram Grafiği
 # plt.hist(df["Trihalomethanes"].dropna(), bins=20)
