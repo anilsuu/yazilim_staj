@@ -58,8 +58,15 @@ print(std_values)
 
 print("-----------------------------")
 
+#Histogram Grafiği
+plt.hist(df["ph"], bins=20)
+plt.xlabel("pH")
+plt.ylabel("Frekans")
+plt.title("pH Değerlerinin Dağılımı")
+plt.show()
+
 #Eksik Verilerin analiz edilmelerine göre doldurulmaları.
-print("Eksik değerler:", df[["ph"]].isna().sum())
+print("Eksik değerler:", df["ph"].isna().sum())
 
 print("Medyan değeri:", df["ph"].median())
 
@@ -78,7 +85,7 @@ plt.show()
 print("-----------------------------")
 
 #Null değerlerin sayısı ve medyan değerinin hesaplanması
-print("Eksik değerler:" , df[["Hardness"]].isna().sum())
+print("Eksik değerler:" , df["Hardness"].isna().sum())
 print("Medyan değeri:", df["Hardness"].median())
 
 #Histogram Grafiği
@@ -90,7 +97,7 @@ plt.show()
 
 print("-----------------------------")
 
-print("Eksik değerler:", df[["Solids"]].isna().sum())
+print("Eksik değerler:", df["Solids"].isna().sum())
 print("Medyan değeri:", df["Solids"].median())
 
 #Histogram Grafiği
@@ -102,7 +109,7 @@ plt.show()
 
 print("-----------------------------")
 
-print("Eksik değerler:", df[["Chloramines"]].isna().sum())
+print("Eksik değerler:", df["Chloramines"].isna().sum())
 print("Medyan değeri:", df["Chloramines"].median())
 
 #Histogram Grafiği
@@ -114,8 +121,16 @@ plt.show()
 
 print("-----------------------------")
 
-print("Eksik değerler:",df[["Sulfate"]].isna().sum())
-print("Medyan Değeri:",df[["Sulfate"]].median())
+
+#Histogram Grafiği
+plt.hist(df["Sulfate"],bins=20)
+plt.xlabel("Sulfate")
+plt.ylabel("frekans")
+plt.title("Sulfate değerlerinin Dağılımı")
+plt.show()
+
+print("Eksik değerler:",df["Sulfate"].isna().sum())
+print("Medyan Değeri:",df["Sulfate"].median())
 df["Sulfate"]=df["Sulfate"].fillna(df["Sulfate"].median())
 print("Doldurma sonrası Sulfate eksik değerler:",df["Sulfate"].isna().sum())
 
@@ -128,8 +143,8 @@ plt.show()
 
 print("-----------------------------")
 
-print("Eksik değerler:",df[["Conductivity"]].isna().sum())
-print("Medyan Değeri:",df[["Conductivity"]].median())
+print("Eksik değerler:",df["Conductivity"].isna().sum())
+print("Medyan Değeri:",df["Conductivity"].median())
 
 #Histogram Grafiği
 plt.hist(df["Conductivity"],bins=20)
@@ -139,6 +154,12 @@ plt.title("Conductivity değerlerinin Dağılımı")
 plt.show()
 
 print("-----------------------------")
+
+print("Eksik değerler:",df["Organic_carbon"].isna().sum())
+print("Medyan Değeri:",df["Organic_carbon"].median())
+
+#Histogram Grafiği
+
 
 
 
