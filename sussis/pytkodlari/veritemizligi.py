@@ -44,7 +44,8 @@ df = df.drop_duplicates()
 # print(df.describe())
 # std=np.std()
 # print(std)
-
+print("ph eksik oranı:", df["ph"].isna().mean() * 100)
+print("Sulfate eksik oranı:", df["Sulfate"].isna().mean() * 100)
 # Tüm sayısal değişkenlerin standart sapmasını Series olarak döndürür
 print("-----------------------------")
 
