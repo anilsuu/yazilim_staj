@@ -46,6 +46,7 @@ df = df.drop_duplicates()
 # print(std)
 print("ph eksik oranı:", df["ph"].isna().mean() * 100)
 print("Sulfate eksik oranı:", df["Sulfate"].isna().mean() * 100)
+print("Trihalomethanes eksik oranı:", df["Trihalomethanes"].isna().mean() * 100)
 # Tüm sayısal değişkenlerin standart sapmasını Series olarak döndürür
 print("-----------------------------")
 
@@ -164,10 +165,49 @@ print("Eksik değerler:",df["Organic_carbon"].isna().sum())
 print("Medyan Değeri:",df["Organic_carbon"].median())
 
 #Histogram Grafiği
+plt.hist(df["Organic_carbon"],bins=20)
+plt.xlabel("Organic_carbon")
+plt.ylabel("frekans")
+plt.title("Organic_carbon değerlerinin Dağılımı")
+plt.show()
+
+print("-----------------------------")
 
 
+#Histogram Grafiği
+plt.hist(df["Trihalomethanes"].dropna(), bins=20)
+plt.xlabel("Trihalomethanes")
+plt.ylabel("Frekans")
+plt.title("Trihalomethanes Değerlerinin Dağılımı")
+plt.show()
 
 
+print("Eksik değerler:", df["Trihalomethanes"].isna().sum())
+print("Medyan değeri:", df["Trihalomethanes"].median())
+
+#Histogram Grafiği
+plt.hist(df["Trihalomethanes"], bins=20)
+plt.xlabel("Trihalomethanes")
+plt.ylabel("frekans")
+plt.title("Trihalomethanes Değerlerinin Dağılımı")
+plt.show()
+
+print("-----------------------------")
+
+print("Eksik değerler:", df["Turbidity"].isna().sum())
+print("Medyan değeri:", df["Turbidity"].median())
+
+#Histogram Grafiği
+plt.hist(df["Turbidity"], bins=20)
+plt.xlabel("Turbidity")
+plt.ylabel("frekans")
+plt.title("Turbidity Değerlerinin Dağılımı")
+plt.show()
+
+
+print("-----------------------------")
+
+#
 #EKSİKLERİ DOLDURUP AYKIRI ANALİZİ YAP YARIN 
 #BU SATIRLARI SİLLLLLL*****
 #ENCODED PAZARTESİ VERİ SETİNİN YARISINI , SALI VERİ SETİNİN ÖBÜR YARISINI ENCODE
