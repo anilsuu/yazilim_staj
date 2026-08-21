@@ -33,7 +33,6 @@ print(df.head()) # İlk 5 satırı yazdır
 
 print("Veri boyutu:", df.shape)
 
-
 # DUPLICATE(TEKRAR EDEN VERİ) KONTROLÜ
 print("Toplam duplicate kayıt:", df.duplicated().sum())
 
@@ -49,7 +48,6 @@ df = df.drop_duplicates()
 # Tüm sayısal değişkenlerin standart sapmasını Series olarak döndürür
 print("-----------------------------")
 
-
 # print("Tüm sütunların standart sapması:")
 # std_values = df.std(numeric_only=True)
 # print(std_values)
@@ -60,14 +58,13 @@ print(std_values)
 
 print("-----------------------------")
 
-
 #Eksik Verilerin analiz edilmelerine göre doldurulmaları.
 print("Eksik değerler:", df[["ph"]].isna().sum())
 
+print("ph Medyan değeri:", df["ph"].median())
+
 # ph sütunundaki null değerleri 'ph'sütununu medyanı ile doldurur.
 df["ph"] = df["ph"].fillna(df["ph"].median())
-
-print("ph Medyan değeri:", df["ph"].median())
 
 # Eksik veri kalıp kalmadığının kontrolü
 print("Doldurma sonrası 'ph' eksik değer sayısı:", df["ph"].isna().sum())
@@ -78,9 +75,7 @@ plt.ylabel("Frekans")
 plt.title("pH Değerlerinin Dağılımı")
 plt.show()
 
-
 print("-----------------------------")
-
 
 #Hardness Sütunu için eksik verilerin sayısı
 print("Eksik değerler:" , df[["Hardness"]].isna().sum())
@@ -94,9 +89,7 @@ plt.ylabel("frekans")
 plt.title("Hardness değerlerinin Dağılımı")
 plt.show()
 
-
 print("-----------------------------")
-
 
 # Solids sütunundaki eksik değerlerin sayısı
 print("Eksik değerler:", df[["Solids"]].isna().sum())
@@ -110,26 +103,42 @@ plt.ylabel("frekans")
 plt.title("Solids Değerlerinin Dağılımı")
 plt.show()
 
+print("-----------------------------")
+
+# Chloramines sütunundaki eksik değerlerin sayısı
+print("Eksik değerler:", df[["Chloramines"]].isna().sum())
+
+# Chloramines sütununun medyan değerinin gösterilmesi
+print("Chloramines Medyan değeri:", df["Chloramines"].median())
+
+plt.hist(df["Chloramines"], bins=20)
+plt.xlabel("Chloramines")
+plt.ylabel("frekans")
+plt.title("Chloramines Değerlerinin Dağılımı")
+plt.show()
 
 print("-----------------------------")
 
+#Sulfate sütunun eksik değerlerinin hesaplanması
+print("Eksik değer sayısı:",df[["Sulfate"]].isna().sum())
 
-# # Chloramines sütunundaki eksik değerlerin sayısı
-# print("Eksik değerler:", df[["Chloramines"]].isna().sum())
+#Sulfate sütunun medyan değerinin gösterilmesi
+print("Sulfate Medyan Değeri:",df[["Sulfate"]].median())
 
-# # Chloramines sütununun medyan değerinin gösterilmesi
-# print("Chloramines Medyan değeri:", df["Chloramines"].median())
+df["Sulfate"]=df["Sulfate"].fillna(df["Sulfate"].median())
 
-# plt.hist(df["Chloramines"], bins=20)
-# plt.xlabel("Chloramines")
-# plt.ylabel("frekans")
-# plt.title("Chloramines Değerlerinin Dağılımı")
+print("Doldurma sonrası Sulfate eksik değer sayısı:",df["Sulfate"].isna().sum())
 
+print("Doldurmadan önce:", df["Sulfate"].dtype)
 
-# plt.show()
+median = df["Sulfate"].median()
+df["Sulfate"] = df["Sulfate"].fillna(median)
 
-# print("-----------------------------")
+print("Doldurduktan sonra:", df["Sulfate"].dtype)
 
 
+#EKSİKLERİ DOLDURUP AYKIRI ANALİZİ YAP YARIN 
+#BU SATIRLARI SİLLLLLL*****
+#ENCODED PAZARTESİ VERİ SETİNİN YARISINI , SALI VERİ SETİNİN ÖBÜR YARISINI ENCODE
 
 
