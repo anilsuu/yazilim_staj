@@ -37,10 +37,10 @@ print("Veri boyutu:", df.shape)
 print("Toplam duplicate kayıt:", df.duplicated().sum())
 
 def hesaplamainfo(column):
-    print(f"Ortalama:{column}",df.mean())
-    print(f"Medyan:{column}",df.median())
-    print(f"Standart Sapma:{column}",df.std())
-    print(f"Eksik değerler:{column}",df.isna().sum())
+    print(f"Ortalama:{column}",df[column].mean())
+    print(f"Medyan:{column}",df[column].median())
+    print(f"Standart Sapma:{column}",df[column].std())
+    print(f"Eksik değerler:{column}",df[column].isna().sum())
     
     
 #Eksik Verilerin analiz edilmelerine göre doldurulmaları.
@@ -157,11 +157,7 @@ plt.ylabel("frekans")
 plt.title("Sulfate değerlerinin Dağılımı")
 plt.show()
 
-# Eksik veri kalıp kalmadığının kontrolü
-print("Sulfate Ortalama:", df["Sulfate"].mean())
-print("Sulfate Medyan:", df["Sulfate"].median())
-print("Sulfate Standart Sapma:", df["Sulfate"].std())
-print("Sulfate Eksik Değer:", df["Sulfate"].isna().sum())
+hesaplamainfo("Sulfate")
 
 df["Sulfate"]=df["Sulfate"].fillna(df["Sulfate"].median())
 
@@ -208,18 +204,14 @@ plt.show()
 
 print("-----------------------------------------------------")
 
-print("Trihalomethanes Ortalama:", df["Trihalomethanes"].mean())
-print("Trihalomethanes Medyan:", df["Trihalomethanes"].median())
-print("Trihalomethanes Standart Sapma:", df["Trihalomethanes"].std())
-print("Eksik değerler:", df["Trihalomethanes"].isna().sum())
-
-
 #Histogram Grafiği
 plt.hist(df["Trihalomethanes"].dropna(), bins=20)
 plt.xlabel("Trihalomethanes")
 plt.ylabel("Frekans")
 plt.title("Trihalomethanes Değerlerinin Dağılımı")
 plt.show()
+
+hesaplamainfo("Trihalomethanes")
 
 df["Trihalomethanes"]=df["Trihalomethanes"].fillna(df["Trihalomethanes"].median())
 print("Medyan değeri:", df["Trihalomethanes"].median())
