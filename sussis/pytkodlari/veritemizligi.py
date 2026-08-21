@@ -74,7 +74,6 @@ plt.xlabel("pH")
 plt.ylabel("Frekans")
 plt.title("pH Değerlerinin Dağılımı")
 plt.show()
-
 print("-----------------------------")
 
 #Hardness Sütunu için eksik verilerin sayısı
@@ -88,7 +87,6 @@ plt.xlabel("Hardness")
 plt.ylabel("frekans")
 plt.title("Hardness değerlerinin Dağılımı")
 plt.show()
-
 print("-----------------------------")
 
 # Solids sütunundaki eksik değerlerin sayısı
@@ -102,7 +100,6 @@ plt.xlabel("Solids")
 plt.ylabel("frekans")
 plt.title("Solids Değerlerinin Dağılımı")
 plt.show()
-
 print("-----------------------------")
 
 # Chloramines sütunundaki eksik değerlerin sayısı
@@ -116,9 +113,7 @@ plt.xlabel("Chloramines")
 plt.ylabel("frekans")
 plt.title("Chloramines Değerlerinin Dağılımı")
 plt.show()
-
 print("-----------------------------")
-
 #Sulfate sütunun eksik değerlerinin hesaplanması
 print("Eksik değer sayısı:",df[["Sulfate"]].isna().sum())
 
@@ -129,12 +124,12 @@ df["Sulfate"]=df["Sulfate"].fillna(df["Sulfate"].median())
 
 print("Doldurma sonrası Sulfate eksik değer sayısı:",df["Sulfate"].isna().sum())
 
-print("Doldurmadan önce:", df["Sulfate"].dtype)
-
-median = df["Sulfate"].median()
-df["Sulfate"] = df["Sulfate"].fillna(median)
-
-print("Doldurduktan sonra:", df["Sulfate"].dtype)
+plt.hist(df["Sulfate"],bins=20)
+plt.xlabel("Sulfate")
+plt.ylabel("frekans")
+plt.title("Sulfate değerlerinin Dağılımı")
+plt.show()
+print("-----------------------------")
 
 
 #EKSİKLERİ DOLDURUP AYKIRI ANALİZİ YAP YARIN 
