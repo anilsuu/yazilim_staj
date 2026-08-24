@@ -13,6 +13,8 @@ import pyodbc
 from sqlalchemy import create_engine
 import urllib
 import missingno as msno
+from sklearn.impute import KNNImputer
+
 
 #Server ve database bilgisi
 server = 'LAPTOP-MNJN06EU\\NILSS'
@@ -40,7 +42,6 @@ df=df.drop(["Carcinogenics","medical_waste"],axis=1)
 print("Toplam duplicate kayıt:", df.duplicated().sum())
 
 msno.matrix(df.sample(len(df)))
-
 
 def hesaplamainfo(column):
     print(f"Ortalama:{column}",df[column].mean())
@@ -134,7 +135,7 @@ print("-----------------------------------------------------")
 
 hesaplamainfo("Sulfate")
 
-medyanladoldurma("Sulfate")
+
 
 nansızsütuninfo("Sulfate")
 
