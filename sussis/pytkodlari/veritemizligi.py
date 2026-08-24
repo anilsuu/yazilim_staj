@@ -269,6 +269,8 @@ def karsilastir_aykiri_degerler(iqr_sonuclari, zscore_sonuclari):
 # Fonksiyonları çağırıp sonuçları değişkenlere atar
 bulunan_iqr = iqr_aykirianalizi(df, "ph")
 bulunan_zscore = zscore_aykirianalizi(df, "ph")
+
+
 # karşılaştırma fonksiyonu
 ortak_aykiri_degerler = karsilastir_aykiri_degerler(bulunan_iqr, bulunan_zscore)
 
@@ -316,8 +318,32 @@ ortak_aykiri_degerler = karsilastir_aykiri_degerler(bulunan_iqr, bulunan_zscore)
 
 
 
+# Analiz edilecek sütunların listesi
+sutunlar = ["ph", "Hardness", "Solids", "Chloramines", "Sulfate", 
+            "Conductivity", "Organic_carbon", "Trihalomethanes", "Turbidity"]
+
+# Silinecek indexlerin toplanacağı küme 
+# (Aynı satırı iki kere silmeye çalışıp hata almamak için 'set' )
+silinecek_indexler = set()
+
+for col in sutunlar:
+    
+    zscore_outliers = zscore_aykirianalizi(df, col)
+    
+    # Bulunan aykırı satırların index numaraları kümeye eklenir.
+    silinecek_indexler.update(zscore_outliers.index)
+
+# Toplanan tüm aykırı satırları veri setinden silinir
+df_temiz = df.drop(index=list(silinecek_indexler)).copy()
 
 
+# df = df.drop(index=list(silinecek_indexler))
+
+print("-----------------------------------------------------")
+print(f"Orijinal veri seti satır sayısı: {len(df)}")
+print(f"Silinen toplam aykırı satır sayısı: {len(silinecek_indexler)}")
+print(f"Temizlenmiş yeni veri seti satır sayısı: {len(df_temiz)}")
+print("-----------------------------------------------------")
 
 # df.plot(x ='Sulfate', y='ph', kind='scatter')
 # plt.show()
