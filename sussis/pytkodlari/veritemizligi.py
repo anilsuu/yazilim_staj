@@ -12,6 +12,7 @@ from sklearn.preprocessing import PowerTransformer
 import pyodbc
 from sqlalchemy import create_engine
 import urllib
+import missingno as msno
 
 #Server ve database bilgisi
 server = 'LAPTOP-MNJN06EU\\NILSS'
@@ -33,8 +34,13 @@ print(df.head()) # İlk 5 satırı yazdır
 
 print("Veri boyutu:", df.shape)
 
+df=df.drop(["Carcinogenics","medical_waste"],axis=1)
+
 # DUPLICATE(TEKRAR EDEN VERİ) KONTROLÜ
 print("Toplam duplicate kayıt:", df.duplicated().sum())
+
+msno.matrix(df.sample(len(df)))
+
 
 def hesaplamainfo(column):
     print(f"Ortalama:{column}",df[column].mean())
@@ -63,6 +69,7 @@ print("ph eksik oranı:", df["ph"].isna().mean() * 100)
 print("Sulfate eksik oranı:", df["Sulfate"].isna().mean() * 100)
 print("Trihalomethanes eksik oranı:", df["Trihalomethanes"].isna().mean() * 100)
 
+
 print("-----------------------------------------------------")
 
 # print("Tüm sütunların standart sapması:")
@@ -75,24 +82,13 @@ print(std_values)
 
 print("-----------------------------------------------------")
 
-#Histogram Grafiği
-plt.hist(df["ph"].dropna(), bins=20)
-plt.xlabel("pH")
-plt.ylabel("Frekans")
-plt.title("pH Değerlerinin Dağılımı")
-plt.show()
-
-
 hesaplamainfo("ph")
 
 # # ph sütunundaki null değerleri 'ph'sütununu medyanı ile doldurur.
 # df["ph"] = df["ph"].fillna(df["ph"].median())
-
 medyanladoldurma("ph")
 
-
 nansızsütuninfo("ph")
-
 
 #Histogram Grafiği
 plt.hist(df["ph"], bins=20)
@@ -112,7 +108,6 @@ plt.ylabel("frekans")
 plt.title("Hardness değerlerinin Dağılımı")
 plt.show()
 
-
 print("-----------------------------------------------------")
 
 hesaplamainfo("Solids")
@@ -123,7 +118,6 @@ plt.xlabel("Solids")
 plt.ylabel("frekans")
 plt.title("Solids Değerlerinin Dağılımı")
 plt.show()
-
 
 print("-----------------------------------------------------")
 
@@ -136,15 +130,7 @@ plt.ylabel("frekans")
 plt.title("Chloramines Değerlerinin Dağılımı")
 plt.show()
 
-
 print("-----------------------------------------------------")
-
-#Histogram Grafiği
-plt.hist(df["Sulfate"].dropna(),bins=20)
-plt.xlabel("Sulfate")
-plt.ylabel("frekans")
-plt.title("Sulfate değerlerinin Dağılımı")
-plt.show()
 
 hesaplamainfo("Sulfate")
 
@@ -152,14 +138,12 @@ medyanladoldurma("Sulfate")
 
 nansızsütuninfo("Sulfate")
 
-
 #Histogram Grafiği
 plt.hist(df["Sulfate"],bins=20)
 plt.xlabel("Sulfate")
 plt.ylabel("frekans")
 plt.title("Sulfate değerlerinin Dağılımı")
 plt.show()
-
 
 print("-----------------------------------------------------")
 
@@ -172,7 +156,6 @@ plt.ylabel("frekans")
 plt.title("Conductivity değerlerinin Dağılımı")
 plt.show()
 
-
 print("-----------------------------------------------------")
 
 hesaplamainfo("Organic_carbon")
@@ -184,54 +167,36 @@ plt.ylabel("frekans")
 plt.title("Organic_carbon değerlerinin Dağılımı")
 plt.show()
 
+print("-----------------------------------------------------")
+
+hesaplamainfo("Trihalomethanes")
+
+medyanladoldurma("Trihalomethanes")
+
+nansızsütuninfo("Trihalomethanes")
+
+#Histogram Grafiği
+plt.hist(df["Trihalomethanes"].dropna(), bins=20)
+plt.xlabel("Trihalomethanes")
+plt.ylabel("Frekans")
+plt.title("Trihalomethanes Değerlerinin Dağılımı")
+plt.show()
 
 print("-----------------------------------------------------")
 
-# #Histogram Grafiği
-# plt.hist(df["Trihalomethanes"].dropna(), bins=20)
-# plt.xlabel("Trihalomethanes")
-# plt.ylabel("Frekans")
-# plt.title("Trihalomethanes Değerlerinin Dağılımı")
-# plt.show()
+hesaplamainfo("Turbidity")
 
-# hesaplamainfo("Trihalomethanes")
+#Histogram Grafiği
+plt.hist(df["Turbidity"], bins=20)
+plt.xlabel("Turbidity")
+plt.ylabel("frekans")
+plt.title("Turbidity Değerlerinin Dağılımı")
+plt.show()
 
-# df["Trihalomethanes"]=df["Trihalomethanes"].fillna(df["Trihalomethanes"].median())
-# print("Medyan değeri:", df["Trihalomethanes"].median())
+print("-----------------------------------------------------")
 
-
-# print("Doldurma sonrası Trihalomethanes Ortalama:", df["Trihalomethanes"].mean())
-# print("Doldurma sonrası Trihalomethanes Medyan:", df["Trihalomethanes"].median())
-# print("Doldurma sonrası Trihalomethanes Standart Sapma:", df["Trihalomethanes"].std())
-# print("Doldurma sonrası Eksik değerler:", df["Trihalomethanes"].isna().sum())
-
-# #Histogram Grafiği
-# plt.hist(df["Trihalomethanes"], bins=20)
-# plt.xlabel("Trihalomethanes")
-# plt.ylabel("frekans")
-# plt.title("Trihalomethanes Değerlerinin Dağılımı")
-# plt.show()
-
-# print("-----------------------------------------------------")
-
-
-# print("Eksik değerler:", df["Turbidity"].isna().sum())
-# print("Medyan değeri:", df["Turbidity"].median())
-
-# #Histogram Grafiği
-# plt.hist(df["Turbidity"], bins=20)
-# plt.xlabel("Turbidity")
-# plt.ylabel("frekans")
-# plt.title("Turbidity Değerlerinin Dağılımı")
-# plt.show()
-
-
-
-# print("-----------------------------------------------------")
-
-# #
-# #EKSİKLERİ DOLDURUP AYKIRI ANALİZİ YAP YARIN 
+# Medyan değeriyle doldurmak doğru mu bir kez daha kontrol et
+# #EKSİKLERİ DOLDURUP AYKIRI ANALİZİ YAP PZTTTTTT
 # #BU SATIRLARI SİLLLLLL*****
 # #ENCODED PAZARTESİ VERİ SETİNİN YARISINI , SALI VERİ SETİNİN ÖBÜR YARISINI ENCODE
-
 
