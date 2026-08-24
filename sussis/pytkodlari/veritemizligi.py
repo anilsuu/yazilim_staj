@@ -14,7 +14,9 @@ from sqlalchemy import create_engine
 import urllib
 import missingno as msno
 from sklearn.impute import KNNImputer
-import scipy.stats
+import scipy.stats 
+from scipy.stats import zscore
+
 
 #Server ve database bilgisi
 server = 'LAPTOP-MNJN06EU\\NILSS'
@@ -38,6 +40,9 @@ print("Veri boyutu:", df.shape)
 
 df=df.drop(["Carcinogenics","medical_waste"],axis=1)
 
+
+
+# msno.matrix(df.sample(len(df)))
 
 
 # DUPLICATE(TEKRAR EDEN VERİ) KONTROLÜ
@@ -149,7 +154,7 @@ df_knn = pd.DataFrame(scaler.fit_transform(df_knn), columns = df_knn.columns)
 knn_imputer = KNNImputer(n_neighbors=5, weights='distance')
 df_knn_imputed = pd.DataFrame(knn_imputer.fit_transform(df_knn), columns=df_knn.columns)
 
-print(df_knn_imputed)
+# print(df_knn_imputed)
 df_imputed = pd.DataFrame(scaler.inverse_transform(df_knn_imputed), columns=df_knn.columns)
 
 # Doldurulmuş Sulfate sütununu, tekrar main dataframe eklendi.
@@ -213,6 +218,120 @@ plt.title("Turbidity Değerlerinin Dağılımı")
 plt.show()
 
 print("-----------------------------------------------------")
+
+
+# ─────────────────────────────────────────────────────
+# ADIM 5 — AYKIRI DEĞER (IQR ve Z-SCORE)
+# ─────────────────────────────────────────────────────
+import pandas as pd
+
+def iqr_aykirianalizi(df, column):
+    Q1  = df[column].quantile(0.25)
+    Q3  = df[column].quantile(0.75)
+    IQR = Q3 - Q1
+    lower = Q1 - 1.5 * IQR
+    upper = Q3 + 1.5 * IQR
+    
+    # Sadece string yerine df[column] üzerinden karşılaştırma yapar
+    # Sonucu direkt bir DataFrame olarak almak için df[...] içine aldım
+    iqr_outliers = df[(df[column] < lower) | (df[column] > upper)]
+    
+    
+    return iqr_outliers
+
+
+def zscore_aykirianalizi(df, column):
+    ortalama = df[column].mean()
+    std_sapma = df[column].std()
+    z_skorlari = (df[column] - ortalama) / std_sapma
+    zscore_outliers = df[z_skorlari.abs() > 3]
+    
+    return zscore_outliers
+
+
+# 3. İki Sonucu Karşılaştıran Fonksiyon
+def karsilastir_aykiri_degerler(iqr_sonuclari, zscore_sonuclari):
+    print(f"IQR yöntemi {len(iqr_sonuclari)} adet aykırı değer buldu.")
+    print(f"Z-Skoru yöntemi {len(zscore_sonuclari)} adet aykırı değer buldu.")
+    
+    # Her iki yöntemin de ortak (kesişim) bulduğu aykırı değerlerin indexlerini al
+    ortak_indexler = iqr_sonuclari.index.intersection(zscore_sonuclari.index)
+    
+    print(f"Her iki yöntemin ORTAK bulduğu aykırı değer sayısı: {len(ortak_indexler)}")
+    print("-----------------------------------------------------")
+    
+    # Ortak bulunan bu satırların indexlerini döndürür
+    return ortak_indexler
+
+
+# --- ÇALIŞTIRMA KISMI ---
+
+# Fonksiyonları çağırıp sonuçları değişkenlere atar
+bulunan_iqr = iqr_aykirianalizi(df, "ph")
+bulunan_zscore = zscore_aykirianalizi(df, "ph")
+# karşılaştırma fonksiyonu
+ortak_aykiri_degerler = karsilastir_aykiri_degerler(bulunan_iqr, bulunan_zscore)
+
+
+bulunan_iqr = iqr_aykirianalizi(df, "Hardness")
+bulunan_zscore = zscore_aykirianalizi(df, "Hardness")
+# karşılaştırma fonksiyonu
+ortak_aykiri_degerler = karsilastir_aykiri_degerler(bulunan_iqr, bulunan_zscore)
+
+bulunan_iqr = iqr_aykirianalizi(df, "Solids")
+bulunan_zscore = zscore_aykirianalizi(df, "Solids")
+# karşılaştırma fonksiyonu
+ortak_aykiri_degerler = karsilastir_aykiri_degerler(bulunan_iqr, bulunan_zscore)
+
+bulunan_iqr = iqr_aykirianalizi(df, "Chloramines")
+bulunan_zscore = zscore_aykirianalizi(df, "Chloramines")
+# karşılaştırma fonksiyonu
+ortak_aykiri_degerler = karsilastir_aykiri_degerler(bulunan_iqr, bulunan_zscore)
+
+bulunan_iqr = iqr_aykirianalizi(df, "Sulfate")
+bulunan_zscore = zscore_aykirianalizi(df, "Sulfate")
+# karşılaştırma fonksiyonu
+ortak_aykiri_degerler = karsilastir_aykiri_degerler(bulunan_iqr, bulunan_zscore)
+
+bulunan_iqr = iqr_aykirianalizi(df, "Conductivity")
+bulunan_zscore = zscore_aykirianalizi(df, "Conductivity")
+# karşılaştırma fonksiyonu
+ortak_aykiri_degerler = karsilastir_aykiri_degerler(bulunan_iqr, bulunan_zscore)
+
+bulunan_iqr = iqr_aykirianalizi(df, "Organic_carbon")
+bulunan_zscore = zscore_aykirianalizi(df, "Organic_carbon")
+# karşılaştırma fonksiyonu
+ortak_aykiri_degerler = karsilastir_aykiri_degerler(bulunan_iqr, bulunan_zscore)
+
+bulunan_iqr = iqr_aykirianalizi(df, "Trihalomethanes")
+bulunan_zscore = zscore_aykirianalizi(df, "Trihalomethanes")
+# karşılaştırma fonksiyonu
+ortak_aykiri_degerler = karsilastir_aykiri_degerler(bulunan_iqr, bulunan_zscore)
+
+bulunan_iqr = iqr_aykirianalizi(df, "Turbidity")
+bulunan_zscore = zscore_aykirianalizi(df, "Turbidity")
+# karşılaştırma fonksiyonu
+ortak_aykiri_degerler = karsilastir_aykiri_degerler(bulunan_iqr, bulunan_zscore)
+
+
+
+
+
+
+
+# df.plot(x ='Sulfate', y='ph', kind='scatter')
+# plt.show()
+
+# print("\nAykırı değer (IQR):")
+# df["ph"] = iqr_aykirianalizi(df["ph"])
+# df["Hardness"] = iqr_aykirianalizi(df["Hardness"])
+# df["Solids"] = iqr_aykirianalizi(df["Solids"])
+# df["Chloramines"] = iqr_aykirianalizi(df["Chloramines"])
+# df["Sulfate"] = iqr_aykirianalizi(df["Sulfate"])
+# df["Conductivity"] = iqr_aykirianalizi(df["Conductivity"])
+# df["Organic_carbon"] = iqr_aykirianalizi(df["Organic_carbon"])
+# df["Trihalomethanes"] = iqr_aykirianalizi(df["Trihalomethanes"])
+# df["Turbidity"] = iqr_aykirianalizi(df["Turbidity"])
 
 
 
