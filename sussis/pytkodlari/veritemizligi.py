@@ -135,21 +135,22 @@ print("-----------------------------------------------------")
 
 hesaplamainfo("Sulfate")
 
-# medyanladoldurma("Sulfate")
-
+#Sulfate sütununu kNN ile doldurmak için eğitecek 2 başka sütunda seçildi.
+#Kopya bir dataframe oluşturuldu.
 df_knn=df.filter(["Sulfate","ph","Hardness"],axis=1).copy()
 
+#
 scaler=MinMaxScaler()
 df_knn = pd.DataFrame(scaler.fit_transform(df_knn), columns = df_knn.columns)
 
-# Define KNN imputer and fill missing values
+# Daha doğru sonuç için d
 knn_imputer = KNNImputer(n_neighbors=5, weights='distance')
 df_knn_imputed = pd.DataFrame(knn_imputer.fit_transform(df_knn), columns=df_knn.columns)
 
 print(df_knn_imputed)
 df_imputed = pd.DataFrame(scaler.inverse_transform(df_knn_imputed), columns=df_knn.columns)
 
-# 4. Sadece doldurulmuş Sulfate sütununu, asıl df'mizin içine aktarıyoruz
+# Doldurulmuş Sulfate sütununu, tekrar main dataframe eklendi.
 df["Sulfate"] = df_imputed["Sulfate"]
 
 nansızsütuninfo("Sulfate")
@@ -211,7 +212,7 @@ plt.show()
 
 print("-----------------------------------------------------")
 
-# Medyan değeriyle doldurmak doğru mu bir kez daha kontrol et
+
 # #EKSİKLERİ DOLDURUP AYKIRI ANALİZİ YAP PZTTTTTT
 # #BU SATIRLARI SİLLLLLL*****
 # #ENCODED PAZARTESİ VERİ SETİNİN YARISINI , SALI VERİ SETİNİN ÖBÜR YARISINI ENCODE
