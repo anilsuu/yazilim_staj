@@ -306,11 +306,11 @@ print(f"Silinen toplam aykırı satır sayısı: {len(silinecek_indexler)}")
 print(f"Temizlenmiş yeni veri seti satır sayısı: {len(df_temiz)}")
 print("-----------------------------------------------------")
 
-
-
-
 kayip_orani=(len(df)-len(df_temiz))/len(df)*100
 print("Veri seti kayıp oranı:" ,kayip_orani)
+
+# Eski kopuk indeksleri silip baştan 0,1,2,3... diye numaralandırır
+df_temiz = df_temiz.reset_index(drop=True)
 
 # #ENCODED  VERİ SETİNİN YARISINI YAPACAĞIM.
 
