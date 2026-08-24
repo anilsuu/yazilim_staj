@@ -215,39 +215,6 @@ plt.show()
 print("-----------------------------------------------------")
 
 
-# ─────────────────────────────────────────────────────
-# ADIM 5 — AYKIRI DEĞER (IQR)
-# ─────────────────────────────────────────────────────
-
-def clip_outliers(series):
-    Q1  = series.quantile(0.25)
-    Q3  = series.quantile(0.75)
-    IQR = Q3 - Q1
-    lower = Q1 - 1.5 * IQR
-    upper = Q3 + 1.5 * IQR
-    
-    outliers = (series < lower) | (series > upper)
-    
-    print(f"  {series.name}: [{lower:.2f}, {upper:.2f}]  "
-          f"→ {outliers.sum()} aykırı değer")
-    return outliers
-
-# df.plot(x ='Sulfate', y='ph', kind='scatter')
-# plt.show()
-
- 
-print("\nAykırı değer (IQR):")
-df["ph"] = clip_outliers(df["ph"])
-df["Hardness"] = clip_outliers(df["Hardness"])
-df["Solids"] = clip_outliers(df["Solids"])
-df["Chloramines"] = clip_outliers(df["Chloramines"])
-df["Sulfate"] = clip_outliers(df["Sulfate"])
-df["Conductivity"] = clip_outliers(df["Conductivity"])
-df["Organic_carbon"] = clip_outliers(df["Organic_carbon"])
-df["Trihalomethanes"] = clip_outliers(df["Trihalomethanes"])
-df["Turbidity"] = clip_outliers(df["Turbidity"])
-
-
 
 # #BU SATIRLARI SİLLLLLL*****
 # #ENCODED PAZARTESİ VERİ SETİNİN YARISINI , SALI VERİ SETİNİN ÖBÜR YARISINI ENCODE
