@@ -309,5 +309,8 @@ print("-----------------------------------------------------")
 
 
 
-# #ENCODED PAZARTESİ VERİ SETİNİN YARISINI , SALI VERİ SETİNİN ÖBÜR YARISINI ENCODE
+kayip_orani=(len(df)-len(df_temiz))/len(df)*100
+print("Veri seti kayıp oranı:" ,kayip_orani)
+
+# #ENCODED  VERİ SETİNİN YARISINI YAPACAĞIM.
 
