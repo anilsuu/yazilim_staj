@@ -18,6 +18,10 @@ import scipy.stats
 from scipy.stats import zscore
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV, KFold, learning_curve
+from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
+from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import r2_score, roc_curve, auc
 
 #Server ve database bilgisi
 server = 'LAPTOP-MNJN06EU\\NILSS'
@@ -372,3 +376,16 @@ plt.xlabel("Ölçeklendirilmiş Özellik")
 plt.ylabel("Potability (İçilebilirlik)")
 plt.legend()
 plt.show()
+# 4. BASE MODEL + CROSS VALIDATION
+# =====================================================
+rf = RandomForestRegressor(random_state=42)
+
+kf = KFold(n_splits=10, shuffle=True, random_state=42)
+cv_scores = cross_val_score(rf, x, y, cv=kf, scoring='r2')
+
+rf.fit(x_train, y_train)
+base_r2 = r2_score(y_test, rf.predict(x_test))
+
+print(f"CV Ortalama R2: {np.mean(cv_scores):.4f}")
+print(f"Base Model R2 : {base_r2:.4f}")
+print("-" * 50)
