@@ -374,4 +374,11 @@ x_train = x_train.sort_index()
 y_train=y_train.sort_index()
 
 plt.plot(x_train,y_train)
+
+# plt.plot yerine plt.scatter kullanın
+plt.scatter(x_test, y_test, color='red', label='Gerçek Veriler')
+plt.scatter(x_test, tahmin, color='blue', alpha=0.5, label='Model Tahminleri')
+
+plt.title("Gerçek Değerler ve Tahminler")
+plt.legend()
 plt.show()
