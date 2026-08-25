@@ -358,16 +358,17 @@ model = LogisticRegression()
 model.fit(x_train, y_train)
 
 tahmin=model.predict(x_test)
+
 # x_test'in içinde birden fazla özellik olduğu için görselleştirme adına 
 # X ekseninde göstermek üzere sadece 0. indeksteki ilk sütunu (özelliği) seç:
-x_gorsel = x_test[:,0]
+x_gorsel = x_test[:,2]
 
 # plt.plot yerine plt.scatter kullanın
 plt.scatter(x_gorsel, y_test, color='pink', label='Gerçek Veriler')
 plt.scatter(x_gorsel, tahmin, color='blue', alpha=0.5, label='Model Tahminleri')
 
 plt.title("Gerçek Değerler ve Tahminler")
-plt.xlabel("Ölçeklendirilmiş 1. Özellik")
+plt.xlabel("Ölçeklendirilmiş Özellik")
 plt.ylabel("Potability (İçilebilirlik)")
 plt.legend()
 plt.show()
