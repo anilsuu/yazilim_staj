@@ -40,10 +40,7 @@ print("Veri boyutu:", df.shape)
 
 df=df.drop(["Carcinogenics","medical_waste"],axis=1)
 
-
-
 # msno.matrix(df.sample(len(df)))
-
 
 # DUPLICATE(TEKRAR EDEN VERİ) KONTROLÜ
 print("Toplam duplicate kayıt:", df.duplicated().sum())
@@ -72,9 +69,6 @@ print("Duplicate gruplarındaki toplam satır:",
 df = df.drop_duplicates()
 
 
-print("ph eksik oranı:", df["ph"].isna().mean() * 100)
-print("Sulfate eksik oranı:", df["Sulfate"].isna().mean() * 100)
-print("Trihalomethanes eksik oranı:", df["Trihalomethanes"].isna().mean() * 100)
 
 
 print("-----------------------------------------------------")
@@ -86,6 +80,7 @@ print("-----------------------------------------------------")
 print("Sütunların standart sapması:")
 std_values = df.drop(columns=["deney_id"]).std(numeric_only=True)
 print(std_values)
+
 
 print("-----------------------------------------------------")
 
@@ -103,6 +98,7 @@ plt.ylabel("Frekans")
 plt.title("ph Değerlerinin Dağılımı")
 plt.show()
 
+
 print("-----------------------------------------------------")
 
 hesaplamainfo("Hardness")
@@ -113,6 +109,7 @@ plt.xlabel("Hardness")
 plt.ylabel("frekans")
 plt.title("Hardness değerlerinin Dağılımı")
 plt.show()
+
 
 print("-----------------------------------------------------")
 
@@ -125,6 +122,7 @@ plt.ylabel("frekans")
 plt.title("Solids Değerlerinin Dağılımı")
 plt.show()
 
+
 print("-----------------------------------------------------")
 
 hesaplamainfo("Chloramines")
@@ -136,6 +134,7 @@ plt.ylabel("frekans")
 plt.title("Chloramines Değerlerinin Dağılımı")
 plt.show()
 
+
 print("-----------------------------------------------------")
 
 hesaplamainfo("Sulfate")
@@ -144,7 +143,7 @@ hesaplamainfo("Sulfate")
 #Kopya bir dataframe oluşturuldu.
 df_knn=df.filter(["Sulfate","ph","Hardness"],axis=1).copy()
 
-#
+
 scaler=MinMaxScaler()
 df_knn = pd.DataFrame(scaler.fit_transform(df_knn), columns = df_knn.columns)
 
@@ -167,6 +166,7 @@ plt.ylabel("frekans")
 plt.title("Sulfate değerlerinin Dağılımı")
 plt.show()
 
+
 print("-----------------------------------------------------")
 
 hesaplamainfo("Conductivity")
@@ -178,6 +178,7 @@ plt.ylabel("frekans")
 plt.title("Conductivity değerlerinin Dağılımı")
 plt.show()
 
+
 print("-----------------------------------------------------")
 
 hesaplamainfo("Organic_carbon")
@@ -188,6 +189,7 @@ plt.xlabel("Organic_carbon")
 plt.ylabel("frekans")
 plt.title("Organic_carbon değerlerinin Dağılımı")
 plt.show()
+
 
 print("-----------------------------------------------------")
 
@@ -204,6 +206,7 @@ plt.ylabel("Frekans")
 plt.title("Trihalomethanes Değerlerinin Dağılımı")
 plt.show()
 
+
 print("-----------------------------------------------------")
 
 hesaplamainfo("Turbidity")
@@ -214,10 +217,13 @@ plt.ylabel("frekans")
 plt.title("Turbidity Değerlerinin Dağılımı")
 plt.show()
 
+
 print("-----------------------------------------------------")
+
 # ─────────────────────────────────────────────────────
 # ADIM 5 — AYKIRI DEĞER (IQR ve Z-SCORE)
 # ─────────────────────────────────────────────────────
+
 def iqr_aykirianalizi(df, column):
     Q1  = df[column].quantile(0.25)
     Q3  = df[column].quantile(0.75)
@@ -243,20 +249,27 @@ def zscore_aykirianalizi(df, column):
 
 
 # 3. İki Sonucu Karşılaştıran Fonksiyon
+
 def karsilastir_aykiri_degerler(iqr_sonuclari, zscore_sonuclari):
     print(f"IQR yöntemi {len(iqr_sonuclari)} adet aykırı değer buldu.")
     print(f"Z-Skoru yöntemi {len(zscore_sonuclari)} adet aykırı değer buldu.")
     
     # Her iki yöntemin de ortak (kesişim) bulduğu aykırı değerlerin indexlerini al
+    
     ortak_indexler = iqr_sonuclari.index.intersection(zscore_sonuclari.index)
     
     print(f"Her iki yöntemin ORTAK bulduğu aykırı değer sayısı: {len(ortak_indexler)}")
+    
+    
+
     print("-----------------------------------------------------")
     
     # Ortak bulunan bu satırların indexlerini döndürür
+    
     return ortak_indexler
 
 # Tüm analiz sürecini tek kalemde yapan birleştirici fonksiyon
+
 def tam_aykiri_analizi(df, column):
     print(f"\n--- {column.upper()} SÜTUNU ANALİZİ ---")
     
@@ -275,7 +288,7 @@ def tam_aykiri_analizi(df, column):
 sutunlar = ["ph", "Hardness", "Solids", "Chloramines", "Sulfate", 
             "Conductivity", "Organic_carbon", "Trihalomethanes", "Turbidity"]
 
-# Tüm sütunları tek tek yeni fonksiyona gönderiyor.
+# Tüm sütunları tek tek yeni fonksiyona gönderiyor
 for col in sutunlar:
     tam_aykiri_analizi(df, col)
 
@@ -292,25 +305,29 @@ for col in sutunlar:
     # Bulunan aykırı satırların index numaraları kümeye eklenir.
     silinecek_indexler.update(zscore_outliers.index)
 
-
 # Toplanan tüm aykırı satırları veri setinden silinir
 df_temiz = df.drop(index=list(silinecek_indexler)).copy()
-
 
 # df = df.drop(index=list(silinecek_indexler))
 
 
 print("-----------------------------------------------------")
+
 print(f"Orijinal veri seti satır sayısı: {len(df)}")
+
 print(f"Silinen toplam aykırı satır sayısı: {len(silinecek_indexler)}")
+
 print(f"Temizlenmiş yeni veri seti satır sayısı: {len(df_temiz)}")
+
 print("-----------------------------------------------------")
 
+
 kayip_orani=(len(df)-len(df_temiz))/len(df)*100
-print("Veri seti kayıp oranı:" ,kayip_orani)
+print("Veri setindeki kayıp oranı:" ,kayip_orani)
 
 # Eski kopuk indeksleri silip baştan 0,1,2,3... diye numaralandırır
 df_temiz = df_temiz.reset_index(drop=True)
 
-# #ENCODED  VERİ SETİNİN YARISINI YAPACAĞIM.
+
+# #ENCODED  VERİ SETİNİN YARISINI YARIN YAPACAĞIM.
 
