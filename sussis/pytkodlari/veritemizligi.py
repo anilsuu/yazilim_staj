@@ -16,7 +16,8 @@ import missingno as msno
 from sklearn.impute import KNNImputer
 import scipy.stats 
 from scipy.stats import zscore
-
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LinearRegression
 
 #Server ve database bilgisi
 server = 'LAPTOP-MNJN06EU\\NILSS'
@@ -331,17 +332,24 @@ print("Veri setindeki kayıp oranı:" ,kayip_orani)
 df_temiz = df_temiz.reset_index(drop=True)
 
 
-#SCALİNG ISLEMLERİ 
-
+#SCALİNG ISLEMLERİ
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LinearRegression
 
-# 1. Veriyi Ayırma
+df_temiz
+
+#x ve y değişkenlerini tanımlama
+#'hedef_sutun' isimli sütunu y yapıp, geri kalanları x yapıyoruz
+x = df_temiz.drop('Potability', axis=1) 
+y = df_temiz['Potability']              
+
+# Veriyi bölme (Sizin kodunuz - artık x ve y tanımlı olduğu için çalışacaktır)
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=0)
 
-# 2. Ölçeklendirme (Sadece bağımsız değişkenler yani x için)
-sc = StandardScaler() # Yazım hatası düzeltildi
+# Veriyi Ayırma
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=0)
+
+# Ölçeklendirme 
+sc = StandardScaler() 
 
 # Train setinde öğren (fit) ve uygula (transform)
 x_train = sc.fit_transform(x_train)
@@ -355,5 +363,15 @@ x_test = sc.transform(x_test)
 lr = LinearRegression()
 lr.fit(x_train, y_train)
 
-# 4. Tahmin (y_test üzerinden değil, x_test üzerinden yapılır)
+# Tahmin (y_test üzerinden değil, x_test üzerinden yapılır)
 tahmin = lr.predict(x_test)
+import pandas as pd
+
+# fit_transform sonrası NumPy dizisini tekrar DataFrame yapar
+x_train = pd.DataFrame(x_train)
+x_train = x_train.sort_index()
+
+y_train=y_train.sort_index()
+
+plt.plot(x_train,y_train)
+plt.show()
