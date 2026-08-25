@@ -22,6 +22,8 @@ from sklearn.model_selection import train_test_split, cross_val_score, GridSearc
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import r2_score, roc_curve, auc
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
 
 #Server ve database bilgisi
 server = 'LAPTOP-MNJN06EU\\NILSS'
@@ -337,8 +339,6 @@ df_temiz = df_temiz.reset_index(drop=True)
 
 
 #SCALİNG ISLEMLERİ
-from sklearn.model_selection import train_test_split
-
 
 #x ve y değişkenlerini tanımlama
 #'hedef_sutun' isimli sütunu y yapıp, geri kalanları x yapar
@@ -365,7 +365,7 @@ tahmin=model.predict(x_test)
 
 # x_test'in içinde birden fazla özellik olduğu için görselleştirme adına 
 # X ekseninde göstermek üzere sadece 0. indeksteki ilk sütunu (özelliği) seç:
-x_gorsel = x_test[:,2]
+x_gorsel = x_test[:,4]
 
 # plt.plot yerine plt.scatter kullanın
 plt.scatter(x_gorsel, y_test, color='pink', label='Gerçek Veriler')
@@ -379,14 +379,14 @@ plt.show()
 
 # 4. BASE MODEL + CROSS VALIDATION
 # =====================================================
-rf = RandomForestRegressor(random_state=42)
+rf = RandomForestClassifier(random_state=42)
 
 kf = KFold(n_splits=10, shuffle=True, random_state=42)
-cv_scores = cross_val_score(rf, x, y, cv=kf, scoring='r2')
+cv_scores = cross_val_score(rf, x, y, cv=kf, scoring='accuracy')
 
 rf.fit(x_train, y_train)
-base_r2 = r2_score(y_test, rf.predict(x_test))
+base_accuracy = accuracy_score(y_test, rf.predict(x_test))
 
-print(f"CV Ortalama R2: {np.mean(cv_scores):.4f}")
-print(f"Base Model R2 : {base_r2:.4f}")
+print(f"CV Ortalama Accuracy : {np.mean(cv_scores):.4f}")
+print(f"Base Model Accuracy : {base_accuracy:.4f}")
 print("-" * 50)
