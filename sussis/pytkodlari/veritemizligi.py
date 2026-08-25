@@ -376,6 +376,7 @@ plt.xlabel("Ölçeklendirilmiş Özellik")
 plt.ylabel("Potability (İçilebilirlik)")
 plt.legend()
 plt.show()
+
 # 4. BASE MODEL + CROSS VALIDATION
 # =====================================================
 rf = RandomForestRegressor(random_state=42)
