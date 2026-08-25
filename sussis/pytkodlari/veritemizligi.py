@@ -69,6 +69,9 @@ print("Duplicate gruplarındaki toplam satır:",
 df = df.drop_duplicates()
 
 
+print("ph eksik oranı:", df["ph"].isna().mean() * 100)
+print("Sulfate eksik oranı:", df["Sulfate"].isna().mean() * 100)
+print("Trihalomethanes eksik oranı:", df["Trihalomethanes"].isna().mean() * 100)
 
 
 print("-----------------------------------------------------")
@@ -85,8 +88,7 @@ print(std_values)
 print("-----------------------------------------------------")
 
 hesaplamainfo("ph")
-# # ph sütunundaki null değerleri 'ph'sütununu medyanı ile doldurur.
-# df["ph"] = df["ph"].fillna(df["ph"].median())
+
 medyanladoldurma("ph")
 
 nansızsütuninfo("ph")
@@ -329,5 +331,29 @@ print("Veri setindeki kayıp oranı:" ,kayip_orani)
 df_temiz = df_temiz.reset_index(drop=True)
 
 
-# #ENCODED  VERİ SETİNİN YARISINI YARIN YAPACAĞIM.
+#SCALİNG ISLEMLERİ 
 
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LinearRegression
+
+# 1. Veriyi Ayırma
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=0)
+
+# 2. Ölçeklendirme (Sadece bağımsız değişkenler yani x için)
+sc = StandardScaler() # Yazım hatası düzeltildi
+
+# Train setinde öğren (fit) ve uygula (transform)
+x_train = sc.fit_transform(x_train)
+
+# Test setinde SADECE uygula (transform)
+x_test = sc.transform(x_test) 
+
+# (y_train ve y_test ölçeklendirme adımları gereksiz olduğu için silindi)
+
+# 3. Model Eğitimi
+lr = LinearRegression()
+lr.fit(x_train, y_train)
+
+# 4. Tahmin (y_test üzerinden değil, x_test üzerinden yapılır)
+tahmin = lr.predict(x_test)
