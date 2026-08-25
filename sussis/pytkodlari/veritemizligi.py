@@ -17,7 +17,7 @@ from sklearn.impute import KNNImputer
 import scipy.stats 
 from scipy.stats import zscore
 from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LogisticRegression
 
 #Server ve database bilgisi
 server = 'LAPTOP-MNJN06EU\\NILSS'
@@ -335,17 +335,13 @@ df_temiz = df_temiz.reset_index(drop=True)
 #SCALİNG ISLEMLERİ
 from sklearn.model_selection import train_test_split
 
-df_temiz
 
 #x ve y değişkenlerini tanımlama
-#'hedef_sutun' isimli sütunu y yapıp, geri kalanları x yapıyoruz
+#'hedef_sutun' isimli sütunu y yapıp, geri kalanları x yapar
 x = df_temiz.drop('Potability', axis=1) 
 y = df_temiz['Potability']              
 
-# Veriyi bölme (Sizin kodunuz - artık x ve y tanımlı olduğu için çalışacaktır)
-x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=0)
 
-# Veriyi Ayırma
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=0)
 
 # Ölçeklendirme 
@@ -357,28 +353,21 @@ x_train = sc.fit_transform(x_train)
 # Test setinde SADECE uygula (transform)
 x_test = sc.transform(x_test) 
 
-# (y_train ve y_test ölçeklendirme adımları gereksiz olduğu için silindi)
+# Model Eğitimi
+model = LogisticRegression()
+model.fit(x_train, y_train)
 
-# 3. Model Eğitimi
-lr = LinearRegression()
-lr.fit(x_train, y_train)
-
-# Tahmin (y_test üzerinden değil, x_test üzerinden yapılır)
-tahmin = lr.predict(x_test)
-import pandas as pd
-
-# fit_transform sonrası NumPy dizisini tekrar DataFrame yapar
-x_train = pd.DataFrame(x_train)
-x_train = x_train.sort_index()
-
-y_train=y_train.sort_index()
-
-plt.plot(x_train,y_train)
+tahmin=model.predict(x_test)
+# x_test'in içinde birden fazla özellik olduğu için görselleştirme adına 
+# X ekseninde göstermek üzere sadece 0. indeksteki ilk sütunu (özelliği) seç:
+x_gorsel = x_test[:, 0]
 
 # plt.plot yerine plt.scatter kullanın
-plt.scatter(x_test, y_test, color='red', label='Gerçek Veriler')
-plt.scatter(x_test, tahmin, color='blue', alpha=0.5, label='Model Tahminleri')
+plt.scatter(x_gorsel, y_test, color='red', label='Gerçek Veriler')
+plt.scatter(x_gorsel, tahmin, color='blue', alpha=0.5, label='Model Tahminleri')
 
 plt.title("Gerçek Değerler ve Tahminler")
+plt.xlabel("Ölçeklendirilmiş 1. Özellik")
+plt.ylabel("Potability (İçilebilirlik)")
 plt.legend()
 plt.show()
