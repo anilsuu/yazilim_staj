@@ -338,55 +338,56 @@ print("Veri setindeki kayıp oranı:" ,kayip_orani)
 df_temiz = df_temiz.reset_index(drop=True)
 
 
-#SCALİNG ISLEMLERİ
+# #SCALİNG ISLEMLERİ
 
-#x ve y değişkenlerini tanımlama
-#'hedef_sutun' isimli sütunu y yapıp, geri kalanları x yapar
-x = df_temiz.drop('Potability', axis=1) 
-y = df_temiz['Potability']              
+# #x ve y değişkenlerini tanımlama
+# #'hedef_sutun' isimli sütunu y yapıp, geri kalanları x yapar
+# x = df_temiz.drop('Potability', axis=1) 
+# y = df_temiz['Potability']              
 
 
-x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=0)
+# x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=0)
 
-# Ölçeklendirme 
-sc = StandardScaler() 
+# # Ölçeklendirme 
+# sc = StandardScaler() 
 
-# Train setinde öğren (fit) ve uygula (transform)
-x_train = sc.fit_transform(x_train)
+# # Train setinde öğren (fit) ve uygula (transform)
+# x_train = sc.fit_transform(x_train)
 
-# Test setinde SADECE uygula (transform)
-x_test = sc.transform(x_test) 
+# # Test setinde SADECE uygula (transform)
+# x_test = sc.transform(x_test) 
 
-# Model Eğitimi
-model = LogisticRegression()
-model.fit(x_train, y_train)
+# # Model Eğitimi
+# model = LogisticRegression()
+# model.fit(x_train, y_train)
 
-tahmin=model.predict(x_test)
+# tahmin=model.predict(x_test)
 
-# x_test'in içinde birden fazla özellik olduğu için görselleştirme adına 
-# X ekseninde göstermek üzere sadece 0. indeksteki ilk sütunu (özelliği) seç:
-x_gorsel = x_test[:,4]
+# # x_test'in içinde birden fazla özellik olduğu için görselleştirme adına 
+# # X ekseninde göstermek üzere sadece 0. indeksteki ilk sütunu (özelliği) seç:
+# x_gorsel = x_test[:,4]
 
-# plt.plot yerine plt.scatter kullanın
-plt.scatter(x_gorsel, y_test, color='pink', label='Gerçek Veriler')
-plt.scatter(x_gorsel, tahmin, color='blue', alpha=0.5, label='Model Tahminleri')
+# # plt.plot yerine plt.scatter kullanın
+# plt.scatter(x_gorsel, y_test, color='pink', label='Gerçek Veriler')
+# plt.scatter(x_gorsel, tahmin, color='blue', alpha=0.5, label='Model Tahminleri')
 
-plt.title("Gerçek Değerler ve Tahminler")
-plt.xlabel("Ölçeklendirilmiş Özellik")
-plt.ylabel("Potability (İçilebilirlik)")
-plt.legend()
-plt.show()
+# plt.title("Gerçek Değerler ve Tahminler")
+# plt.xlabel("Ölçeklendirilmiş Özellik")
+# plt.ylabel("Potability (İçilebilirlik)")
+# plt.legend()
+# plt.show()
 
-# 4. BASE MODEL + CROSS VALIDATION
-# =====================================================
-rf = RandomForestClassifier(random_state=42)
+# # 4. BASE MODEL + CROSS VALIDATION
+# # =====================================================
+# rf = RandomForestClassifier(random_state=42)
 
-kf = KFold(n_splits=10, shuffle=True, random_state=42)
-cv_scores = cross_val_score(rf, x, y, cv=kf, scoring='accuracy')
+# kf = KFold(n_splits=10, shuffle=True, random_state=42)
+# cv_scores = cross_val_score(rf, x, y, cv=kf, scoring='accuracy')
 
-rf.fit(x_train, y_train)
-base_accuracy = accuracy_score(y_test, rf.predict(x_test))
+# rf.fit(x_train, y_train)
+# base_accuracy = accuracy_score(y_test, rf.predict(x_test))
 
-print(f"CV Ortalama Accuracy : {np.mean(cv_scores):.4f}")
-print(f"Base Model Accuracy : {base_accuracy:.4f}")
-print("-" * 50)
+# print(f"CV Ortalama Accuracy : {np.mean(cv_scores):.4f}")
+# print(f"Base Model Accuracy : {base_accuracy:.4f}")
+# print("-" * 50)
+
