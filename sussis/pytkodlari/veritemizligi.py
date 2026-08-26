@@ -461,3 +461,60 @@ test_accuracy = accuracy_score(y_test, y_pred)
 print(f"\nOptimize Edilmiş Test Accuracy Skoru: {test_accuracy:.4f}")
 print("\nSınıflandırma Raporu (Precision, Recall, F1-Score):")
 print(classification_report(y_test, y_pred))
+
+
+print("\n=====================================================")
+print("--- 1. VERİ SIZINTISI (TARGET LEAKAGE) KONTROLÜ ---")
+print("=====================================================")
+
+# x_train mi X_train mi kullanıldığını otomatik algıla (hata almamak için)
+
+if 'x_train' in locals():
+    aktif_x_train = x_train
+    aktif_x_test = x_test
+else:
+    raise ValueError("Eğitim verisi (x_train veya X_train) bulunamadı!")
+
+# NumPy dizisi ise (StandardScaler uygulandıysa) DataFrame'e çevir
+if isinstance(aktif_x_train, np.ndarray):
+    num_cols = aktif_x_train.shape[1]
+    print(f"Eğitim setindeki sütun (özellik) sayısı: {num_cols}")
+    
+    # Sütun sayısına göre isimleri belirle
+    # Eğer 10 sütun varsa 'deney_id' hala içeride demektir.
+    if num_cols == 9:
+        cols = ["ph", "Hardness", "Solids", "Chloramines", "Sulfate", 
+                "Conductivity", "Organic_carbon", "Trihalomethanes", "Turbidity"]
+    else:
+        # Ne olduğu bilinmiyorsa geçici isim ver
+        cols = [f"Sutun_{i}" for i in range(num_cols)]
+        
+    df_check = pd.DataFrame(aktif_x_train, columns=cols)
+else:
+    df_check = aktif_x_train.copy()
+    print("Eğitim setindeki sütunlar:", df_check.columns.tolist())
+
+# Hedef değişkeni güvenle tabloya ekle
+df_check['HEDEF_POTABILITY'] = np.array(y_train).flatten()
+
+# Korelasyon hesabı (Hedef değişkenle diğer sütunlar arasındaki matematiksel ilişki)
+korelasyonlar = df_check.corr()['HEDEF_POTABILITY'].drop('HEDEF_POTABILITY').sort_values(ascending=False)
+print("\nÖzelliklerin Hedef Değişkenle (Potability) Korelasyonu:")
+print(korelasyonlar)
+
+print("\n🔍 ANALİZ İPUCU:")
+print("Korelasyon değerlerinde 0.20'nin veya -0.20'nin üzerinde aşırı yüksek bir sütun var mı?")
+print("Özellikle 'deney_id' veya 'Sutun_0' gibi bir değişkenin korelasyonu kol geziyorsa, %98'lik skorun sırrı odur!")
+
+print("\n=====================================================")
+print("--- 2. VERİ AYIRMA (DATA SPLIT) KONTROLÜ ---")
+print("=====================================================")
+
+print(f"Eğitim Seti Satır Sayısı: {aktif_x_train.shape[0]}")
+print(f"Test Seti Satır Sayısı:   {aktif_x_test.shape[0]}")
+
+print("\nEğitim Seti (y_train) Sınıf Dağılımı:")
+print(pd.Series(np.array(y_train).flatten()).value_counts(normalize=True))
+
+print("\nTest Seti (y_test) Sınıf Dağılımı:")
+print(pd.Series(np.array(y_test).flatten()).value_counts(normalize=True))
