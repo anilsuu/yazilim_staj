@@ -300,6 +300,7 @@ def tam_aykiri_analizi(df, column):
 sutunlar = ["ph", "Hardness", "Solids", "Chloramines", "Sulfate", 
             "Conductivity", "Organic_carbon", "Trihalomethanes", "Turbidity"]
 
+
 # Tüm sütunları tek tek yeni fonksiyona gönderiyor
 for col in sutunlar:
     tam_aykiri_analizi(df, col)
@@ -366,102 +367,158 @@ print("Veri setindeki kayıp oranı:" ,kayip_orani)
 df_temiz = df_temiz.reset_index(drop=True)
 
 
-# #SCALİNG ISLEMLERİ
+# # #SCALİNG ISLEMLERİ
 
-#x ve y değişkenlerini tanımlama
-#'hedef_sutun' isimli sütunu y yapıp, geri kalanları x yapar
-x = df_temiz.drop('Potability', axis=1) 
+# #x ve y değişkenlerini tanımlama
+# #'hedef_sutun' isimli sütunu y yapıp, geri kalanları x yapar
+# x = df_temiz.drop('Potability', axis=1) 
+# y = df_temiz['Potability']              
+
+
+# x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=0)
+
+# # Ölçeklendirme 
+# sc = StandardScaler() 
+
+# # Train setinde öğren (fit) ve uygula (transform)
+# x_train = sc.fit_transform(x_train)
+
+# # Test setinde SADECE uygula (transform)
+# x_test = sc.transform(x_test) 
+
+# # Model Eğitimi
+# model = LogisticRegression()
+# model.fit(x_train, y_train)
+
+# tahmin=model.predict(x_test)
+
+# # x_test'in içinde birden fazla özellik olduğu için görselleştirme adına 
+# # X ekseninde göstermek üzere sadece 0. indeksteki ilk sütunu (özelliği) seç:
+# x_gorsel = x_test[:,4]
+
+# # plt.plot yerine plt.scatter kullanın
+# plt.scatter(x_gorsel, y_test, color='pink', label='Gerçek Veriler')
+# plt.scatter(x_gorsel, tahmin, color='blue', alpha=0.5, label='Model Tahminleri')
+
+# plt.title("Gerçek Değerler ve Tahminler")
+# plt.xlabel("Ölçeklendirilmiş Özellik")
+# plt.ylabel("Potability (İçilebilirlik)")
+# plt.legend()
+# plt.show()
+
+# =====================================================
+# 1. VERİ BÖLME VE ÖLÇEKLEME (Yorum satırları kaldırıldı ve deney_id atıldı)
+# =====================================================
+
+# x değişkeninden hem hedef değişkeni hem de gereksiz 'deney_id' sütununu atıyoruz
+x = df_temiz.drop(['Potability', 'deney_id'], axis=1) 
 y = df_temiz['Potability']              
-
 
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=0)
 
 # Ölçeklendirme 
 sc = StandardScaler() 
-
-# Train setinde öğren (fit) ve uygula (transform)
 x_train = sc.fit_transform(x_train)
-
-# Test setinde SADECE uygula (transform)
 x_test = sc.transform(x_test) 
 
-# Model Eğitimi
-model = LogisticRegression()
-model.fit(x_train, y_train)
 
-tahmin=model.predict(x_test)
-
-# x_test'in içinde birden fazla özellik olduğu için görselleştirme adına 
-# X ekseninde göstermek üzere sadece 0. indeksteki ilk sütunu (özelliği) seç:
-x_gorsel = x_test[:,4]
-
-# plt.plot yerine plt.scatter kullanın
-plt.scatter(x_gorsel, y_test, color='pink', label='Gerçek Veriler')
-plt.scatter(x_gorsel, tahmin, color='blue', alpha=0.5, label='Model Tahminleri')
-
-plt.title("Gerçek Değerler ve Tahminler")
-plt.xlabel("Ölçeklendirilmiş Özellik")
-plt.ylabel("Potability (İçilebilirlik)")
-plt.legend()
-plt.show()
-
-# 4. BASE MODEL + CROSS VALIDATION
 # =====================================================
-rf = RandomForestClassifier(random_state=42)
-
-kf = KFold(n_splits=10, shuffle=True, random_state=42)
-cv_scores = cross_val_score(rf, x, y, cv=kf, scoring='accuracy')
-
-rf.fit(x_train, y_train)
-base_accuracy = accuracy_score(y_test, rf.predict(x_test))
-
-print(f"CV Ortalama Accuracy : {np.mean(cv_scores):.4f}")
-print(f"Base Model Accuracy : {base_accuracy:.4f}")
-print("-" * 50)
-
+# 2. XGBOOST MODEL EĞİTİMİ VE OPTİMİZASYON
+# =====================================================
 import xgboost as xgb
-from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import accuracy_score, classification_report
 
-# 1. Temel XGBoost Sınıflandırıcısını Tanımla
 xgb_model = xgb.XGBClassifier(random_state=42, eval_metric='logloss')
 
-# 2. Aşırı öğrenmeyi engelleyecek parametre ızgarası (Grid)
-# max_depth düşük tutularak ezberleme önlenir.
-# subsample ve colsample_bytree ile modelin her adımda verinin/sütunların sadece bir kısmını görmesi sağlanır.
 param_grid = {
-    'n_estimators': [100, 200, 300],        # Ağaç sayısı
-    'max_depth': [3, 5, 7],                 # Ağaç derinliği (Düşük tutmak overfitting'i engeller)
-    'learning_rate': [0.01, 0.05, 0.1],     # Öğrenme oranı
-    'subsample': [0.8, 1.0],                # Her ağaç için kullanılacak satır oranı
-    'colsample_bytree': [0.8, 1.0]          # Her ağaç için kullanılacak sütun oranı
+    'n_estimators': [100, 200, 300],        
+    'max_depth': [3, 5, 7],                 
+    'learning_rate': [0.01, 0.05, 0.1],     
+    'subsample': [0.8, 1.0],                
+    'colsample_bytree': [0.8, 1.0]          
 }
 
-print("GridSearchCV ile en iyi parametreler aranıyor... (Bu işlem birkaç dakika sürebilir)")
+print("GridSearchCV ile en iyi parametreler aranıyor...")
 
-# 3. GridSearchCV'yi Başlat (5 katlı Çapraz Doğrulama ile)
 grid_search = GridSearchCV(
     estimator=xgb_model, 
     param_grid=param_grid, 
     scoring='accuracy', 
     cv=5, 
-    n_jobs=-1, # İşlemcinin tüm çekirdeklerini kullanır (Hızlandırır)
+    n_jobs=-1, 
     verbose=1
 )
 
-# 4. Modeli Eğit
 grid_search.fit(x_train, y_train)
 
-# 5. En İyi Parametreleri ve Çapraz Doğrulama Skorunu Yazdır
 print("\n--- OPTİMİZASYON SONUÇLARI ---")
 print(f"En İyi Parametreler: {grid_search.best_params_}")
 print(f"En İyi CV Accuracy Skoru: {grid_search.best_score_:.4f}")
 
-# 6. Test Seti Üzerinde Tahmin ve Değerlendirme
 best_xgb = grid_search.best_estimator_
 y_pred = best_xgb.predict(x_test)
 
 test_accuracy = accuracy_score(y_test, y_pred)
 print(f"\nOptimize Edilmiş Test Accuracy Skoru: {test_accuracy:.4f}")
-print("\nSınıflandırma Raporu (Precision, Recall, F1-Score):")
+print("\nSınıflandırma Raporu:")
 print(classification_report(y_test, y_pred))
+
+
+# =====================================================
+# 3. KONTROL AŞAMASI (Küçük harf 'x' ile düzeltildi)
+# =====================================================
+import pandas as pd
+import numpy as np
+
+print("\n--- 1. VERİ SIZINTISI (TARGET LEAKAGE) KONTROLÜ ---")
+
+# x_train artık StandardScaler'dan çıktığı için bir NumPy array. DataFrame'e çeviriyoruz.
+if isinstance(x_train, np.ndarray):
+    print("x_train bir NumPy dizisi olarak algılandı. DataFrame'e dönüştürülüyor...")
+    # x değişkenini tanımlarken kullandığımız sütun isimlerini alıyoruz
+    sutun_isimleri = x.columns.tolist() 
+    df_check = pd.DataFrame(x_train, columns=sutun_isimleri)
+else:
+    df_check = x_train.copy()
+
+# Hedef değişkeni ekliyoruz
+df_check['HEDEF_y'] = np.array(y_train)
+
+# Korelasyon hesabı
+korelasyonlar = df_check.corr()['HEDEF_y'].drop('HEDEF_y').sort_values(ascending=False)
+print("\nÖzelliklerin Hedef Değişkenle Korelasyonu:")
+print(korelasyonlar)
+
+print("\n-----------------------------------------------------")
+print("--- 2. VERİ AYIRMA KONTROLÜ ---")
+print(f"Eğitim Seti (x_train) Satır Sayısı: {x_train.shape[0]}")
+print(f"Test Seti (x_test) Satır Sayısı: {x_test.shape[0]}")
+
+print("\nEğitim Seti (y_train) Sınıf Dağılımı (Oransal):")
+print(pd.Series(np.array(y_train).flatten()).value_counts(normalize=True))
+
+print("\nTest Seti (y_test) Sınıf Dağılımı (Oransal):")
+print(pd.Series(np.array(y_test).flatten()).value_counts(normalize=True))
+
+
+# 4. BASE MODEL + CROSS VALIDATION
+# =====================================================
+
+rf = RandomForestClassifier(random_state=42)
+
+# 1. Base Model Eğitimi (Train setiyle eğitilir, Test setiyle ölçülür)
+rf.fit(x_train, y_train)
+y_pred_rf = rf.predict(x_test)
+base_accuracy = accuracy_score(y_test, y_pred_rf)
+
+# 2. Çapraz Doğrulama (Sadece eğitim setinde genelleme gücünü ölçmek için)
+kf = KFold(n_splits=10, shuffle=True, random_state=42)
+cv_scores = cross_val_score(rf, x_train, y_train, cv=kf, scoring='accuracy')
+
+print(f"Random Forest - Base Test Accuracy : {base_accuracy:.4f}")
+print(f"Random Forest - CV Ortalama Accuracy: {np.mean(cv_scores):.4f}")
+print(f"Random Forest - CV Standart Sapma   : {np.std(cv_scores):.4f}")
+print("-" * 50)
+print(f"CV Ortalama Accuracy : {np.mean(cv_scores):.4f}")
+print(f"Base Model Accuracy : {base_accuracy:.4f}")
+print("-" * 50)
