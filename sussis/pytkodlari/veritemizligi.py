@@ -323,29 +323,29 @@ df_temiz = df.drop(index=list(silinecek_indexler)).copy()
 # df = df.drop(index=list(silinecek_indexler))
 
 
-def iqr_winsorize(df, column):
-    # Çeyreklikler ve IQR hesaplama
-    Q1 = df[column].quantile(0.25)
-    Q3 = df[column].quantile(0.75)
-    IQR = Q3 - Q1
+# def iqr_winsorize(df, column):
+#     # Çeyreklikler ve IQR hesaplama
+#     Q1 = df[column].quantile(0.25)
+#     Q3 = df[column].quantile(0.75)
+#     IQR = Q3 - Q1
     
-    alt_sinir = Q1 - 1.5 * IQR
-    ust_sinir = Q3 + 1.5 * IQR
+#     alt_sinir = Q1 - 1.5 * IQR
+#     ust_sinir = Q3 + 1.5 * IQR
     
-    # clip() metodu: alt_sinir'dan küçükleri alt_sinir'a, ust_sinir'dan büyükleri ust_sinir'a eşitler.
-    df[column] = df[column].clip(lower=alt_sinir, upper=ust_sinir)
+#     # clip() metodu: alt_sinir'dan küçükleri alt_sinir'a, ust_sinir'dan büyükleri ust_sinir'a eşitler.
+#     df[column] = df[column].clip(lower=alt_sinir, upper=ust_sinir)
     
-    return df
+#     return df
 
-# Sütun listemiz (hedef değişken olan Potability hariç tüm sayısal sütunlar)
-sutunlar = ["ph", "Hardness", "Solids", "Chloramines", "Sulfate", 
-            "Conductivity", "Organic_carbon", "Trihalomethanes", "Turbidity"]
+# # Sütun listemiz (hedef değişken olan Potability hariç tüm sayısal sütunlar)
+# sutunlar = ["ph", "Hardness", "Solids", "Chloramines", "Sulfate", 
+#             "Conductivity", "Organic_carbon", "Trihalomethanes", "Turbidity"]
 
-# df_temiz veri seti üzerinde döngü ile tüm sütunlara baskılama uyguluyoruz
-for col in sutunlar:
-    df_temiz = iqr_winsorize(df_temiz, col)
+# # df_temiz veri seti üzerinde döngü ile tüm sütunlara baskılama uyguluyoruz
+# for col in sutunlar:
+#     df_temiz = iqr_winsorize(df_temiz, col)
 
-print("Winsorization (Baskılama) işlemi tüm sütunlar için başarıyla tamamlandı.")
+# print("Winsorization (Baskılama) işlemi tüm sütunlar için başarıyla tamamlandı.")
 
 
 print("-----------------------------------------------------")
@@ -419,3 +419,49 @@ print(f"CV Ortalama Accuracy : {np.mean(cv_scores):.4f}")
 print(f"Base Model Accuracy : {base_accuracy:.4f}")
 print("-" * 50)
 
+import xgboost as xgb
+from sklearn.model_selection import GridSearchCV
+from sklearn.metrics import accuracy_score, classification_report
+
+# 1. Temel XGBoost Sınıflandırıcısını Tanımla
+xgb_model = xgb.XGBClassifier(random_state=42, eval_metric='logloss')
+
+# 2. Aşırı öğrenmeyi engelleyecek parametre ızgarası (Grid)
+# max_depth düşük tutularak ezberleme önlenir.
+# subsample ve colsample_bytree ile modelin her adımda verinin/sütunların sadece bir kısmını görmesi sağlanır.
+param_grid = {
+    'n_estimators': [100, 200, 300],        # Ağaç sayısı
+    'max_depth': [3, 5, 7],                 # Ağaç derinliği (Düşük tutmak overfitting'i engeller)
+    'learning_rate': [0.01, 0.05, 0.1],     # Öğrenme oranı
+    'subsample': [0.8, 1.0],                # Her ağaç için kullanılacak satır oranı
+    'colsample_bytree': [0.8, 1.0]          # Her ağaç için kullanılacak sütun oranı
+}
+
+print("GridSearchCV ile en iyi parametreler aranıyor... (Bu işlem birkaç dakika sürebilir)")
+
+# 3. GridSearchCV'yi Başlat (5 katlı Çapraz Doğrulama ile)
+grid_search = GridSearchCV(
+    estimator=xgb_model, 
+    param_grid=param_grid, 
+    scoring='accuracy', 
+    cv=5, 
+    n_jobs=-1, # İşlemcinin tüm çekirdeklerini kullanır (Hızlandırır)
+    verbose=1
+)
+
+# 4. Modeli Eğit
+grid_search.fit(x_train, y_train)
+
+# 5. En İyi Parametreleri ve Çapraz Doğrulama Skorunu Yazdır
+print("\n--- OPTİMİZASYON SONUÇLARI ---")
+print(f"En İyi Parametreler: {grid_search.best_params_}")
+print(f"En İyi CV Accuracy Skoru: {grid_search.best_score_:.4f}")
+
+# 6. Test Seti Üzerinde Tahmin ve Değerlendirme
+best_xgb = grid_search.best_estimator_
+y_pred = best_xgb.predict(x_test)
+
+test_accuracy = accuracy_score(y_test, y_pred)
+print(f"\nOptimize Edilmiş Test Accuracy Skoru: {test_accuracy:.4f}")
+print("\nSınıflandırma Raporu (Precision, Recall, F1-Score):")
+print(classification_report(y_test, y_pred))
