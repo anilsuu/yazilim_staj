@@ -316,34 +316,6 @@ for col in sutunlar:
 # Toplanan tüm aykırı satırları veri setinden silinir
 df_temiz = df.drop(index=list(silinecek_indexler)).copy()
 
-# df = df.drop(index=list(silinecek_indexler))
-
-
-# def iqr_winsorize(df, column):
-#     # Çeyreklikler ve IQR hesaplama
-#     Q1 = df[column].quantile(0.25)
-#     Q3 = df[column].quantile(0.75)
-#     IQR = Q3 - Q1
-    
-#     alt_sinir = Q1 - 1.5 * IQR
-#     ust_sinir = Q3 + 1.5 * IQR
-    
-#     # clip() metodu: alt_sinir'dan küçükleri alt_sinir'a, ust_sinir'dan büyükleri ust_sinir'a eşitler.
-#     df[column] = df[column].clip(lower=alt_sinir, upper=ust_sinir)
-    
-#     return df
-
-# # Sütun listemiz (hedef değişken olan Potability hariç tüm sayısal sütunlar)
-# sutunlar = ["ph", "Hardness", "Solids", "Chloramines", "Sulfate", 
-#             "Conductivity", "Organic_carbon", "Trihalomethanes", "Turbidity"]
-
-# # df_temiz veri seti üzerinde döngü ile tüm sütunlara baskılama uyguluyoruz
-# for col in sutunlar:
-#     df_temiz = iqr_winsorize(df_temiz, col)
-
-# print("Winsorization (Baskılama) işlemi tüm sütunlar için başarıyla tamamlandı.")
-
-
 print("-----------------------------------------------------")
 
 print(f"Orijinal veri seti satır sayısı: {len(df)}")
@@ -364,12 +336,50 @@ df_temiz = df_temiz.reset_index(drop=True)
 
 # #SCALİNG ISLEMLERİ
 
-#x ve y değişkenlerini tanımlama
+# # #x ve y değişkenlerini tanımlama
 
-#'hedef_sutun' yani içilebilirlik sütunu y yapıp, geri kalanları x yapar
-x = df_temiz.drop('Potability', axis=1) 
-y = df_temiz['Potability']              
+# #'hedef_sutun' yani içilebilirlik sütunu y yapıp, geri kalanları x yapar
+# x = df_temiz.drop(['Potability','deney_id']) 
+# y = df_temiz['Potability','deney_id']     
 
+      
+# # 1. Veri setindeki tüm sütun isimlerini görelim (Kontrol amaçlı)
+# print("Veri Setindeki Sütunlar:", df_temiz.columns.tolist())
+
+# # 2. Silinmesi gereken sütunları (büyük/küçük harf varyasyonlarıyla) bul ve güvenle sil
+# silinecekler = [col for col in df_temiz.columns if col.lower() in ['Potability','deney_id']]
+
+# x = df_temiz.drop(columns=silinecekler)
+
+# # 3. Hedef değişkeni (y) güvenle tanımla
+
+# y_sutun_adi = [col for col in df_temiz.columns if col.lower() == 'potability'][0]
+# y = df_temiz[y_sutun_adi]
+
+# =====================================================
+# X VE Y DEĞİŞKENLERİNİ OLUŞTURMA (BEYAZ LİSTE)
+# =====================================================
+
+# 1. Sadece modelin öğrenmesini istediğimiz 9 kimyasal sütunu manuel seçiyoruz.
+kimyasal_sutunlar = [
+    "ph", "Hardness", "Solids", "Chloramines", "Sulfate", 
+    "Conductivity", "Organic_carbon", "Trihalomethanes", "Turbidity"
+]
+
+# x'in içine SADECE bu 9 sütunu alıyoruz. Potability'nin sızma ihtimali SIFIR!
+x = df_temiz[kimyasal_sutunlar]
+
+# 2. Hedef değişkeni büyük/küçük harf duyarlılığını otomatik aşarak alıyoruz
+y_sutun_adi = [col for col in df_temiz.columns if col.lower() == 'potability'][0]
+y = df_temiz[y_sutun_adi]
+
+# Sağlama yapıyoruz (Konsolda mutlaka 9 görmelisin)
+print(f"--- GÜVENLİK KONTROLÜ ---")
+print(f"X (Özellikler) Sütun Sayısı: {x.shape[1]} (Bu sayı 9 ise sızıntı tamamen bitmiştir!)")
+print("-------------------------\n")
+
+
+# print(f"X (Özellikler) Sütun Sayısı: {x.shape[1]}") # Burası tam olarak 9 olmalı!
 
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=0)
 
@@ -476,12 +486,14 @@ else:
     raise ValueError("Eğitim verisi (x_train veya X_train) bulunamadı!")
 
 # NumPy dizisi ise (StandardScaler uygulandıysa) DataFrame'e çevir
+
 if isinstance(aktif_x_train, np.ndarray):
     num_cols = aktif_x_train.shape[1]
     print(f"Eğitim setindeki sütun (özellik) sayısı: {num_cols}")
     
     # Sütun sayısına göre isimleri belirle
     # Eğer 10 sütun varsa 'deney_id' hala içeride demektir.
+    
     if num_cols == 9:
         cols = ["ph", "Hardness", "Solids", "Chloramines", "Sulfate", 
                 "Conductivity", "Organic_carbon", "Trihalomethanes", "Turbidity"]
