@@ -5,7 +5,6 @@
 import os
 import pandas as pd
 import numpy as np
-from scipy.stats.mstats import winsorize
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.preprocessing import LabelEncoder, MinMaxScaler, StandardScaler
@@ -15,7 +14,6 @@ from sqlalchemy import create_engine
 import urllib
 import missingno as msno
 from sklearn.impute import KNNImputer
-import scipy.stats 
 from scipy.stats import zscore
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
@@ -23,8 +21,8 @@ from sklearn.model_selection import train_test_split, cross_val_score, GridSearc
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import r2_score, roc_curve, auc
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, classification_report
+import xgboost as xgb
 
 #Server ve database bilgisi
 server = 'LAPTOP-MNJN06EU\\NILSS'
@@ -49,8 +47,6 @@ print("Veri boyutu:", df.shape)
 df=df.drop(["Carcinogenics","medical_waste"],axis=1)
 
 # msno.matrix(df.sample(len(df)))
-
-
 
 # DUPLICATE(TEKRAR EDEN VERİ) KONTROLÜ
 print("Toplam duplicate kayıt:", df.duplicated().sum())
@@ -151,7 +147,7 @@ print("-----------------------------------------------------")
 
 hesaplamainfo("Sulfate")
 
-#Sulfate sütununu kNN ile doldurmak için eğitecek 2 başka sütunda seçildi.
+#Sulfate sütununu kNN ile doldurmak için eğitecek 2 başka sütun seçtim.
 #Kopya bir dataframe oluşturuldu.
 df_knn=df.filter(["Sulfate","ph","Hardness"],axis=1).copy()
 
@@ -260,13 +256,13 @@ def zscore_aykirianalizi(df, column):
     return zscore_outliers
 
 
-# 3. İki Sonucu Karşılaştıran Fonksiyon
+#  İki Sonucu Karşılaştıran Fonksiyon
 
 def karsilastir_aykiri_degerler(iqr_sonuclari, zscore_sonuclari):
     print(f"IQR yöntemi {len(iqr_sonuclari)} adet aykırı değer buldu.")
     print(f"Z-Skoru yöntemi {len(zscore_sonuclari)} adet aykırı değer buldu.")
     
-    # Her iki yöntemin de ortak (kesişim) bulduğu aykırı değerlerin indexlerini al
+    # Her iki yöntemin de ortak (kesişim) bulduğu aykırı değerlerin indexlerini alır.
     
     ortak_indexler = iqr_sonuclari.index.intersection(zscore_sonuclari.index)
     
@@ -285,13 +281,13 @@ def karsilastir_aykiri_degerler(iqr_sonuclari, zscore_sonuclari):
 def tam_aykiri_analizi(df, column):
     print(f"\n--- {column.upper()} SÜTUNU ANALİZİ ---")
     
-    # 1. IQR Analizi
+    # IQR Analizi
     bulunan_iqr = iqr_aykirianalizi(df, column)
     
-    # 2. Z-Skoru Analizi
+    # Z-Skoru Analizi
     bulunan_zscore = zscore_aykirianalizi(df, column)
     
-    # 3. Karşılaştırma
+    # Karşılaştırma
     ortak_indexler = karsilastir_aykiri_degerler(bulunan_iqr, bulunan_zscore)
     
     # İleride silmek veya değiştirmek için ortak indexleri geri döndürür.
@@ -369,7 +365,8 @@ df_temiz = df_temiz.reset_index(drop=True)
 # #SCALİNG ISLEMLERİ
 
 #x ve y değişkenlerini tanımlama
-#'hedef_sutun' isimli sütunu y yapıp, geri kalanları x yapar
+
+#'hedef_sutun' yani içilebilirlik sütunu y yapıp, geri kalanları x yapar
 x = df_temiz.drop('Potability', axis=1) 
 y = df_temiz['Potability']              
 
@@ -405,8 +402,10 @@ plt.ylabel("Potability (İçilebilirlik)")
 plt.legend()
 plt.show()
 
-# 4. BASE MODEL + CROSS VALIDATION
-# =====================================================
+# BASE MODEL + CROSS VALIDATION
+
+print(" =====================================================")
+
 rf = RandomForestClassifier(random_state=42)
 
 kf = KFold(n_splits=10, shuffle=True, random_state=42)
@@ -419,19 +418,16 @@ print(f"CV Ortalama Accuracy : {np.mean(cv_scores):.4f}")
 print(f"Base Model Accuracy : {base_accuracy:.4f}")
 print("-" * 50)
 
-import xgboost as xgb
-from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import accuracy_score, classification_report
 
-# 1. Temel XGBoost Sınıflandırıcısını Tanımla
+# Temel XGBoost Sınıflandırıcısını Tanımla
 xgb_model = xgb.XGBClassifier(random_state=42, eval_metric='logloss')
 
-# 2. Aşırı öğrenmeyi engelleyecek parametre ızgarası (Grid)
+# Aşırı öğrenmeyi engelleyecek parametre ızgarası (Grid)
 # max_depth düşük tutularak ezberleme önlenir.
 # subsample ve colsample_bytree ile modelin her adımda verinin/sütunların sadece bir kısmını görmesi sağlanır.
 param_grid = {
     'n_estimators': [100, 200, 300],        # Ağaç sayısı
-    'max_depth': [3, 5, 7],                 # Ağaç derinliği (Düşük tutmak overfitting'i engeller)
+    'max_depth': [3, 5, 7],                 # Ağaç derinliği (Düşük overfitting'i engeller)
     'learning_rate': [0.01, 0.05, 0.1],     # Öğrenme oranı
     'subsample': [0.8, 1.0],                # Her ağaç için kullanılacak satır oranı
     'colsample_bytree': [0.8, 1.0]          # Her ağaç için kullanılacak sütun oranı
@@ -439,7 +435,7 @@ param_grid = {
 
 print("GridSearchCV ile en iyi parametreler aranıyor... (Bu işlem birkaç dakika sürebilir)")
 
-# 3. GridSearchCV'yi Başlat (5 katlı Çapraz Doğrulama ile)
+# GridSearchCV'yi Başlat (5 katlı Çapraz Doğrulama ile)
 grid_search = GridSearchCV(
     estimator=xgb_model, 
     param_grid=param_grid, 
@@ -449,15 +445,15 @@ grid_search = GridSearchCV(
     verbose=1
 )
 
-# 4. Modeli Eğit
+# Modeli Eğit
 grid_search.fit(x_train, y_train)
 
-# 5. En İyi Parametreleri ve Çapraz Doğrulama Skorunu Yazdır
+# En İyi Parametreleri ve Çapraz Doğrulama Skorunu Yazdır
 print("\n--- OPTİMİZASYON SONUÇLARI ---")
 print(f"En İyi Parametreler: {grid_search.best_params_}")
 print(f"En İyi CV Accuracy Skoru: {grid_search.best_score_:.4f}")
 
-# 6. Test Seti Üzerinde Tahmin ve Değerlendirme
+# Test Seti Üzerinde Tahmin ve Değerlendirme
 best_xgb = grid_search.best_estimator_
 y_pred = best_xgb.predict(x_test)
 
