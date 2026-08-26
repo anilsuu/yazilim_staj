@@ -334,199 +334,182 @@ print("Veri setindeki kayıp oranı:" ,kayip_orani)
 df_temiz = df_temiz.reset_index(drop=True)
 
 
-# #SCALİNG ISLEMLERİ
+# YENİ ADIM: Temizlenmiş veriyi CSV olarak dışa aktar
+# -----------------------------------------------------
+df_temiz.to_csv("temizlenmis_su_kalitesi.csv", index=False)
+print("\nVeri temizleme tamamlandı ve 'temizlenmis_su_kalitesi.csv' olarak kaydedildi!")
 
-# # #x ve y değişkenlerini tanımlama
+# # =====================================================
+# # X VE Y DEĞİŞKENLERİNİ OLUŞTURMA (BEYAZ LİSTE)
+# # =====================================================
 
-# #'hedef_sutun' yani içilebilirlik sütunu y yapıp, geri kalanları x yapar
-# x = df_temiz.drop(['Potability','deney_id']) 
-# y = df_temiz['Potability','deney_id']     
+# # 1. Sadece modelin öğrenmesini istediğimiz 9 kimyasal sütunu manuel seçiyoruz.
+# kimyasal_sutunlar = [
+#     "ph", "Hardness", "Solids", "Chloramines", "Sulfate", 
+#     "Conductivity", "Organic_carbon", "Trihalomethanes", "Turbidity"
+# ]
 
-      
-# # 1. Veri setindeki tüm sütun isimlerini görelim (Kontrol amaçlı)
-# print("Veri Setindeki Sütunlar:", df_temiz.columns.tolist())
+# # x'in içine SADECE bu 9 sütunu alıyoruz. Potability'nin sızma ihtimali SIFIR!
+# x = df_temiz[kimyasal_sutunlar]
 
-# # 2. Silinmesi gereken sütunları (büyük/küçük harf varyasyonlarıyla) bul ve güvenle sil
-# silinecekler = [col for col in df_temiz.columns if col.lower() in ['Potability','deney_id']]
-
-# x = df_temiz.drop(columns=silinecekler)
-
-# # 3. Hedef değişkeni (y) güvenle tanımla
-
+# # 2. Hedef değişkeni büyük/küçük harf duyarlılığını otomatik aşarak alıyoruz
 # y_sutun_adi = [col for col in df_temiz.columns if col.lower() == 'potability'][0]
 # y = df_temiz[y_sutun_adi]
 
-# =====================================================
-# X VE Y DEĞİŞKENLERİNİ OLUŞTURMA (BEYAZ LİSTE)
-# =====================================================
-
-# 1. Sadece modelin öğrenmesini istediğimiz 9 kimyasal sütunu manuel seçiyoruz.
-kimyasal_sutunlar = [
-    "ph", "Hardness", "Solids", "Chloramines", "Sulfate", 
-    "Conductivity", "Organic_carbon", "Trihalomethanes", "Turbidity"
-]
-
-# x'in içine SADECE bu 9 sütunu alıyoruz. Potability'nin sızma ihtimali SIFIR!
-x = df_temiz[kimyasal_sutunlar]
-
-# 2. Hedef değişkeni büyük/küçük harf duyarlılığını otomatik aşarak alıyoruz
-y_sutun_adi = [col for col in df_temiz.columns if col.lower() == 'potability'][0]
-y = df_temiz[y_sutun_adi]
-
-# Sağlama yapıyoruz (Konsolda mutlaka 9 görmelisin)
-print(f"--- GÜVENLİK KONTROLÜ ---")
-print(f"X (Özellikler) Sütun Sayısı: {x.shape[1]} (Bu sayı 9 ise sızıntı tamamen bitmiştir!)")
-print("-------------------------\n")
+# # Sağlama yapıyoruz (Konsolda mutlaka 9 görmelisin)
+# print(f"--- GÜVENLİK KONTROLÜ ---")
+# print(f"X (Özellikler) Sütun Sayısı: {x.shape[1]} (Bu sayı 9 ise sızıntı tamamen bitmiştir!)")
+# print("-------------------------\n")
 
 
-# print(f"X (Özellikler) Sütun Sayısı: {x.shape[1]}") # Burası tam olarak 9 olmalı!
+# # print(f"X (Özellikler) Sütun Sayısı: {x.shape[1]}") # Burası tam olarak 9 olmalı!
 
-x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=0)
+# x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=0)
 
-# Ölçeklendirme 
-sc = StandardScaler() 
+# # Ölçeklendirme 
+# sc = StandardScaler() 
 
-# Train setinde öğren (fit) ve uygula (transform)
-x_train = sc.fit_transform(x_train)
+# # Train setinde öğren (fit) ve uygula (transform)
+# x_train = sc.fit_transform(x_train)
 
-# Test setinde SADECE uygula (transform)
-x_test = sc.transform(x_test) 
+# # Test setinde SADECE uygula (transform)
+# x_test = sc.transform(x_test) 
 
-# Model Eğitimi
-model = LogisticRegression()
-model.fit(x_train, y_train)
+# # Model Eğitimi
+# model = LogisticRegression()
+# model.fit(x_train, y_train)
 
-tahmin=model.predict(x_test)
+# tahmin=model.predict(x_test)
 
-# x_test'in içinde birden fazla özellik olduğu için görselleştirme adına 
-# X ekseninde göstermek üzere sadece 0. indeksteki ilk sütunu (özelliği) seç:
-x_gorsel = x_test[:,4]
+# # x_test'in içinde birden fazla özellik olduğu için görselleştirme adına 
+# # X ekseninde göstermek üzere sadece 0. indeksteki ilk sütunu (özelliği) seç:
+# x_gorsel = x_test[:,4]
 
-# plt.plot yerine plt.scatter kullanın
-plt.scatter(x_gorsel, y_test, color='pink', label='Gerçek Veriler')
-plt.scatter(x_gorsel, tahmin, color='blue', alpha=0.5, label='Model Tahminleri')
+# # plt.plot yerine plt.scatter kullanın
+# plt.scatter(x_gorsel, y_test, color='pink', label='Gerçek Veriler')
+# plt.scatter(x_gorsel, tahmin, color='blue', alpha=0.5, label='Model Tahminleri')
 
-plt.title("Gerçek Değerler ve Tahminler")
-plt.xlabel("Ölçeklendirilmiş Özellik")
-plt.ylabel("Potability (İçilebilirlik)")
-plt.legend()
-plt.show()
+# plt.title("Gerçek Değerler ve Tahminler")
+# plt.xlabel("Ölçeklendirilmiş Özellik")
+# plt.ylabel("Potability (İçilebilirlik)")
+# plt.legend()
+# plt.show()
 
-# BASE MODEL + CROSS VALIDATION
+# # BASE MODEL + CROSS VALIDATION
 
-print(" =====================================================")
+# print(" =====================================================")
 
-rf = RandomForestClassifier(random_state=42)
+# rf = RandomForestClassifier(random_state=42)
 
-kf = KFold(n_splits=10, shuffle=True, random_state=42)
-cv_scores = cross_val_score(rf, x, y, cv=kf, scoring='accuracy')
+# kf = KFold(n_splits=10, shuffle=True, random_state=42)
+# cv_scores = cross_val_score(rf, x, y, cv=kf, scoring='accuracy')
 
-rf.fit(x_train, y_train)
-base_accuracy = accuracy_score(y_test, rf.predict(x_test))
+# rf.fit(x_train, y_train)
+# base_accuracy = accuracy_score(y_test, rf.predict(x_test))
 
-print(f"CV Ortalama Accuracy : {np.mean(cv_scores):.4f}")
-print(f"Base Model Accuracy : {base_accuracy:.4f}")
-print("-" * 50)
-
-
-# Temel XGBoost Sınıflandırıcısını Tanımla
-xgb_model = xgb.XGBClassifier(random_state=42, eval_metric='logloss')
-
-# Aşırı öğrenmeyi engelleyecek parametre ızgarası (Grid)
-# max_depth düşük tutularak ezberleme önlenir.
-# subsample ve colsample_bytree ile modelin her adımda verinin/sütunların sadece bir kısmını görmesi sağlanır.
-param_grid = {
-    'n_estimators': [100, 200, 300],        # Ağaç sayısı
-    'max_depth': [3, 5, 7],                 # Ağaç derinliği (Düşük overfitting'i engeller)
-    'learning_rate': [0.01, 0.05, 0.1],     # Öğrenme oranı
-    'subsample': [0.8, 1.0],                # Her ağaç için kullanılacak satır oranı
-    'colsample_bytree': [0.8, 1.0]          # Her ağaç için kullanılacak sütun oranı
-}
-
-print("GridSearchCV ile en iyi parametreler aranıyor... (Bu işlem birkaç dakika sürebilir)")
-
-# GridSearchCV'yi Başlat (5 katlı Çapraz Doğrulama ile)
-grid_search = GridSearchCV(
-    estimator=xgb_model, 
-    param_grid=param_grid, 
-    scoring='accuracy', 
-    cv=5, 
-    n_jobs=-1, # İşlemcinin tüm çekirdeklerini kullanır (Hızlandırır)
-    verbose=1
-)
-
-# Modeli Eğit
-grid_search.fit(x_train, y_train)
-
-# En İyi Parametreleri ve Çapraz Doğrulama Skorunu Yazdır
-print("\n--- OPTİMİZASYON SONUÇLARI ---")
-print(f"En İyi Parametreler: {grid_search.best_params_}")
-print(f"En İyi CV Accuracy Skoru: {grid_search.best_score_:.4f}")
-
-# Test Seti Üzerinde Tahmin ve Değerlendirme
-best_xgb = grid_search.best_estimator_
-y_pred = best_xgb.predict(x_test)
-
-test_accuracy = accuracy_score(y_test, y_pred)
-print(f"\nOptimize Edilmiş Test Accuracy Skoru: {test_accuracy:.4f}")
-print("\nSınıflandırma Raporu (Precision, Recall, F1-Score):")
-print(classification_report(y_test, y_pred))
+# print(f"CV Ortalama Accuracy : {np.mean(cv_scores):.4f}")
+# print(f"Base Model Accuracy : {base_accuracy:.4f}")
+# print("-" * 50)
 
 
-print("\n=====================================================")
-print("--- 1. VERİ SIZINTISI (TARGET LEAKAGE) KONTROLÜ ---")
-print("=====================================================")
+# # Temel XGBoost Sınıflandırıcısını Tanımla
+# xgb_model = xgb.XGBClassifier(random_state=42, eval_metric='logloss')
 
-# x_train mi X_train mi kullanıldığını otomatik algıla (hata almamak için)
+# # Aşırı öğrenmeyi engelleyecek parametre ızgarası (Grid)
+# # max_depth düşük tutularak ezberleme önlenir.
+# # subsample ve colsample_bytree ile modelin her adımda verinin/sütunların sadece bir kısmını görmesi sağlanır.
+# param_grid = {
+#     'n_estimators': [100, 200, 300],        # Ağaç sayısı
+#     'max_depth': [3, 5, 9],                 # Ağaç derinliği (Düşük overfitting'i engeller)
+#     'learning_rate': [0.01, 0.05, 0.1],     # Öğrenme oranı
+#     'subsample': [0.8, 1.0],                # Her ağaç için kullanılacak satır oranı
+#     'colsample_bytree': [0.8, 1.0]          # Her ağaç için kullanılacak sütun oranı
+# }
 
-if 'x_train' in locals():
-    aktif_x_train = x_train
-    aktif_x_test = x_test
-else:
-    raise ValueError("Eğitim verisi (x_train veya X_train) bulunamadı!")
+# print("GridSearchCV ile en iyi parametreler aranıyor... (Bu işlem birkaç dakika sürebilir)")
 
-# NumPy dizisi ise (StandardScaler uygulandıysa) DataFrame'e çevir
+# # GridSearchCV'yi Başlat (5 katlı Çapraz Doğrulama ile)
+# grid_search = GridSearchCV(
+#     estimator=xgb_model, 
+#     param_grid=param_grid, 
+#     scoring='accuracy', 
+#     cv=5, 
+#     n_jobs=-1, # İşlemcinin tüm çekirdeklerini kullanır (Hızlandırır)
+#     verbose=1
+# )
 
-if isinstance(aktif_x_train, np.ndarray):
-    num_cols = aktif_x_train.shape[1]
-    print(f"Eğitim setindeki sütun (özellik) sayısı: {num_cols}")
+# # Modeli Eğit
+# grid_search.fit(x_train, y_train)
+
+# # En İyi Parametreleri ve Çapraz Doğrulama Skorunu Yazdır
+# print("\n--- OPTİMİZASYON SONUÇLARI ---")
+# print(f"En İyi Parametreler: {grid_search.best_params_}")
+# print(f"En İyi CV Accuracy Skoru: {grid_search.best_score_:.4f}")
+
+# # Test Seti Üzerinde Tahmin ve Değerlendirme
+# best_xgb = grid_search.best_estimator_
+# y_pred = best_xgb.predict(x_test)
+
+# test_accuracy = accuracy_score(y_test, y_pred)
+# print(f"\nOptimize Edilmiş Test Accuracy Skoru: {test_accuracy:.4f}")
+# print("\nSınıflandırma Raporu (Precision, Recall, F1-Score):")
+# print(classification_report(y_test, y_pred))
+
+
+# print("\n=====================================================")
+# print("--- 1. VERİ SIZINTISI (TARGET LEAKAGE) KONTROLÜ ---")
+# print("=====================================================")
+
+# # x_train mi X_train mi kullanıldığını otomatik algıla (hata almamak için)
+
+# if 'x_train' in locals():
+#     aktif_x_train = x_train
+#     aktif_x_test = x_test
+# else:
+#     raise ValueError("Eğitim verisi (x_train veya X_train) bulunamadı!")
+
+# # NumPy dizisi ise (StandardScaler uygulandıysa) DataFrame'e çevir
+
+# if isinstance(aktif_x_train, np.ndarray):
+#     num_cols = aktif_x_train.shape[1]
+#     print(f"Eğitim setindeki sütun (özellik) sayısı: {num_cols}")
     
-    # Sütun sayısına göre isimleri belirle
-    # Eğer 10 sütun varsa 'deney_id' hala içeride demektir.
+#     # Sütun sayısına göre isimleri belirle
+#     # Eğer 10 sütun varsa 'deney_id' hala içeride demektir.
     
-    if num_cols == 9:
-        cols = ["ph", "Hardness", "Solids", "Chloramines", "Sulfate", 
-                "Conductivity", "Organic_carbon", "Trihalomethanes", "Turbidity"]
-    else:
-        # Ne olduğu bilinmiyorsa geçici isim ver
-        cols = [f"Sutun_{i}" for i in range(num_cols)]
+#     if num_cols == 9:
+#         cols = ["ph", "Hardness", "Solids", "Chloramines", "Sulfate", 
+#                 "Conductivity", "Organic_carbon", "Trihalomethanes", "Turbidity"]
+#     else:
+#         # Ne olduğu bilinmiyorsa geçici isim ver
+#         cols = [f"Sutun_{i}" for i in range(num_cols)]
         
-    df_check = pd.DataFrame(aktif_x_train, columns=cols)
-else:
-    df_check = aktif_x_train.copy()
-    print("Eğitim setindeki sütunlar:", df_check.columns.tolist())
+#     df_check = pd.DataFrame(aktif_x_train, columns=cols)
+# else:
+#     df_check = aktif_x_train.copy()
+#     print("Eğitim setindeki sütunlar:", df_check.columns.tolist())
 
-# Hedef değişkeni güvenle tabloya ekle
-df_check['HEDEF_POTABILITY'] = np.array(y_train).flatten()
+# # Hedef değişkeni güvenle tabloya ekle
+# df_check['HEDEF_POTABILITY'] = np.array(y_train).flatten()
 
-# Korelasyon hesabı (Hedef değişkenle diğer sütunlar arasındaki matematiksel ilişki)
-korelasyonlar = df_check.corr()['HEDEF_POTABILITY'].drop('HEDEF_POTABILITY').sort_values(ascending=False)
-print("\nÖzelliklerin Hedef Değişkenle (Potability) Korelasyonu:")
-print(korelasyonlar)
+# # Korelasyon hesabı (Hedef değişkenle diğer sütunlar arasındaki matematiksel ilişki)
+# korelasyonlar = df_check.corr()['HEDEF_POTABILITY'].drop('HEDEF_POTABILITY').sort_values(ascending=False)
+# print("\nÖzelliklerin Hedef Değişkenle (Potability) Korelasyonu:")
+# print(korelasyonlar)
 
-print("\n🔍 ANALİZ İPUCU:")
-print("Korelasyon değerlerinde 0.20'nin veya -0.20'nin üzerinde aşırı yüksek bir sütun var mı?")
-print("Özellikle 'deney_id' veya 'Sutun_0' gibi bir değişkenin korelasyonu kol geziyorsa, %98'lik skorun sırrı odur!")
+# print("\n🔍 ANALİZ İPUCU:")
+# print("Korelasyon değerlerinde 0.20'nin veya -0.20'nin üzerinde aşırı yüksek bir sütun var mı?")
+# print("Özellikle 'deney_id' veya 'Sutun_0' gibi bir değişkenin korelasyonu kol geziyorsa, %98'lik skorun sırrı odur!")
 
-print("\n=====================================================")
-print("--- 2. VERİ AYIRMA (DATA SPLIT) KONTROLÜ ---")
-print("=====================================================")
+# print("\n=====================================================")
+# print("--- 2. VERİ AYIRMA (DATA SPLIT) KONTROLÜ ---")
+# print("=====================================================")
 
-print(f"Eğitim Seti Satır Sayısı: {aktif_x_train.shape[0]}")
-print(f"Test Seti Satır Sayısı:   {aktif_x_test.shape[0]}")
+# print(f"Eğitim Seti Satır Sayısı: {aktif_x_train.shape[0]}")
+# print(f"Test Seti Satır Sayısı:   {aktif_x_test.shape[0]}")
 
-print("\nEğitim Seti (y_train) Sınıf Dağılımı:")
-print(pd.Series(np.array(y_train).flatten()).value_counts(normalize=True))
+# print("\nEğitim Seti (y_train) Sınıf Dağılımı:")
+# print(pd.Series(np.array(y_train).flatten()).value_counts(normalize=True))
 
-print("\nTest Seti (y_test) Sınıf Dağılımı:")
-print(pd.Series(np.array(y_test).flatten()).value_counts(normalize=True))
+# print("\nTest Seti (y_test) Sınıf Dağılımı:")
+# print(pd.Series(np.array(y_test).flatten()).value_counts(normalize=True))
