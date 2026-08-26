@@ -5,6 +5,7 @@
 import os
 import pandas as pd
 import numpy as np
+from scipy.stats.mstats import winsorize
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.preprocessing import LabelEncoder, MinMaxScaler, StandardScaler
@@ -48,6 +49,8 @@ print("Veri boyutu:", df.shape)
 df=df.drop(["Carcinogenics","medical_waste"],axis=1)
 
 # msno.matrix(df.sample(len(df)))
+
+
 
 # DUPLICATE(TEKRAR EDEN VERİ) KONTROLÜ
 print("Toplam duplicate kayıt:", df.duplicated().sum())
@@ -320,6 +323,31 @@ df_temiz = df.drop(index=list(silinecek_indexler)).copy()
 # df = df.drop(index=list(silinecek_indexler))
 
 
+def iqr_winsorize(df, column):
+    # Çeyreklikler ve IQR hesaplama
+    Q1 = df[column].quantile(0.25)
+    Q3 = df[column].quantile(0.75)
+    IQR = Q3 - Q1
+    
+    alt_sinir = Q1 - 1.5 * IQR
+    ust_sinir = Q3 + 1.5 * IQR
+    
+    # clip() metodu: alt_sinir'dan küçükleri alt_sinir'a, ust_sinir'dan büyükleri ust_sinir'a eşitler.
+    df[column] = df[column].clip(lower=alt_sinir, upper=ust_sinir)
+    
+    return df
+
+# Sütun listemiz (hedef değişken olan Potability hariç tüm sayısal sütunlar)
+sutunlar = ["ph", "Hardness", "Solids", "Chloramines", "Sulfate", 
+            "Conductivity", "Organic_carbon", "Trihalomethanes", "Turbidity"]
+
+# df_temiz veri seti üzerinde döngü ile tüm sütunlara baskılama uyguluyoruz
+for col in sutunlar:
+    df_temiz = iqr_winsorize(df_temiz, col)
+
+print("Winsorization (Baskılama) işlemi tüm sütunlar için başarıyla tamamlandı.")
+
+
 print("-----------------------------------------------------")
 
 print(f"Orijinal veri seti satır sayısı: {len(df)}")
@@ -340,54 +368,54 @@ df_temiz = df_temiz.reset_index(drop=True)
 
 # #SCALİNG ISLEMLERİ
 
-# #x ve y değişkenlerini tanımlama
-# #'hedef_sutun' isimli sütunu y yapıp, geri kalanları x yapar
-# x = df_temiz.drop('Potability', axis=1) 
-# y = df_temiz['Potability']              
+#x ve y değişkenlerini tanımlama
+#'hedef_sutun' isimli sütunu y yapıp, geri kalanları x yapar
+x = df_temiz.drop('Potability', axis=1) 
+y = df_temiz['Potability']              
 
 
-# x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=0)
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=0)
 
-# # Ölçeklendirme 
-# sc = StandardScaler() 
+# Ölçeklendirme 
+sc = StandardScaler() 
 
-# # Train setinde öğren (fit) ve uygula (transform)
-# x_train = sc.fit_transform(x_train)
+# Train setinde öğren (fit) ve uygula (transform)
+x_train = sc.fit_transform(x_train)
 
-# # Test setinde SADECE uygula (transform)
-# x_test = sc.transform(x_test) 
+# Test setinde SADECE uygula (transform)
+x_test = sc.transform(x_test) 
 
-# # Model Eğitimi
-# model = LogisticRegression()
-# model.fit(x_train, y_train)
+# Model Eğitimi
+model = LogisticRegression()
+model.fit(x_train, y_train)
 
-# tahmin=model.predict(x_test)
+tahmin=model.predict(x_test)
 
-# # x_test'in içinde birden fazla özellik olduğu için görselleştirme adına 
-# # X ekseninde göstermek üzere sadece 0. indeksteki ilk sütunu (özelliği) seç:
-# x_gorsel = x_test[:,4]
+# x_test'in içinde birden fazla özellik olduğu için görselleştirme adına 
+# X ekseninde göstermek üzere sadece 0. indeksteki ilk sütunu (özelliği) seç:
+x_gorsel = x_test[:,4]
 
-# # plt.plot yerine plt.scatter kullanın
-# plt.scatter(x_gorsel, y_test, color='pink', label='Gerçek Veriler')
-# plt.scatter(x_gorsel, tahmin, color='blue', alpha=0.5, label='Model Tahminleri')
+# plt.plot yerine plt.scatter kullanın
+plt.scatter(x_gorsel, y_test, color='pink', label='Gerçek Veriler')
+plt.scatter(x_gorsel, tahmin, color='blue', alpha=0.5, label='Model Tahminleri')
 
-# plt.title("Gerçek Değerler ve Tahminler")
-# plt.xlabel("Ölçeklendirilmiş Özellik")
-# plt.ylabel("Potability (İçilebilirlik)")
-# plt.legend()
-# plt.show()
+plt.title("Gerçek Değerler ve Tahminler")
+plt.xlabel("Ölçeklendirilmiş Özellik")
+plt.ylabel("Potability (İçilebilirlik)")
+plt.legend()
+plt.show()
 
-# # 4. BASE MODEL + CROSS VALIDATION
-# # =====================================================
-# rf = RandomForestClassifier(random_state=42)
+# 4. BASE MODEL + CROSS VALIDATION
+# =====================================================
+rf = RandomForestClassifier(random_state=42)
 
-# kf = KFold(n_splits=10, shuffle=True, random_state=42)
-# cv_scores = cross_val_score(rf, x, y, cv=kf, scoring='accuracy')
+kf = KFold(n_splits=10, shuffle=True, random_state=42)
+cv_scores = cross_val_score(rf, x, y, cv=kf, scoring='accuracy')
 
-# rf.fit(x_train, y_train)
-# base_accuracy = accuracy_score(y_test, rf.predict(x_test))
+rf.fit(x_train, y_train)
+base_accuracy = accuracy_score(y_test, rf.predict(x_test))
 
-# print(f"CV Ortalama Accuracy : {np.mean(cv_scores):.4f}")
-# print(f"Base Model Accuracy : {base_accuracy:.4f}")
-# print("-" * 50)
+print(f"CV Ortalama Accuracy : {np.mean(cv_scores):.4f}")
+print(f"Base Model Accuracy : {base_accuracy:.4f}")
+print("-" * 50)
 
