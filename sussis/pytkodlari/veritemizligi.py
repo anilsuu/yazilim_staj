@@ -336,9 +336,53 @@ print("Veri setindeki kayıp oranı:" ,kayip_orani)
 df_temiz = df_temiz.reset_index(drop=True)
 
 
+# =====================================================
+# FEATURE ENGINEERING ADIMI
+# =====================================================
+df_fe = df_temiz.copy()
+
+# ideal ph aralığı 6.5-8.5 olarak yeni ph_ideal üretmek
+df_fe['ph_ideal'] = df_fe['ph'].between(6.5, 8.5).astype(int)
+
+# ideal bulanıklık 5 değerinin altında olmalı
+df_fe["Turbidity_safe"]=(df["Turbidity"]<5.0).astype(int)
+
+# ideal Sülfatın değerinin 400den küçük olması gerekiyor 
+df_fe["Sulfate_safe"]=(df["Sulfate"]<400).astype(int)
+
+# Kimyasal etki Trihalometan oluşumu kloramin ve organik karbonun reaksiyonuyla artar
+df_fe["Chemistry_reactivity"]=df_fe["Chloramines"]*df_fe["Organic_carbon"]
+
+# İletkenlik ve Çözünmüş Katı Madde (Solids/Conductivity) ilişkisi
+# 0'a bölme hatasını önlemek için küçük bir epsilon (1e-6) eklenir
+df_fe['solids_to_cond_ratio'] = df_fe['Solids'] / (df_fe['Conductivity'] + 1e-6)
+
+# Sertlik ve Sülfat oranı (Mineral yoğunluk dengesi)
+df_fe['hardness_sulfate_ratio'] = df_fe['Hardness'] / (df_fe['Sulfate'] + 1e-6)
+
+# 3. İdeal pH'tan Uzaklık (Non-linear Sapma)
+# Suyun ideal pH olan 7.0'dan ne kadar saptığını ölçen mutlak sapma
+df_fe['ph_dev_from_neutral'] = np.abs(df_fe['ph'] - 7.0)
+
+
+# 4. Genel Kirletici İndeksi (Agregasyon)
+# Organik karbon ve bulanıklığın birleşik kirlilik etkisi
+df_fe['pollution_index'] = df_fe['Organic_carbon'] * df_fe['Turbidity']
+
+
+# 5. Güvenlik İhlal Skoru (Ne kadar çok kural ihlal edilirse o kadar içilemez)
+df_fe['safety_violations'] = (
+    (1 - df_fe['ph_ideal']) + 
+    (1 - df_fe['Turbidity_safe']) + 
+    (1 - df_fe['Sulfate_safe'])
+)
+
+print(f"Eski Özellik Sayısı: {df_temiz.shape[1] - 1}")
+print(f"Yeni Özellik Sayısı: {df_fe.shape[1] - 1}")
+
 # Temizlenmiş veriyi CSV olarak dışa aktar
 # -----------------------------------------------------
-df_temiz.to_csv("temizlenmis_su_kalitesi.csv", index=False)
+df_fe.to_csv("temizlenmis_su_kalitesi.csv", index=False)
 print("\nVeri temizleme tamamlandı ve 'temizlenmis_su_kalitesi.csv' olarak kaydedildi!")
 
 
@@ -353,25 +397,6 @@ print("\nVeri temizleme tamamlandı ve 'temizlenmis_su_kalitesi.csv' olarak kayd
 # # Test setinde SADECE uygula (transform)
 # x_test = sc.transform(x_test) 
 
-# # Model Eğitimi
-# model = LogisticRegression()
-# model.fit(x_train, y_train)
-
-# tahmin=model.predict(x_test)
-
-# # x_test'in içinde birden fazla özellik olduğu için görselleştirme adına 
-# # X ekseninde göstermek üzere sadece 0. indeksteki ilk sütunu (özelliği) seç:
-# x_gorsel = x_test[:,4]
-
-# # plt.plot yerine plt.scatter kullanın
-# plt.scatter(x_gorsel, y_test, color='pink', label='Gerçek Veriler')
-# plt.scatter(x_gorsel, tahmin, color='blue', alpha=0.5, label='Model Tahminleri')
-
-# plt.title("Gerçek Değerler ve Tahminler")
-# plt.xlabel("Ölçeklendirilmiş Özellik")
-# plt.ylabel("Potability (İçilebilirlik)")
-# plt.legend()
-# plt.show()
 
 # # BASE MODEL + CROSS VALIDATION
 
