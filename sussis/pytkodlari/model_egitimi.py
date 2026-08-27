@@ -109,6 +109,56 @@ plt.show()
 
 
 
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# XGBoost modeli (GridSearchCV'den çıkan en iyi modelin kendisi)
+# Not: Eğer pipeline kullandıysanız model ismini ona göre güncelleyin. 
+# Örnek olarak düz bir XGBoost modeli varsayılmıştır.
+from xgboost import XGBClassifier
+
+# Modeli en iyi parametrelerle tekrar eğitelim (SMOTE yapılmış verilerle)
+xgb_best = XGBClassifier(
+    colsample_bytree=1.0, 
+    learning_rate=0.1, 
+    max_depth=7, 
+    n_estimators=300, 
+    subsample=0.8,
+    random_state=42
+)
+xgb_best.fit(x_train, y_train)
+
+# Özellik önem düzeylerini al ve bir DataFrame'e çevir
+feature_importances = pd.DataFrame({
+    'Feature': kimyasal_sutunlar,
+    'Importance': xgb_best.feature_importances_
+}).sort_values(by='Importance', ascending=False)
+
+# Görselleştirme
+plt.figure(figsize=(10, 8))
+sns.barplot(x='Importance', y='Feature', data=feature_importances, palette='viridis')
+plt.title('XGBoost - Özellik Önem Düzeyleri (Feature Importance)')
+plt.xlabel('Önem Skoru')
+plt.ylabel('Özellikler')
+plt.tight_layout()
+plt.show()
+
+# Grafikte en altta kalan özellikleri buraya yazın (Aşağıdakiler sadece ÖRNEKTİR)
+silinecek_sutunlar = ['ph_ideal', 'safety_violations', 'Chemistry_reactivity', 'pollution_index'] 
+
+# Bu sütunları veri setinden çıkartıyoruz
+df_sade = df_fe.drop(columns=silinecek_sutunlar)
+
+# Yeni X ve y'yi güncelliyoruz
+X_sade = df_sade.drop('Potability', axis=1)
+y_sade = df_sade['Potability']
+
+print(f"Kalan Özellik Sayısı: {X_sade.shape[1]}")
+
+
+
+
 # BASE MODEL + CROSS VALIDATION
 
 print("=====================================================")
@@ -152,120 +202,122 @@ print("\n XGBoost Sınıflandırma Raporu:")
 print(classification_report(y_test, y_pred))
 
 
+# print("=====================================================")
+# print("--- 2. LIGHTGBM MODELİ OPTİMİZASYONU ---")
+# print("=====================================================")
 
-print("=====================================================")
-print("--- 2. LIGHTGBM MODELİ OPTİMİZASYONU ---")
-print("=====================================================")
+# # LightGBM Pipeline'ı
+# lgbm_pipeline = Pipeline(steps=[
+#     ('smote', SMOTE(random_state=42)),
+#     # verbose=-1 LightGBM'in gereksiz uyarı mesajlarını almayı engelliyor.
+#     ('lgbm', LGBMClassifier(random_state=42, verbose=-1))
+# ])
 
-# LightGBM Pipeline'ı
-lgbm_pipeline = Pipeline(steps=[
-    ('smote', SMOTE(random_state=42)),
-    # verbose=-1 LightGBM'in gereksiz uyarı mesajlarını almayı engelliyor.
-    ('lgbm', LGBMClassifier(random_state=42, verbose=-1))
-])
+# lgbm_param_grid = {
+#     'lgbm__n_estimators': [100, 200, 300],
+#     'lgbm__max_depth': [3, 5, 7],
+#     'lgbm__learning_rate': [0.01, 0.05, 0.1]
+# }
 
-lgbm_param_grid = {
-    'lgbm__n_estimators': [100, 200, 300],
-    'lgbm__max_depth': [3, 5, 7],
-    'lgbm__learning_rate': [0.01, 0.05, 0.1]
-}
+# grid_lgbm = GridSearchCV(
+#     estimator=lgbm_pipeline, 
+#     param_grid=lgbm_param_grid, 
+#     scoring='accuracy', 
+#     cv=5, 
+#     n_jobs=-1  # İşlemcinin tüm çekirdeklerini kullanır (Hızlandırır)
+# )
 
-grid_lgbm = GridSearchCV(
-    estimator=lgbm_pipeline, 
-    param_grid=lgbm_param_grid, 
-    scoring='accuracy', 
-    cv=5, 
-    n_jobs=-1  # İşlemcinin tüm çekirdeklerini kullanır (Hızlandırır)
-)
+# print("LightGBM eğitiliyor... Lütfen bekleyin.")
+# grid_lgbm.fit(x_train, y_train)
 
-print("LightGBM eğitiliyor... Lütfen bekleyin.")
-grid_lgbm.fit(x_train, y_train)
+# best_lgbm = grid_lgbm.best_estimator_
+# y_pred_lgbm = best_lgbm.predict(x_test)
 
-best_lgbm = grid_lgbm.best_estimator_
-y_pred_lgbm = best_lgbm.predict(x_test)
-
-print(f"\nLightGBM Test Accuracy Skoru: {accuracy_score(y_test, y_pred_lgbm):.4f}")
-print("LightGBM Sınıflandırma Raporu:")
-print(classification_report(y_test, y_pred_lgbm))
+# print(f"\nLightGBM Test Accuracy Skoru: {accuracy_score(y_test, y_pred_lgbm):.4f}")
+# print("LightGBM Sınıflandırma Raporu:")
+# print(classification_report(y_test, y_pred_lgbm))
 
 
-print("\n=====================================================")
-print("--- 3. CATBOOST MODELİ OPTİMİZASYONU ---")
-print("=====================================================")
+# print("\n=====================================================")
+# print("--- 3. CATBOOST MODELİ OPTİMİZASYONU ---")
+# print("=====================================================")
 
-# CatBoost Pipeline'ı
-cat_pipeline = Pipeline(steps=[
-    ('smote', SMOTE(random_state=42)),
-    # verbose=False ile CatBoost'un her adımda ekrana yazı yazmasını engelliyoruz
-    ('cat', CatBoostClassifier(random_state=42, verbose=False))
-])
+# # CatBoost Pipeline'ı
+# cat_pipeline = Pipeline(steps=[
+#     ('smote', SMOTE(random_state=42)),
+#     # verbose=False ile CatBoost'un her adımda ekrana yazı yazmasını engelliyoruz
+#     ('cat', CatBoostClassifier(random_state=42, verbose=False))
+# ])
 
-cat_param_grid = {
-    'cat__iterations': [100, 200, 300], # CatBoost'ta n_estimators yerine iterations kullanılır
-    'cat__depth': [3, 5, 7],            # max_depth yerine depth kullanılır
-    'cat__learning_rate': [0.01, 0.05, 0.1]
-}
+# cat_param_grid = {
+#     'cat__iterations': [100, 200, 300], # CatBoost'ta n_estimators yerine iterations kullanılır
+#     'cat__depth': [3, 5, 7],            # max_depth yerine depth kullanılır
+#     'cat__learning_rate': [0.01, 0.05, 0.1]
+# }
 
-grid_cat = GridSearchCV(
-    estimator=cat_pipeline, 
-    param_grid=cat_param_grid, 
-    scoring='accuracy', 
-    cv=5, 
-    n_jobs=-1   # İşlemcinin tüm çekirdeklerini kullanır (Hızlandırır)
-)
+# grid_cat = GridSearchCV(
+#     estimator=cat_pipeline, 
+#     param_grid=cat_param_grid, 
+#     scoring='accuracy', 
+#     cv=5, 
+#     n_jobs=-1   # İşlemcinin tüm çekirdeklerini kullanır (Hızlandırır)
+# )
 
-print("CatBoost eğitiliyor... Lütfen bekleyin.")
-grid_cat.fit(x_train, y_train)
+# print("CatBoost eğitiliyor... Lütfen bekleyin.")
+# grid_cat.fit(x_train, y_train)
 
-best_cat = grid_cat.best_estimator_
-y_pred_cat = best_cat.predict(x_test)
+# best_cat = grid_cat.best_estimator_
+# y_pred_cat = best_cat.predict(x_test)
 
-print(f"\nCatBoost Test Accuracy Skoru: {accuracy_score(y_test, y_pred_cat):.4f}")
-print("CatBoost Sınıflandırma Raporu:")
-print(classification_report(y_test, y_pred_cat))
-# 1. Pipeline (Boru Hattı) Kurulumu
-# SMOTE ve XGBoost'u birbirine bağlıyoruz.
-pipeline = Pipeline(steps=[
-    ('smote', SMOTE(random_state=42)),
-    ('xgb', xgb.XGBClassifier(random_state=42, eval_metric='logloss'))
-])
+# print(f"\nCatBoost Test Accuracy Skoru: {accuracy_score(y_test, y_pred_cat):.4f}")
+# print("CatBoost Sınıflandırma Raporu:")
+# print(classification_report(y_test, y_pred_cat))
 
-#  Parametre Izgarası
-# Pipeline kullandığımız için parametre isimlerinin başına 'xgb__' eklemeliyiz
-param_grid = {
-    'xgb__n_estimators': [100, 200, 300],
-    'xgb__max_depth': [3, 5, 7],
-    'xgb__learning_rate': [0.01, 0.05, 0.1],
-    'xgb__subsample': [0.8, 1.0],
-    'xgb__colsample_bytree': [0.8, 1.0]
-}
 
-print("Pipeline ile SMOTE ve GridSearchCV çalışıyor ...")
 
-#  GridSearchCV'yi Başlat
-grid_search = GridSearchCV(
-    estimator=pipeline, 
-    param_grid=param_grid, 
-    scoring='accuracy', 
-    cv=5, 
-    n_jobs=-1, # İşlemcinin tüm çekirdeklerini kullanır (Hızlandırır)
-    verbose=1
-)
+# # 1. Pipeline (Boru Hattı) Kurulumu
+# # SMOTE ve XGBoost'u birbirine bağlıyoruz.
+# pipeline = Pipeline(steps=[
+#     ('smote', SMOTE(random_state=42)),
+#     ('xgb', xgb.XGBClassifier(random_state=42, eval_metric='logloss'))
+# ])
 
-# DİKKAT: Artık x_train_smote DEĞİL, orijinal x_train veriyoruz!
-# Pipeline içeride SMOTE işlemini otomatik ve güvenli yapacak.
-grid_search.fit(x_train, y_train)
+# #  Parametre Izgarası
+# # Pipeline kullandığımız için parametre isimlerinin başına 'xgb__' eklemeliyiz
+# param_grid = {
+#     'xgb__n_estimators': [100, 200, 300],
+#     'xgb__max_depth': [3, 5, 7],
+#     'xgb__learning_rate': [0.01, 0.05, 0.1],
+#     'xgb__subsample': [0.8, 1.0],
+#     'xgb__colsample_bytree': [0.8, 1.0]
+# }
 
-# Sonuçları Değerlendirme
-print("\n--- OPTİMİZASYON SONUÇLARI ---")
-print(f"En İyi Parametreler: {grid_search.best_params_}")
+# print("Pipeline ile SMOTE ve GridSearchCV çalışıyor ...")
 
-best_model = grid_search.best_estimator_
-y_pred = best_model.predict(x_test)
+# #  GridSearchCV'yi Başlat
+# grid_search = GridSearchCV(
+#     estimator=pipeline, 
+#     param_grid=param_grid, 
+#     scoring='accuracy', 
+#     cv=5, 
+#     n_jobs=-1, # İşlemcinin tüm çekirdeklerini kullanır (Hızlandırır)
+#     verbose=1
+# )
 
-print(f"\nTest Accuracy Skoru: {accuracy_score(y_test, y_pred):.4f}")
-print("\nSınıflandırma Raporu:")
-print(classification_report(y_test, y_pred))
+# # DİKKAT: Artık x_train_smote DEĞİL, orijinal x_train veriyoruz!
+# # Pipeline içeride SMOTE işlemini otomatik ve güvenli yapacak.
+# grid_search.fit(x_train, y_train)
+
+# # Sonuçları Değerlendirme
+# print("\n--- OPTİMİZASYON SONUÇLARI ---")
+# print(f"En İyi Parametreler: {grid_search.best_params_}")
+
+# best_model = grid_search.best_estimator_
+# y_pred = best_model.predict(x_test)
+
+# print(f"\nTest Accuracy Skoru: {accuracy_score(y_test, y_pred):.4f}")
+# print("\nSınıflandırma Raporu:")
+# print(classification_report(y_test, y_pred))
 
 # # Hedef değişkeni güvenle tabloya ekle
 # df_check['HEDEF_POTABILITY'] = np.array(y_train).flatten()
@@ -280,21 +332,38 @@ print(classification_report(y_test, y_pred))
 # print("Özellikle 'deney_id' veya 'Sutun_0' gibi bir değişkenin korelasyonu kol geziyorsa, %98'lik skorun sırrı odur!")
  
 
-# # BASE MODEL + CROSS VALIDATION
+# BASE MODEL + CROSS VALIDATION
 
-# print(" =====================================================")
+print(" =====================================================")
 
-# rf = RandomForestClassifier(random_state=42)
+rf = RandomForestClassifier(random_state=42)
 
-# kf = KFold(n_splits=10, shuffle=True, random_state=42)
-# cv_scores = cross_val_score(rf, x, y, cv=kf, scoring='accuracy')
+kf = KFold(n_splits=10, shuffle=True, random_state=42)
+cv_scores = cross_val_score(rf, x, y, cv=kf, scoring='accuracy')
 
-# rf.fit(x_train, y_train)
-# base_accuracy = accuracy_score(y_test, rf.predict(x_test))
+rf.fit(x_train, y_train)
+base_accuracy = accuracy_score(y_test, rf.predict(x_test))
 
-# print(f"CV Ortalama Accuracy : {np.mean(cv_scores):.4f}")
-# print(f"Base Model Accuracy : {base_accuracy:.4f}")
-# print("-" * 50)
+print(f"CV Ortalama Accuracy : {np.mean(cv_scores):.4f}")
+print(f"Base Model Accuracy : {base_accuracy:.4f}")
+print("-" * 50)
+
+
+
+ # x_test'in içinde birden fazla özellik olduğu için görselleştirme adına 
+# X ekseninde göstermek üzere sadece 0. indeksteki ilk sütunu (özelliği) seç:
+x_gorsel = x_test[:,2]
+
+# plt.plot yerine plt.scatter kullanın
+plt.scatter(x_gorsel, y_test, color='pink', label='Gerçek Veriler')
+plt.scatter(x_gorsel, tahmin, color='blue', alpha=0.5, label='Model Tahminleri')
+
+
+plt.title("Gerçek Değerler ve Tahminler")
+plt.xlabel("Ölçeklendirilmiş Özellik")
+plt.ylabel("Potability (İçilebilirlik)")
+plt.legend()
+plt.show()
 
 
 # # Temel XGBoost Sınıflandırıcısını Tanımla
