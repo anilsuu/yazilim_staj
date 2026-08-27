@@ -174,23 +174,6 @@ plt.xlabel("Önem")
 plt.tight_layout()
 plt.show()
 
-# =====================================================
-# 7. LEARNING CURVE (SINIFLANDIRMA SKORU İLE)
-# =====================================================
-train_sizes, train_scores, test_scores = learning_curve(
-    best_rf, x_train_sc, y_train, cv=5, n_jobs=-1,
-    train_sizes=np.linspace(0.1, 1.0, 5), scoring='accuracy'
-)
-
-plt.figure(figsize=(8, 5))
-plt.plot(train_sizes, np.mean(train_scores, axis=1), label="Train")
-plt.plot(train_sizes, np.mean(test_scores, axis=1), label="Validation")
-plt.title("Learning Curve")
-plt.xlabel("Veri Miktarı")
-plt.ylabel("Accuracy")
-plt.legend()
-plt.grid()
-plt.show()
 
 
 
@@ -300,7 +283,7 @@ xgb_model = xgb.XGBClassifier(
     subsample=0.8,
     colsample_bytree=0.8,
     random_state=42,             
-    min_child_weight=5,      # (Aşırı dallanmayı engeller)
+    min_child_weight=20,      # (Aşırı dallanmayı engeller)
     gamma=1.5,               # (Gereksiz dalları budar)
     eval_metric='logloss'
 )
@@ -334,7 +317,7 @@ xgb_saglam_kontrol = xgb.XGBClassifier(
     n_estimators=100,            # Ağaç sayısını 300'den 100'e düşürdük
     learning_rate=0.02,          # Öğrenmeyi yavaşlattık
     max_depth=4,                 # Derinliği 6'dan 4'e indirdik (Ezberi engeller)
-    min_child_weight=10,         # Bir yaprakta en az 10 örnek olmasını şart koştuk
+    min_child_weight=20,         # Bir yaprakta en az 10 örnek olmasını şart koştuk
     gamma=2.0,                   # Yeni dallar açılmasına yüksek ceza getirdik
     subsample=0.7,               # Her ağaç verinin %70'ini görsün
     colsample_bytree=0.7,        # Her ağaç özelliklerin %70'ini görsün
@@ -363,6 +346,23 @@ print(f"Yeni Uçurum (Fark)       : {(train_accuracy - test_accuracy):.4f}")
 
 
 
+# =====================================================
+# 7. LEARNING CURVE (SINIFLANDIRMA SKORU İLE)
+# =====================================================
+train_sizes, train_scores, test_scores = learning_curve(
+    best_rf, x_train_sc, y_train, cv=5, n_jobs=-1,
+    train_sizes=np.linspace(0.1, 1.0, 5), scoring='accuracy'
+)
+
+plt.figure(figsize=(8, 5))
+plt.plot(train_sizes, np.mean(train_scores, axis=1), label="Train")
+plt.plot(train_sizes, np.mean(test_scores, axis=1), label="Validation")
+plt.title("Learning Curve")
+plt.xlabel("Veri Miktarı")
+plt.ylabel("Accuracy")
+plt.legend()
+plt.grid()
+plt.show()
 
 
 # BURANIN SONUCU EĞİTİM:0.8719 , TEST:0.6355 , UÇURUM:0.2364
