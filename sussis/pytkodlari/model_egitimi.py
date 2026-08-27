@@ -40,10 +40,6 @@ df_son = pd.read_csv("temizlenmis_su_kalitesi.csv")
 
 
 
-# =====================================================
-# Sızıntı engellemek için sütunları tekrar filtreleyerk devam ediyorum.
-# =====================================================
-
 # modelin öğrenmesi için deney_id ve potability sütunu hariç 9 sütunu seçtim.
 tum_kimyasal_sutunlar = [
     "ph", "Hardness", "Solids", "Chloramines", "Sulfate", 
@@ -86,6 +82,117 @@ x_test_sc = sc.transform(x_test)
 # Sınıf dengesizliğini algoritmaların kendi içine ağırlık verdim.
 # (Negatif / Pozitif) sınıf oranı. XGBoost için gereklidir.
 scale_weight = (y_train == 0).sum() / (y_train == 1).sum() 
+
+
+
+print("\n=====================================================")
+print("--- 1. VERİ SIZINTISI (TARGET LEAKAGE) KONTROLÜ ---")
+print("=====================================================")
+
+# x_train mi X_train mi kullanıldığını otomatik algıla (hata almamak için)
+
+if 'x_train' in locals():
+    aktif_x_train = x_train
+    aktif_x_test = x_test
+else:
+    raise ValueError("Eğitim verisi (x_train veya X_train) bulunamadı!")
+
+# NumPy dizisi ise (StandardScaler uygulandıysa) DataFrame'e çevir
+
+if isinstance(aktif_x_train, np.ndarray):
+    num_cols = aktif_x_train.shape[1]
+    print(f"Eğitim setindeki sütun (özellik) sayısı: {num_cols}")
+    
+    # Sütun sayısına göre isimleri belirle
+    # Eğer 10 sütun varsa 'deney_id' hala içeride demektir.
+    
+    if num_cols == 9:
+        cols = ["ph", "Hardness", "Solids", "Chloramines", "Sulfate", 
+                "Conductivity", "Organic_carbon", "Trihalomethanes", "Turbidity"]
+    else:
+        # Ne olduğu bilinmiyorsa geçici isim ver
+        cols = [f"Sutun_{i}" for i in range(num_cols)]
+        
+    df_check = pd.DataFrame(aktif_x_train, columns=cols)
+else:
+    df_check = aktif_x_train.copy()
+    print("Eğitim setindeki sütunlar:", df_check.columns.tolist())
+
+# Hedef değişkeni güvenle tabloya ekle
+df_check['HEDEF_POTABILITY'] = np.array(y_train).flatten()
+
+# Korelasyon hesabı (Hedef değişkenle diğer sütunlar arasındaki matematiksel ilişki)
+korelasyonlar = df_check.corr()['HEDEF_POTABILITY'].drop('HEDEF_POTABILITY').sort_values(ascending=False)
+print("\nÖzelliklerin Hedef Değişkenle (Potability) Korelasyonu:")
+print(korelasyonlar)
+
+# =====================================================
+# Sızıntı engellemek için sütunları tekrar filtreleyerk devam ediyorum.
+# =====================================================
+
+
+
+# =====================================================
+# 5. GRID SEARCH (SINIFLANDIRMA İÇİN GÜNCELLENDİ)
+# =====================================================
+param_grid = {
+    'n_estimators': [100, 200],
+    'max_depth': [10, 20, None],
+    'min_samples_split': [2, 5],
+    'ccp_alpha': [0.0, 0.01]
+}
+
+print("\nGridSearch çalışıyor...")
+
+# RandomForestRegressor yerine RandomForestClassifier kullanıldı
+grid = GridSearchCV(RandomForestClassifier(random_state=42, class_weight='balanced'),
+                    param_grid,
+                    cv=3,
+                    n_jobs=-1,
+                    scoring='accuracy')
+
+grid.fit(x_train_sc, y_train)
+
+best_rf = grid.best_estimator_
+y_pred = best_rf.predict(x_test_sc)
+best_acc = accuracy_score(y_test, y_pred)
+
+print("En iyi parametreler:", grid.best_params_)
+print(f"Optimize Doğruluk (Accuracy): {best_acc:.4f}")
+print("-" * 50)
+
+# =====================================================
+# 6. ÖZELLİK ÖNEM SIRALAMASI
+# =====================================================
+importances = best_rf.feature_importances_
+indices = np.argsort(importances)[-15:]
+
+plt.figure(figsize=(10, 6))
+plt.barh(np.array(secili_sutunlar)[indices], importances[indices])
+plt.title("Özellik Önem Sıralaması")
+plt.xlabel("Önem")
+plt.tight_layout()
+plt.show()
+
+# =====================================================
+# 7. LEARNING CURVE (SINIFLANDIRMA SKORU İLE)
+# =====================================================
+train_sizes, train_scores, test_scores = learning_curve(
+    best_rf, x_train_sc, y_train, cv=5, n_jobs=-1,
+    train_sizes=np.linspace(0.1, 1.0, 5), scoring='accuracy'
+)
+
+plt.figure(figsize=(8, 5))
+plt.plot(train_sizes, np.mean(train_scores, axis=1), label="Train")
+plt.plot(train_sizes, np.mean(test_scores, axis=1), label="Validation")
+plt.title("Learning Curve")
+plt.xlabel("Veri Miktarı")
+plt.ylabel("Accuracy")
+plt.legend()
+plt.grid()
+plt.show()
+
+
 
 # =====================================================
 # 3. MODEL EĞİTİMLERİ VE TEST (CLASS WEIGHTS İLE)
@@ -177,7 +284,6 @@ print(classification_report(y_test, y_pred_lgbm))
 
 
 
-
 # Aşırı öğrenmeyi engelleyecek parametre ızgarası (Grid)
 # max_depth düşük tuttum ,ezberlemeyi önlemek için..
 # subsample ve colsample_bytree ile modelin her adımda verinin/sütunların sadece bir kısmını görmesi sağlanır.
@@ -209,8 +315,6 @@ print(classification_report(y_test, y_pred_xgb))
 # 4. GÖRSELLEŞTİRME (EN İYİ MODELİN ÖZELLİK ÖNEM DÜZEYİ)
 # =====================================================
 # CatBoost genellikle bu tarz verilerde en iyi sonucu verir, onun grafiğini çizdirdim
-
-
 
 
 print("\n--- MODEL SÜRECİ BAŞARIYLA TAMAMLANDI! ---")
@@ -256,6 +360,8 @@ print(f"EĞİTİM (Train) Doğruluğu : {train_accuracy:.4f}")
 print(f"TEST Doğruluğu           : {test_accuracy:.4f}")
 print("-" * 50)
 print(f"Yeni Uçurum (Fark)       : {(train_accuracy - test_accuracy):.4f}")
+
+
 
 
 
