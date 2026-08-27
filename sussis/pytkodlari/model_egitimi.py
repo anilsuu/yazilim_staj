@@ -32,10 +32,11 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import accuracy_score, classification_report
 from lightgbm import LGBMClassifier
 from catboost import CatBoostClassifier
+from sklearn.experimental import enable_iterative_imputer
+from sklearn.impute import IterativeImputer
 
 
-
-df_fe = pd.read_csv("temizlenmis_su_kalitesi.csv")
+df_son = pd.read_csv("temizlenmis_su_kalitesi.csv")
 
 
 
@@ -57,9 +58,9 @@ silinecek_sutunlar = ['ph_ideal', 'safety_violations', 'Chemistry_reactivity', '
 secili_sutunlar = [col for col in tum_kimyasal_sutunlar if col not in silinecek_sutunlar]
 
 # X ve y değişkenlerini tanımlama,güncelliyoruz
-X_sade = df_fe[secili_sutunlar]
-y_sutun_adi = [col for col in df_fe.columns if col.lower() == 'potability'][0]
-y_sade = df_fe[y_sutun_adi]
+X_sade = df_son[secili_sutunlar]
+y_sutun_adi = [col for col in df_son.columns if col.lower() == 'potability'][0]
+y_sade = df_son[y_sutun_adi]
 
 print(f"\n--- GÜVENLİK KONTROLÜ ---")
 print(f"Kullanılan Özellik Sayısı: {X_sade.shape[1]}")
@@ -92,11 +93,13 @@ scale_weight = (y_train == 0).sum() / (y_train == 1).sum()
 print("\n=====================================================")
 print("1. CATBOOST MODELİ (Ağırlık Dengelemeli)")
 print("=====================================================")
+
+
 cat_model = CatBoostClassifier(
     auto_class_weights='Balanced',  # Dengesizliği, SMOTE yerine matematiksel cezayla çözer
     iterations=500,
-    learning_rate=0.05,
-    depth=6,
+    learning_rate=0.02,
+    depth=4,
     verbose=False,   # Eğitilirken ekrana binlerce satır yazı basmasını engeller
     random_state=42
 )
@@ -116,16 +119,19 @@ print(classification_report(y_test, y_pred_cat))
 print("\n=====================================================")
 print("2. LIGHTGBM MODELİ (Ağırlık Dengelemeli)")
 print("=====================================================")
+
+
 lgbm_model = LGBMClassifier(
     class_weight='balanced', # Dengesizliği çözen kritik parametre
-    n_estimators=300,
-    learning_rate=0.05,
-    max_depth=6,
+    n_estimators=100,
+    learning_rate=0.02,
+    max_depth=4,
     random_state=42,
     verbose=-1
 )
 lgbm_model.fit(x_train_sc, y_train)
 y_pred_lgbm = lgbm_model.predict(x_test_sc)
+
 
 print(f"LightGBM Test Accuracy: {accuracy_score(y_test, y_pred_lgbm):.4f}")
 print("Sınıflandırma Raporu:")
@@ -144,9 +150,9 @@ print("3. XGBOOST MODELİ (Ağırlık Dengelemeli)")
 print("=====================================================")
 xgb_model = xgb.XGBClassifier(
     scale_pos_weight=scale_weight, # Dengesizliği çözen kritik parametre
-    n_estimators=300,
-    learning_rate=0.05,
-    max_depth=6,
+    n_estimators=100,
+    learning_rate=0.02,
+    max_depth=4,
     subsample=0.8,
     colsample_bytree=0.8,
     random_state=42,             
@@ -164,7 +170,7 @@ print(classification_report(y_test, y_pred_xgb))
 # =====================================================
 # 4. GÖRSELLEŞTİRME (EN İYİ MODELİN ÖZELLİK ÖNEM DÜZEYİ)
 # =====================================================
-# CatBoost genellikle bu tarz verilerde en iyi sonucu verir, onun grafiğini çizdiriyoruz
+# CatBoost genellikle bu tarz verilerde en iyi sonucu verir, onun grafiğini çizdirdim
 
 
 # Özellik önem düzeylerini al ve bir DataFrame'e çevir
@@ -185,40 +191,87 @@ plt.show()
 print("\n--- MODEL SÜRECİ BAŞARIYLA TAMAMLANDI! ---")
 
 
+#BURADAKİ EGİTİM DOĞRULUĞU:0.7201 , TEST DOĞRULUĞU:0.6153 , ARADAKİ FARK:0.1048
 import xgboost as xgb
 from sklearn.metrics import accuracy_score
 
 print("\n=====================================================")
-print("--- OVERFITTING (EZBERLEME) KONTROLÜ (max_depth=15) ---")
+print("--- DÜZENLİLEŞTİRİLMİŞ OVERFITTING KONTROLÜ ---")
 print("=====================================================")
 
-# Modeli max_depth=15 olacak şekilde kuruyoruz
-xgb_ezber_test = xgb.XGBClassifier(
-    scale_pos_weight=scale_weight, # Dengesizlik çözümü (Önceki kodda hesaplamıştık)
-    n_estimators=300,
-    learning_rate=0.05,
-    max_depth=6,                  # DİKKAT: Derinliği 15'e çıkardık
-    subsample=0.8,
-    colsample_bytree=0.8,
+# Modeli aşırı ezberden kaçınacak şekilde sert kurallarla kuruyoruz
+xgb_saglam_kontrol = xgb.XGBClassifier(
+    scale_pos_weight=scale_weight, 
+    n_estimators=100,            # Ağaç sayısını 300'den 100'e düşürdük
+    learning_rate=0.02,          # Öğrenmeyi yavaşlattık
+    max_depth=4,                 # Derinliği 6'dan 4'e indirdik (Ezberi engeller)
+    min_child_weight=10,         # Bir yaprakta en az 10 örnek olmasını şart koştuk
+    gamma=2.0,                   # Yeni dallar açılmasına yüksek ceza getirdik
+    subsample=0.7,               # Her ağaç verinin %70'ini görsün
+    colsample_bytree=0.7,        # Her ağaç özelliklerin %70'ini görsün
+    reg_alpha=1.0,               # L1 Regularization (Gereksiz ağırlıkları sıfırlar)
+    reg_lambda=1.0,              # L2 Regularization (Aşırı büyük katsayıları engeller)
     random_state=42,
     eval_metric='logloss'
 )
 
 # Modeli Eğitiyoruz
-xgb_ezber_test.fit(x_train_sc, y_train)
+xgb_saglam_kontrol.fit(x_train_sc, y_train)
 
-# 1. Eğitim (Train) Skoru: Modelin daha önce gördüğü veriler
-y_train_pred = xgb_ezber_test.predict(x_train_sc)
+# 1. Eğitim (Train) Skoru
+y_train_pred = xgb_saglam_kontrol.predict(x_train_sc)
 train_accuracy = accuracy_score(y_train, y_train_pred)
 
-# 2. Test Skoru: Modelin ilk defa karşılaştığı veriler
-y_test_pred = xgb_ezber_test.predict(x_test_sc)
+# 2. Test Skoru
+y_test_pred = xgb_saglam_kontrol.predict(x_test_sc)
 test_accuracy = accuracy_score(y_test, y_test_pred)
 
 # Sonuçları Yazdır
 print(f"EĞİTİM (Train) Doğruluğu : {train_accuracy:.4f}")
 print(f"TEST Doğruluğu           : {test_accuracy:.4f}")
 print("-" * 50)
-print(f"Aradaki Uçurum (Fark)    : {(train_accuracy - test_accuracy):.4f}")
+print(f"Yeni Uçurum (Fark)       : {(train_accuracy - test_accuracy):.4f}")
+
+
+
+# BURANIN SONUCU EĞİTİM:0.8719 , TEST:0.6355 , UÇURUM:0.2364
+# import xgboost as xgb
+# from sklearn.metrics import accuracy_score
+
+# print("\n=====================================================")
+# print("--- OVERFITTING (EZBERLEME) KONTROLÜ (max_depth=15) ---")
+# print("=====================================================")
+
+# # Modeli max_depth=6 olacak şekilde değiştirdim, n_estimators değerinide değiştirdim 300->100e
+# xgb_ezber_test = xgb.XGBClassifier(
+#     scale_pos_weight=scale_weight, # Dengesizlik çözümü 
+#     n_estimators= 100,
+#     learning_rate=0.02,
+#     max_depth=6,                  
+#     subsample=0.8,
+#     colsample_bytree=0.8,
+#     random_state=42,
+#     eval_metric='logloss'
+# )
+
+# # Modelin eğitimi
+# xgb_ezber_test.fit(x_train_sc, y_train)
+
+# # Eğitim (Train) Skoru: Modelin daha önce gördüğü veriler
+
+# y_train_pred = xgb_ezber_test.predict(x_train_sc)
+# train_accuracy = accuracy_score(y_train, y_train_pred)
+
+# # Test Skoru: Modelin ilk defa karşılaştığı verilerin belirtilmesi
+
+# y_test_pred = xgb_ezber_test.predict(x_test_sc)
+# test_accuracy = accuracy_score(y_test, y_test_pred)
+
+# # Sonuçları Yazdırma aşaması
+
+# print(f"EĞİTİM (Train) Doğruluğu : {train_accuracy:.4f}")
+# print(f"TEST Doğruluğu           : {test_accuracy:.4f}")
+# print("-" * 50)
+# print(f"Aradaki Uçurum (Fark)    : {(train_accuracy - test_accuracy):.4f}")
 
 
