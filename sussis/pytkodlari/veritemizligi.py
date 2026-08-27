@@ -273,12 +273,14 @@ def karsilastir_aykiri_degerler(iqr_sonuclari, zscore_sonuclari):
     print("-----------------------------------------------------")
     
     # Ortak bulunan bu satırların indexlerini döndürür
-    
     return ortak_indexler
 
-# Tüm analiz sürecini tek kalemde yapan birleştirici fonksiyon
+
+# Tüm analiz sürecini tek kodda yapan  fonksiyon
 
 def tam_aykiri_analizi(df, column):
+    
+    #Sütunu büyük harfe dönüştürüp ekrana basıyor.
     print(f"\n--- {column.upper()} SÜTUNU ANALİZİ ---")
     
     # IQR Analizi
@@ -296,13 +298,13 @@ def tam_aykiri_analizi(df, column):
 sutunlar = ["ph", "Hardness", "Solids", "Chloramines", "Sulfate", 
             "Conductivity", "Organic_carbon", "Trihalomethanes", "Turbidity"]
 
-# Tüm sütunları tek tek yeni fonksiyona gönderiyor
+# Tüm sütunları tek tek yeni fonksiyona işler.
 for col in sutunlar:
     tam_aykiri_analizi(df, col)
 
 
 # Silinecek indexlerin toplanacağı küme 
-# (Aynı satırı iki kere silmeye çalışıp hata almamak için 'set' )
+# (Aynı satırı iki kere silmeye çalışınca hata aldım o yüzden, 'set' )
 
 silinecek_indexler = set()
 
@@ -330,39 +332,15 @@ print("-----------------------------------------------------")
 kayip_orani=(len(df)-len(df_temiz))/len(df)*100
 print("Veri setindeki kayıp oranı:" ,kayip_orani)
 
-# Eski kopuk indeksleri silip baştan 0,1,2,3... diye numaralandırır
+# Eski kopuk indeksleri silip baştan 0,1,2,3... diye numaralandırma
 df_temiz = df_temiz.reset_index(drop=True)
 
 
-# YENİ ADIM: Temizlenmiş veriyi CSV olarak dışa aktar
+# Temizlenmiş veriyi CSV olarak dışa aktar
 # -----------------------------------------------------
 df_temiz.to_csv("temizlenmis_su_kalitesi.csv", index=False)
 print("\nVeri temizleme tamamlandı ve 'temizlenmis_su_kalitesi.csv' olarak kaydedildi!")
 
-# # =====================================================
-# # X VE Y DEĞİŞKENLERİNİ OLUŞTURMA (BEYAZ LİSTE)
-# # =====================================================
-
-# # 1. Sadece modelin öğrenmesini istediğimiz 9 kimyasal sütunu manuel seçiyoruz.
-# kimyasal_sutunlar = [
-#     "ph", "Hardness", "Solids", "Chloramines", "Sulfate", 
-#     "Conductivity", "Organic_carbon", "Trihalomethanes", "Turbidity"
-# ]
-
-# # x'in içine SADECE bu 9 sütunu alıyoruz. Potability'nin sızma ihtimali SIFIR!
-# x = df_temiz[kimyasal_sutunlar]
-
-# # 2. Hedef değişkeni büyük/küçük harf duyarlılığını otomatik aşarak alıyoruz
-# y_sutun_adi = [col for col in df_temiz.columns if col.lower() == 'potability'][0]
-# y = df_temiz[y_sutun_adi]
-
-# # Sağlama yapıyoruz (Konsolda mutlaka 9 görmelisin)
-# print(f"--- GÜVENLİK KONTROLÜ ---")
-# print(f"X (Özellikler) Sütun Sayısı: {x.shape[1]} (Bu sayı 9 ise sızıntı tamamen bitmiştir!)")
-# print("-------------------------\n")
-
-
-# # print(f"X (Özellikler) Sütun Sayısı: {x.shape[1]}") # Burası tam olarak 9 olmalı!
 
 # x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=0)
 
