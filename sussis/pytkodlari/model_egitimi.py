@@ -53,21 +53,30 @@ print(f"X (Özellikler) Sütun Sayısı: {x.shape[1]}")
 print("-------------------------\n")
 
 
-# #  Veriyi Bölme (Eğitim ve Test)
-# x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=0)
+#  Veriyi Bölme (Eğitim ve Test)
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=0)
 
-# # Ölçeklendirme (Standardization)
-# sc = StandardScaler() 
-# x_train = sc.fit_transform(x_train)
-# x_test = sc.transform(x_test)
 
-# # SMOTE ile Sınıf Dengesizliğini Çözme (SADECE EĞİTİM SETİNE UYGULANIR)
-# print(f"SMOTE Öncesi Sınıf Dağılımı:\n{y_train.value_counts()}\n")
+# Ölçeklendirme (Standardization)
+sc = StandardScaler() 
 
-# smote = SMOTE(random_state=42)
-# x_train_smote, y_train_smote = smote.fit_resample(x_train, y_train)
 
-# print(f"SMOTE Sonrası Sınıf Dağılımı:\n{y_train_smote.value_counts()}\n")
+# Train setinde öğren (fit) ve uygula (transform)
+x_train = sc.fit_transform(x_train)
+x_test = sc.transform(x_test)
+
+
+# SMOTE ile Sınıf Dengesizliğini Çözmek için (SADECE EĞİTİM SETİNE UYGULANIR)
+print(f"SMOTE Öncesi Sınıf Dağılımı:\n{y_train.value_counts()}\n")
+
+
+smote = SMOTE(random_state=42)
+x_train_smote, y_train_smote = smote.fit_resample(x_train, y_train)
+
+
+print(f"SMOTE Sonrası Sınıf Dağılımı:\n{y_train_smote.value_counts()}\n")
+
+
 
 # #  XGBoost Modeli Eğitimi (SMOTE uygulanmış verilerle)
 # xgb_model = xgb.XGBClassifier(random_state=42, eval_metric='logloss')
