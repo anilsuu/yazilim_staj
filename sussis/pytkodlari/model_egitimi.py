@@ -34,7 +34,7 @@ from lightgbm import LGBMClassifier
 from catboost import CatBoostClassifier
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
-
+import lightgbm as lgb
 
 df_son = pd.read_csv("temizlenmis_su_kalitesi.csv")
 
@@ -65,6 +65,8 @@ y_sade = df_son[y_sutun_adi]
 print(f"\n--- GÜVENLİK KONTROLÜ ---")
 print(f"Kullanılan Özellik Sayısı: {X_sade.shape[1]}")
 print("-------------------------\n")
+
+
 
 
 #  Veriyi Bölme (Eğitim ve Test)
@@ -114,6 +116,21 @@ print(f"CatBoost Test Accuracy: {accuracy_score(y_test, y_pred_cat):.4f}")
 print("Sınıflandırma Raporu:")
 print(classification_report(y_test, y_pred_cat))
 
+# Özellik önem düzeylerini al ve bir DataFrame'e çevir
+feature_importances = pd.DataFrame({
+    'Feature': secili_sutunlar,
+    'Importance': cat_model.get_feature_importance()
+}).sort_values(by='Importance', ascending=False)
+
+plt.figure(figsize=(10, 8))
+# Gelecekte hata vermemesi için hue eklendi
+sns.barplot(x='Importance', y='Feature', data=feature_importances, hue='Feature', palette='viridis', legend=False)
+plt.title('CatBoost - Özellik Önem Düzeyleri (Feature Importance)')
+plt.xlabel('Önem Skoru')
+plt.ylabel('Özellikler')
+plt.tight_layout()
+plt.show()
+
 
 # --- LIGHTGBM MODELİ ---
 print("\n=====================================================")
@@ -129,9 +146,30 @@ lgbm_model = LGBMClassifier(
     random_state=42,
     verbose=-1
 )
+
 lgbm_model.fit(x_train_sc, y_train)
 y_pred_lgbm = lgbm_model.predict(x_test_sc)
 
+
+#Modeli Eğit ve Test Et
+print("LightGBM eğitiliyor (SMOTE YOK)...")
+lgbm_model.fit(x_train_sc, y_train) # LightGBM ölçeklendirilmemiş veriyle de çok iyi çalışır
+y_pred_lgbm = lgbm_model.predict(x_test_sc)
+
+# Özellik önem düzeylerini al ve bir DataFrame'e çevir
+feature_importances_lgbm = pd.DataFrame({
+    'Feature': secili_sutunlar,
+    'Importance': lgbm_model.feature_importances_
+}).sort_values(by='Importance', ascending=False)
+
+plt.figure(figsize=(10, 8))
+# Gelecekte hata vermemesi için hue eklendi
+sns.barplot(x='Importance', y='Feature', data=feature_importances_lgbm, hue='Feature', palette='viridis', legend=False)
+plt.title('LightGBM - Özellik Önem Düzeyleri (Feature Importance)')
+plt.xlabel('Önem Skoru')
+plt.ylabel('Özellikler')
+plt.tight_layout()
+plt.show()
 
 print(f"LightGBM Test Accuracy: {accuracy_score(y_test, y_pred_lgbm):.4f}")
 print("Sınıflandırma Raporu:")
@@ -173,20 +211,7 @@ print(classification_report(y_test, y_pred_xgb))
 # CatBoost genellikle bu tarz verilerde en iyi sonucu verir, onun grafiğini çizdirdim
 
 
-# Özellik önem düzeylerini al ve bir DataFrame'e çevir
-feature_importances = pd.DataFrame({
-    'Feature': secili_sutunlar,
-    'Importance': cat_model.get_feature_importance()
-}).sort_values(by='Importance', ascending=False)
 
-plt.figure(figsize=(10, 8))
-# Gelecekte hata vermemesi için hue eklendi
-sns.barplot(x='Importance', y='Feature', data=feature_importances, hue='Feature', palette='viridis', legend=False)
-plt.title('CatBoost - Özellik Önem Düzeyleri (Feature Importance)')
-plt.xlabel('Önem Skoru')
-plt.ylabel('Özellikler')
-plt.tight_layout()
-plt.show()
 
 print("\n--- MODEL SÜRECİ BAŞARIYLA TAMAMLANDI! ---")
 
