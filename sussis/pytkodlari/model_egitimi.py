@@ -78,37 +78,37 @@ print(f"SMOTE Sonrası Sınıf Dağılımı:\n{y_train_smote.value_counts()}\n")
 
 
 
-# #  XGBoost Modeli Eğitimi (SMOTE uygulanmış verilerle)
-# xgb_model = xgb.XGBClassifier(random_state=42, eval_metric='logloss')
+#  XGBoost Modeli Eğitimi (SMOTE uygulanmış verilerle)
+xgb_model = xgb.XGBClassifier(random_state=42, eval_metric='logloss')
 
-# param_grid = {
-#     'n_estimators': [100, 200, 300],        
-#     'max_depth': [3, 5, 7],                 
-#     'learning_rate': [0.01, 0.05, 0.1],     
-#     'subsample': [0.8, 1.0],                
-#     'colsample_bytree': [0.8, 1.0]          
-# }
 
-# grid_search = GridSearchCV(
-#     estimator=xgb_model, 
-#     param_grid=param_grid, 
-#     scoring='accuracy', 
-#     cv=5, 
-#     n_jobs=-1
-# )
+param_grid = {
+    'n_estimators': [100, 200, 300],        
+    'max_depth': [3, 5, 7],                 
+    'learning_rate': [0.01, 0.05, 0.1],     
+    'subsample': [0.8, 1.0],                
+    'colsample_bytree': [0.8, 1.0]          
+}
 
-# grid_search.fit(x_train_smote, y_train_smote)
+grid_search = GridSearchCV(
+    estimator=xgb_model, 
+    param_grid=param_grid, 
+    scoring='accuracy', 
+    cv=5, 
+    n_jobs=-1
+)
 
-# # 7. Sonuçları Değerlendirme
-# best_xgb = grid_search.best_estimator_
-# y_pred = best_xgb.predict(x_test)
+grid_search.fit(x_train_smote, y_train_smote)
 
-# print("\n--- OPTİMİZASYON SONUÇLARI ---")
-# print(f"En İyi Parametreler: {grid_search.best_params_}")
-# print(f"Test Accuracy Skoru: {accuracy_score(y_test, y_pred):.4f}")
-# print("\nSınıflandırma Raporu:")
-# print(classification_report(y_test, y_pred))
+# Sonuçları Değerlendirme
+best_xgb = grid_search.best_estimator_
+y_pred = best_xgb.predict(x_test)
 
+print("\n--- OPTİMİZASYON SONUÇLARI ---")
+print(f"En İyi Parametreler: {grid_search.best_params_}")
+print(f"Test Accuracy Skoru: {accuracy_score(y_test, y_pred):.4f}")
+print("\nSınıflandırma Raporu:")
+print(classification_report(y_test, y_pred))
 
 
 # # print(f"X (Özellikler) Sütun Sayısı: {x.shape[1]}") # Burası tam olarak 9 olmalı!
