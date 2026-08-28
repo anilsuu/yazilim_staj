@@ -165,6 +165,7 @@ hesaplamainfo("Sulfate")
 # # Doldurulmuş Sulfate sütununu, tekrar main dataframe eklendi.
 # df["Sulfate"] = df_imputed["Sulfate"]
 
+
 medyanladoldurma("Sulfate")
 nansızsütuninfo("Sulfate")
 
@@ -204,7 +205,7 @@ print("-----------------------------------------------------")
 
 hesaplamainfo("Trihalomethanes")
 
-# medyanladoldurma("Trihalomethanes")
+medyanladoldurma("Trihalomethanes")
 
 nansızsütuninfo("Trihalomethanes")
 
@@ -228,6 +229,7 @@ plt.show()
 
 
 print("-----------------------------------------------------")
+
 
 # ─────────────────────────────────────────────────────
 # ADIM 5 — AYKIRI DEĞER (IQR ve Z-SCORE)
@@ -381,8 +383,6 @@ df_fe['safety_violations'] = (
 print(f"Eski Özellik Sayısı: {df_temiz.shape[1] - 1}")
 print(f"Yeni Özellik Sayısı: {df_fe.shape[1] - 1}")
 
-
-
 # # ─────────────────────────────────────────────────────
 # # 4. GELİŞMİŞ EKSİK VERİ DOLDURMA (MICE / IterativeImputer)
 # # ─────────────────────────────────────────────────────
@@ -412,12 +412,10 @@ print(f"Yeni Özellik Sayısı: {df_fe.shape[1] - 1}")
 
 
 
-
-
-# # Temizlenmiş veriyi CSV olarak dışa aktar
-# # -----------------------------------------------------
-# df_fe.to_csv("temizlenmis_su_kalitesi.csv", index=False)
-# print("\nVeri temizleme tamamlandı ve 'temizlenmis_su_kalitesi.csv' olarak kaydedildi!")
+# Temizlenmiş veriyi CSV olarak dışa aktar
+# -----------------------------------------------------
+df_fe.to_csv("temizlenmis_su_kalitesi.csv", index=False)
+print("\nVeri temizleme tamamlandı ve 'temizlenmis_su_kalitesi.csv' olarak kaydedildi!")
 
 
 # x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=0)
