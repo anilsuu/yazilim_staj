@@ -95,7 +95,7 @@ print("-----------------------------------------------------")
 
 hesaplamainfo("ph")
 
-# medyanladoldurma("ph")
+medyanladoldurma("ph")
 
 nansızsütuninfo("ph")
 
@@ -147,23 +147,23 @@ print("-----------------------------------------------------")
 
 hesaplamainfo("Sulfate")
 
-# #Sulfate sütununu kNN ile doldurmak için eğitecek 2 başka sütun seçtim.
-# #Kopya bir dataframe oluşturuldu.
-# df_knn=df.filter(["Sulfate","ph","Hardness"],axis=1).copy()
+#Sulfate sütununu kNN ile doldurmak için eğitecek 2 başka sütun seçtim.
+#Kopya bir dataframe oluşturuldu.
+df_knn=df.filter(["Sulfate","ph","Hardness"],axis=1).copy()
 
 
-# scaler=MinMaxScaler()
-# df_knn = pd.DataFrame(scaler.fit_transform(df_knn), columns = df_knn.columns)
+scaler=MinMaxScaler()
+df_knn = pd.DataFrame(scaler.fit_transform(df_knn), columns = df_knn.columns)
 
-# # Daha doğru sonuç için d
-# knn_imputer = KNNImputer(n_neighbors=5, weights='distance')
-# df_knn_imputed = pd.DataFrame(knn_imputer.fit_transform(df_knn), columns=df_knn.columns)
+# Daha doğru sonuç için d
+knn_imputer = KNNImputer(n_neighbors=5, weights='distance')
+df_knn_imputed = pd.DataFrame(knn_imputer.fit_transform(df_knn), columns=df_knn.columns)
 
-# # print(df_knn_imputed)
-# df_imputed = pd.DataFrame(scaler.inverse_transform(df_knn_imputed), columns=df_knn.columns)
+# print(df_knn_imputed)
+df_imputed = pd.DataFrame(scaler.inverse_transform(df_knn_imputed), columns=df_knn.columns)
 
-# # Doldurulmuş Sulfate sütununu, tekrar main dataframe eklendi.
-# df["Sulfate"] = df_imputed["Sulfate"]
+# Doldurulmuş Sulfate sütununu, tekrar main dataframe eklendi.
+df["Sulfate"] = df_imputed["Sulfate"]
 
 
 # medyanladoldurma("Sulfate")
@@ -205,7 +205,7 @@ print("-----------------------------------------------------")
 
 hesaplamainfo("Trihalomethanes")
 
-# medyanladoldurma("Trihalomethanes")
+medyanladoldurma("Trihalomethanes")
 
 nansızsütuninfo("Trihalomethanes")
 
@@ -230,22 +230,22 @@ plt.show()
 
 print("-----------------------------------------------------")
 
-# ─────────────────────────────────────────────────────
-# 4. GELİŞMİŞ EKSİK VERİ DOLDURMA (MICE / IterativeImputer)
-# ─────────────────────────────────────────────────────
-from sklearn.experimental import enable_iterative_imputer
-from sklearn.impute import IterativeImputer
+# # ─────────────────────────────────────────────────────
+# # 4. GELİŞMİŞ EKSİK VERİ DOLDURMA (MICE / IterativeImputer)
+# # ─────────────────────────────────────────────────────
+# from sklearn.experimental import enable_iterative_imputer
+# from sklearn.impute import IterativeImputer
 
-print("\nEksik veriler makine öğrenmesi (MICE) ile dolduruluyor...")
-# Modelin öğreneceği (X) özellikleri belirliyoruz. "Potability" ve "deney_id" hariç.
-x_sutunlari = [col for col in df.columns if col not in ['Potability', 'deney_id']]
+# print("\nEksik veriler makine öğrenmesi (MICE) ile dolduruluyor...")
+# # Modelin öğreneceği (X) özellikleri belirliyoruz. "Potability" ve "deney_id" hariç.
+# x_sutunlari = [col for col in df.columns if col not in ['Potability', 'deney_id']]
 
-X_raw = df[x_sutunlari]
-y = df['Potability']
+# X_raw = df[x_sutunlari]
+# y = df['Potability']
 
-# KNN veya Median yerine diğer sütunlardan tahmin yaparak eksikleri doldurur
-mice_imputer = IterativeImputer(max_iter=15, random_state=42)
-X_imputed = pd.DataFrame(mice_imputer.fit_transform(X_raw), columns=x_sutunlari)
+# # KNN veya Median yerine diğer sütunlardan tahmin yaparak eksikleri doldurur
+# mice_imputer = IterativeImputer(max_iter=15, random_state=42)
+# X_imputed = pd.DataFrame(mice_imputer.fit_transform(X_raw), columns=x_sutunlari)
 
 
 # ─────────────────────────────────────────────────────
@@ -402,11 +402,11 @@ print(f"Yeni Özellik Sayısı: {df_fe.shape[1] - 1}")
 
 
 
-# Temizlenmiş veriyi dışarı aktarma (İsteğe bağlı)
-df_son = X_imputed.copy()
-df_son['Potability'] = y
-df_son.to_csv("temizlenmis_su_kalitesi_final.csv", index=False)
-print("Temiz ve doldurulmuş veri 'temizlenmis_su_kalitesi_final.csv' olarak kaydedildi.")
+# # Temizlenmiş veriyi dışarı aktarma (İsteğe bağlı)
+# df_fe = X_imputed.copy()
+# df_fe['Potability'] = y
+# df_fe.to_csv("temizlenmis_su_kalitesi_final.csv", index=False)
+# print("Temiz ve doldurulmuş veri 'temizlenmis_su_kalitesi_final.csv' olarak kaydedildi.")
 
 
 # # ─────────────────────────────────────────────────────
@@ -438,10 +438,10 @@ print("Temiz ve doldurulmuş veri 'temizlenmis_su_kalitesi_final.csv' olarak kay
 
 
 
-# # Temizlenmiş veriyi CSV olarak dışa aktar
-# # -----------------------------------------------------
-# df_fe.to_csv("temizlenmis_su_kalitesi.csv", index=False)
-# print("\nVeri temizleme tamamlandı ve 'temizlenmis_su_kalitesi.csv' olarak kaydedildi!")
+# Temizlenmiş veriyi CSV olarak dışa aktar
+# -----------------------------------------------------
+df_fe.to_csv("temizlenmis_su_kalitesi.csv", index=False)
+print("\nVeri temizleme tamamlandı ve 'temizlenmis_su_kalitesi.csv' olarak kaydedildi!")
 
 
 

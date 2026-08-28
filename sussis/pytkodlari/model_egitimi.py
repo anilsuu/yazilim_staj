@@ -15,7 +15,7 @@ import pyodbc
 from sqlalchemy import create_engine
 import urllib
 import missingno as msno
-from sklearn.impute import KNNImputer
+
 from scipy.stats import zscore
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
