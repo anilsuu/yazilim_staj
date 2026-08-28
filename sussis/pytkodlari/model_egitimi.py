@@ -15,6 +15,17 @@ import pyodbc
 from sqlalchemy import create_engine
 import urllib
 import missingno as msno
+import os #Dosya sistemi yollarınnı yönetmek için kullanılır
+
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import joblib
+
+from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
+from sklearn.decomposition import PCA
 
 from scipy.stats import zscore
 from sklearn.preprocessing import StandardScaler
@@ -363,45 +374,5 @@ plt.legend()
 plt.grid()
 plt.show()
 
-
-# BURANIN SONUCU EĞİTİM:0.8719 , TEST:0.6355 , UÇURUM:0.2364
-# import xgboost as xgb
-# from sklearn.metrics import accuracy_score
-
-# print("\n=====================================================")
-# print("--- OVERFITTING (EZBERLEME) KONTROLÜ (max_depth=15) ---")
-# print("=====================================================")
-
-# # Modeli max_depth=6 olacak şekilde değiştirdim, n_estimators değerinide değiştirdim 300->100e
-# xgb_ezber_test = xgb.XGBClassifier(
-#     scale_pos_weight=scale_weight, # Dengesizlik çözümü 
-#     n_estimators= 100,
-#     learning_rate=0.02,
-#     max_depth=6,                  
-#     subsample=0.8,
-#     colsample_bytree=0.8,
-#     random_state=42,
-#     eval_metric='logloss'
-# )
-
-# # Modelin eğitimi
-# xgb_ezber_test.fit(x_train_sc, y_train)
-
-# # Eğitim (Train) Skoru: Modelin daha önce gördüğü veriler
-
-# y_train_pred = xgb_ezber_test.predict(x_train_sc)
-# train_accuracy = accuracy_score(y_train, y_train_pred)
-
-# # Test Skoru: Modelin ilk defa karşılaştığı verilerin belirtilmesi
-
-# y_test_pred = xgb_ezber_test.predict(x_test_sc)
-# test_accuracy = accuracy_score(y_test, y_test_pred)
-
-# # Sonuçları Yazdırma aşaması
-
-# print(f"EĞİTİM (Train) Doğruluğu : {train_accuracy:.4f}")
-# print(f"TEST Doğruluğu           : {test_accuracy:.4f}")
-# print("-" * 50)
-# print(f"Aradaki Uçurum (Fark)    : {(train_accuracy - test_accuracy):.4f}")
 
 

@@ -1,55 +1,51 @@
 # -*- coding: utf-8 -*-
 """
+Created on Fri Aug 28 11:17:00 2026
+
 @author: nilsu
 """
+
+# -*- coding: utf-8 -*-
 import os
 import pandas as pd
 import numpy as np
+import re
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.preprocessing import LabelEncoder, MinMaxScaler, StandardScaler
 from sklearn.preprocessing import PowerTransformer
-import pyodbc
-from sqlalchemy import create_engine
-import urllib
-import missingno as msno
-from sklearn.impute import KNNImputer
-from scipy.stats import zscore
-from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV, KFold, learning_curve
-from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
-from sklearn.preprocessing import LabelEncoder
-from sklearn.metrics import r2_score, roc_curve, auc
-from sklearn.metrics import accuracy_score, classification_report
-import xgboost as xgb
-
-#Server ve database bilgisi
-server = 'LAPTOP-MNJN06EU\\NILSS'
-database = 'water_usability'
-
-#Bağlantı metni -> güvenilirliği için TrustedConnections=yes olmalı 
-conn_str = f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};Trusted_Connection=yes;'
 
 
-# Bağlantı metnini URL formatına çevirip motoru (engine) oluştur
-params = urllib.parse.quote_plus(conn_str)
-engine = create_engine(f"mssql+pyodbc:///?odbc_connect={params}")
+# ======================================================
+# DOSYA YOLU (1 KLASÖR YUKARI)
+# ======================================================
 
-# Sql'den tablo Python'a 
-sql_query = "SELECT * FROM Drinking_water1"
-df = pd.read_sql(sql_query, engine)
+print("Çalışılan dizin:", os.getcwd())
 
-print(df.head()) # İlk 5 satırı yazdır
+# ─────────────────────────────────────────────────────
+#  VERİ YÜKLEME
+# ─────────────────────────────────────────────────────
+
+df_full = pd.read_excel("water_quality_potability1.xlsx")
+
+COLS =  ["ph", "Hardness", "Solids", "Chloramines", "Sulfate", 
+            "Conductivity", "Organic_carbon", "Trihalomethanes", "Turbidity"]
+
+df = df_full[COLS].copy()
 
 print("Veri boyutu:", df.shape)
+print(df.head())
 
-df=df.drop(["Carcinogenics","medical_waste"],axis=1)
+# ─────────────────────────────────────────────────────
+#  TEKRAR EDEN VERİ (DUPLICATE) KONTROLÜ
+# ─────────────────────────────────────────────────────
+# Tüm sütunları baz alarak tamamen aynı olan satırları tespit eder
 
-# msno.matrix(df.sample(len(df)))
-
-# DUPLICATE(TEKRAR EDEN VERİ) KONTROLÜ
 print("Toplam duplicate kayıt:", df.duplicated().sum())
+
+print("Duplicate gruplarındaki toplam satır:",
+      df.duplicated(keep=False).sum())
+df = df.drop_duplicates()
 
 
 def hesaplamainfo(column):
@@ -68,18 +64,6 @@ def nansızsütuninfo(column) :
     print(f"Doldurma sonrası Standart Sapma:{column}",df[column].std())
     print(f"Doldurma sonrası Eksik değerler:{column}",df[column].isna().sum())
     
-
-# Tüm sütunları baz alarak tamamen aynı olan satırları tespit edip,siler.
-print("Duplicate gruplarındaki toplam satır:",
-      df.duplicated(keep=False).sum())
-df = df.drop_duplicates()
-
-
-print("ph eksik oranı:", df["ph"].isna().mean() * 100)
-print("Sulfate eksik oranı:", df["Sulfate"].isna().mean() * 100)
-print("Trihalomethanes eksik oranı:", df["Trihalomethanes"].isna().mean() * 100)
-
-
 print("-----------------------------------------------------")
 
 # print("Tüm sütunların standart sapması:")
@@ -87,17 +71,14 @@ print("-----------------------------------------------------")
 # print(std_values)
 
 print("Sütunların standart sapması:")
-std_values = df.drop(columns=["deney_id"]).std(numeric_only=True)
+std_values = df.std(numeric_only=True)
 print(std_values)
 
+print("-----------------------------------------------------")
 
 print("-----------------------------------------------------")
 
 hesaplamainfo("ph")
-
-medyanladoldurma("ph")
-
-nansızsütuninfo("ph")
 
 #Histogram Grafiği
 plt.hist(df["ph"], bins=20)
@@ -105,7 +86,6 @@ plt.xlabel("ph")
 plt.ylabel("Frekans")
 plt.title("ph Değerlerinin Dağılımı")
 plt.show()
-
 
 print("-----------------------------------------------------")
 
@@ -118,7 +98,6 @@ plt.ylabel("frekans")
 plt.title("Hardness değerlerinin Dağılımı")
 plt.show()
 
-
 print("-----------------------------------------------------")
 
 hesaplamainfo("Solids")
@@ -129,7 +108,6 @@ plt.xlabel("Solids")
 plt.ylabel("frekans")
 plt.title("Solids Değerlerinin Dağılımı")
 plt.show()
-
 
 print("-----------------------------------------------------")
 
@@ -142,32 +120,9 @@ plt.ylabel("frekans")
 plt.title("Chloramines Değerlerinin Dağılımı")
 plt.show()
 
-
 print("-----------------------------------------------------")
 
 hesaplamainfo("Sulfate")
-
-#Sulfate sütununu kNN ile doldurmak için eğitecek 2 başka sütun seçtim.
-#Kopya bir dataframe oluşturuldu.
-df_knn=df.filter(["Sulfate","ph","Hardness"],axis=1).copy()
-
-
-scaler=MinMaxScaler()
-df_knn = pd.DataFrame(scaler.fit_transform(df_knn), columns = df_knn.columns)
-
-# Daha doğru sonuç için d
-knn_imputer = KNNImputer(n_neighbors=5, weights='distance')
-df_knn_imputed = pd.DataFrame(knn_imputer.fit_transform(df_knn), columns=df_knn.columns)
-
-# print(df_knn_imputed)
-df_imputed = pd.DataFrame(scaler.inverse_transform(df_knn_imputed), columns=df_knn.columns)
-
-# Doldurulmuş Sulfate sütununu, tekrar main dataframe eklendi.
-df["Sulfate"] = df_imputed["Sulfate"]
-
-
-# medyanladoldurma("Sulfate")
-nansızsütuninfo("Sulfate")
 
 #Histogram Grafiği
 plt.hist(df["Sulfate"],bins=20)
@@ -175,7 +130,6 @@ plt.xlabel("Sulfate")
 plt.ylabel("frekans")
 plt.title("Sulfate değerlerinin Dağılımı")
 plt.show()
-
 
 print("-----------------------------------------------------")
 
@@ -188,7 +142,6 @@ plt.ylabel("frekans")
 plt.title("Conductivity değerlerinin Dağılımı")
 plt.show()
 
-
 print("-----------------------------------------------------")
 
 hesaplamainfo("Organic_carbon")
@@ -200,14 +153,9 @@ plt.ylabel("frekans")
 plt.title("Organic_carbon değerlerinin Dağılımı")
 plt.show()
 
-
 print("-----------------------------------------------------")
 
 hesaplamainfo("Trihalomethanes")
-
-medyanladoldurma("Trihalomethanes")
-
-nansızsütuninfo("Trihalomethanes")
 
 #Histogram Grafiği
 plt.hist(df["Trihalomethanes"].dropna(), bins=20)
@@ -215,7 +163,6 @@ plt.xlabel("Trihalomethanes")
 plt.ylabel("Frekans")
 plt.title("Trihalomethanes Değerlerinin Dağılımı")
 plt.show()
-
 
 print("-----------------------------------------------------")
 
@@ -227,29 +174,8 @@ plt.ylabel("frekans")
 plt.title("Turbidity Değerlerinin Dağılımı")
 plt.show()
 
-
 print("-----------------------------------------------------")
 
-# # ─────────────────────────────────────────────────────
-# # 4. GELİŞMİŞ EKSİK VERİ DOLDURMA (MICE / IterativeImputer)
-# # ─────────────────────────────────────────────────────
-# from sklearn.experimental import enable_iterative_imputer
-# from sklearn.impute import IterativeImputer
-
-# print("\nEksik veriler makine öğrenmesi (MICE) ile dolduruluyor...")
-# # Modelin öğreneceği (X) özellikleri belirliyoruz. "Potability" ve "deney_id" hariç.
-# x_sutunlari = [col for col in df.columns if col not in ['Potability', 'deney_id']]
-
-# X_raw = df[x_sutunlari]
-# y = df['Potability']
-
-# # KNN veya Median yerine diğer sütunlardan tahmin yaparak eksikleri doldurur
-# mice_imputer = IterativeImputer(max_iter=15, random_state=42)
-# X_imputed = pd.DataFrame(mice_imputer.fit_transform(X_raw), columns=x_sutunlari)
-
-# ─────────────────────────────────────────────────────
-# ADIM 5 — AYKIRI DEĞER (IQR ve Z-SCORE)
-# ─────────────────────────────────────────────────────
 
 def iqr_aykirianalizi(df, column):
     Q1  = df[column].quantile(0.25)
@@ -286,9 +212,7 @@ def karsilastir_aykiri_degerler(iqr_sonuclari, zscore_sonuclari):
     ortak_indexler = iqr_sonuclari.index.intersection(zscore_sonuclari.index)
     
     print(f"Her iki yöntemin ORTAK bulduğu aykırı değer sayısı: {len(ortak_indexler)}")
-    
-    
-
+ 
     print("-----------------------------------------------------")
     
     # Ortak bulunan bu satırların indexlerini döndürür
@@ -313,9 +237,6 @@ def tam_aykiri_analizi(df, column):
     
     # İleride silmek veya değiştirmek için ortak indexleri geri döndürür.
     return ortak_indexler
-
-
-# -----------------------------------------------------
 
 
 sutunlar = ["ph", "Hardness", "Solids", "Chloramines", "Sulfate", 
@@ -361,71 +282,9 @@ print("Veri setindeki kayıp oranı:" ,kayip_orani)
 # Eski kopuk indeksleri silip baştan 0,1,2,3... diye numaralandırma
 df_temiz = df_temiz.reset_index(drop=True)
 
-print(" -----------------------------------------------------")
-# =====================================================
-# FEATURE ENGINEERING 
-# =====================================================
-df_fe = df_temiz.copy()
-
-# ideal ph aralığı 6.5-8.5 olarak yeni ph_ideal üretmek
-df_fe['ph_ideal'] = df_fe['ph'].between(6.5, 8.5).astype(int)
-
-# ideal bulanıklık 5 değerinin altında olmalı
-df_fe["Turbidity_safe"]=(df["Turbidity"]<5.0).astype(int)
-
-# ideal Sülfatın değerinin 400den küçük olması gerekiyor 
-df_fe["Sulfate_safe"]=(df["Sulfate"]<400).astype(int)
-
-# Kimyasal etki Trihalometan oluşumu kloramin ve organik karbonun reaksiyonuyla artar
-df_fe["Chemistry_reactivity"]=df_fe["Chloramines"]*df_fe["Organic_carbon"]
-
-# İletkenlik ve Çözünmüş Katı Madde (Solids/Conductivity) ilişkisi
-# 0'a bölme hatasını önlemek için küçük bir epsilon (1e-6) eklenir
-df_fe['solids_to_cond_ratio'] = df_fe['Solids'] / (df_fe['Conductivity'] + 1e-6)
-
-# Sertlik ve Sülfat oranı (Mineral yoğunluk dengesi)
-df_fe['hardness_sulfate_ratio'] = df_fe['Hardness'] / (df_fe['Sulfate'] + 1e-6)
-
-# 3. İdeal pH'tan Uzaklık (Non-linear Sapma)
-# Suyun ideal pH olan 7.0'dan ne kadar saptığını ölçen mutlak sapma
-df_fe['ph_dev_from_neutral'] = np.abs(df_fe['ph'] - 7.0)
 
 
-# 4. Genel Kirletici İndeksi (Agregasyon)
-# Organik karbon ve bulanıklığın birleşik kirlilik etkisi
-df_fe['pollution_index'] = df_fe['Organic_carbon'] * df_fe['Turbidity']
-
-
-# 5. Güvenlik İhlal Skoru (Ne kadar çok kural ihlal edilirse o kadar içilemez)
-df_fe['safety_violations'] = (
-    (1 - df_fe['ph_ideal']) + 
-    (1 - df_fe['Turbidity_safe']) + 
-    (1 - df_fe['Sulfate_safe'])
-)
-
-print(f"Eski Özellik Sayısı: {df_temiz.shape[1] - 1}")
-print(f"Yeni Özellik Sayısı: {df_fe.shape[1] - 1}")
-
-
-# -----------------------------------------------------
-# # Temizlenmiş veriyi dışarı aktarma 
-# df_fe = X_imputed.copy()
-# df_fe['Potability'] = y
-# df_fe.to_csv("temizlenmis_su_kalitesi_final.csv", index=False)
-# print("Temiz ve doldurulmuş veri 'temizlenmis_su_kalitesi_final.csv' olarak kaydedildi.")
-# -----------------------------------------------------
-
-
-#Test aşamasında iki farklı df çıkmasın diye yukardaki ayarlamalara göre değiştirerek kullandım.
-# df_fe.to_csv kısmını aykırı silinmesi ve eksik veri doldurmasında ayrı ayrı kullandım.
-# Her csvye yazılma ayrı
-
-
-# Temizlenmiş veriyi CSV olarak dışa aktar
-# -----------------------------------------------------
-df_fe.to_csv("temizlenmis_su_kalitesi.csv", index=False)
-print("\nVeri temizleme tamamlandı ve 'temizlenmis_su_kalitesi.csv' olarak kaydedildi!")
-
-
+df_temiz.to_csv("buyuk_veri_su.csv", index=False)
+print("\nVeri temizleme tamamlandı ve 'buyuk_veri_su.csv' olarak kaydedildi!")
 
 
