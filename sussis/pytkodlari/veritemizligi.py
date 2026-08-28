@@ -95,7 +95,7 @@ print("-----------------------------------------------------")
 
 hesaplamainfo("ph")
 
-# medyanladoldurma("ph")
+medyanladoldurma("ph")
 
 nansızsütuninfo("ph")
 
@@ -165,7 +165,8 @@ hesaplamainfo("Sulfate")
 # # Doldurulmuş Sulfate sütununu, tekrar main dataframe eklendi.
 # df["Sulfate"] = df_imputed["Sulfate"]
 
-# nansızsütuninfo("Sulfate")
+medyanladoldurma("Sulfate")
+nansızsütuninfo("Sulfate")
 
 #Histogram Grafiği
 plt.hist(df["Sulfate"],bins=20)
@@ -310,10 +311,10 @@ silinecek_indexler = set()
 
 for col in sutunlar:
     
-    zscore_outliers = zscore_aykirianalizi(df, col)
+    iqr_outliers = iqr_aykirianalizi(df, col)
     
     # Bulunan aykırı satırların index numaraları kümeye eklenir.
-    silinecek_indexler.update(zscore_outliers.index)
+    silinecek_indexler.update(iqr_outliers.index)
 
 # Toplanan tüm aykırı satırları veri setinden silinir
 df_temiz = df.drop(index=list(silinecek_indexler)).copy()
@@ -382,28 +383,32 @@ print(f"Yeni Özellik Sayısı: {df_fe.shape[1] - 1}")
 
 
 
-# ─────────────────────────────────────────────────────
-# 4. GELİŞMİŞ EKSİK VERİ DOLDURMA (MICE / IterativeImputer)
-# ─────────────────────────────────────────────────────
-from sklearn.experimental import enable_iterative_imputer
-from sklearn.impute import IterativeImputer
+# # ─────────────────────────────────────────────────────
+# # 4. GELİŞMİŞ EKSİK VERİ DOLDURMA (MICE / IterativeImputer)
+# # ─────────────────────────────────────────────────────
+# from sklearn.experimental import enable_iterative_imputer
+# from sklearn.impute import IterativeImputer
 
-print("\nEksik veriler makine öğrenmesi (MICE) ile dolduruluyor...")
-# Modelin öğreneceği (X) özellikleri belirliyoruz. "Potability" ve "deney_id" hariç.
-x_sutunlari = [col for col in df_fe.columns if col not in ['Potability', 'deney_id']]
+# print("\nEksik veriler makine öğrenmesi (MICE) ile dolduruluyor...")
+# # Modelin öğreneceği (X) özellikleri belirliyoruz. "Potability" ve "deney_id" hariç.
+# x_sutunlari = [col for col in df_fe.columns if col not in ['Potability', 'deney_id']]
 
-X_raw = df_fe[x_sutunlari]
-y = df_fe['Potability']
+# X_raw = df_fe[x_sutunlari]
+# y = df_fe['Potability']
 
-# KNN veya Median yerine diğer sütunlardan tahmin yaparak eksikleri doldurur
-mice_imputer = IterativeImputer(max_iter=15, random_state=42)
-X_imputed = pd.DataFrame(mice_imputer.fit_transform(X_raw), columns=x_sutunlari)
+# # KNN veya Median yerine diğer sütunlardan tahmin yaparak eksikleri doldurur
+# mice_imputer = IterativeImputer(max_iter=15, random_state=42)
+# X_imputed = pd.DataFrame(mice_imputer.fit_transform(X_raw), columns=x_sutunlari)
 
-# Temizlenmiş veriyi dışarı aktarma (İsteğe bağlı)
-df_son = X_imputed.copy()
-df_son['Potability'] = y
-df_son.to_csv("temizlenmis_su_kalitesi_final.csv", index=False)
-print("Temiz ve doldurulmuş veri 'temizlenmis_su_kalitesi_final.csv' olarak kaydedildi.")
+# # Temizlenmiş veriyi dışarı aktarma (İsteğe bağlı)
+# df_son = X_imputed.copy()
+# df_son['Potability'] = y
+# df_son.to_csv("temizlenmis_su_kalitesi_final.csv", index=False)
+# print("Temiz ve doldurulmuş veri 'temizlenmis_su_kalitesi_final.csv' olarak kaydedildi.")
+
+
+
+
 
 
 

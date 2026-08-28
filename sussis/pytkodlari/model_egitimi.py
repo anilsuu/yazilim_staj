@@ -131,7 +131,6 @@ print(korelasyonlar)
 # =====================================================
 
 
-
 # =====================================================
 # 5. GRID SEARCH (SINIFLANDIRMA İÇİN GÜNCELLENDİ)
 # =====================================================
@@ -327,14 +326,14 @@ xgb_saglam_kontrol = xgb.XGBClassifier(
     eval_metric='logloss'
 )
 
-# Modeli Eğitiyoruz
+# Modeli Eğitme Aşaması
 xgb_saglam_kontrol.fit(x_train_sc, y_train)
 
-# 1. Eğitim (Train) Skoru
+# Eğitim (Train) Skoru
 y_train_pred = xgb_saglam_kontrol.predict(x_train_sc)
 train_accuracy = accuracy_score(y_train, y_train_pred)
 
-# 2. Test Skoru
+# Test Skoru
 y_test_pred = xgb_saglam_kontrol.predict(x_test_sc)
 test_accuracy = accuracy_score(y_test, y_test_pred)
 
