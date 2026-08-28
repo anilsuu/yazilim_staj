@@ -330,10 +330,10 @@ silinecek_indexler = set()
 
 for col in sutunlar:
     
-    iqr_outliers = iqr_aykirianalizi(df, col)
+    zscore_outliers = zscore_aykirianalizi(df, col)
     
     # Bulunan aykırı satırların index numaraları kümeye eklenir.
-    silinecek_indexler.update(iqr_outliers.index)
+    silinecek_indexler.update(zscore_outliers.index)
 
 # Toplanan tüm aykırı satırları veri setinden silinir
 df_temiz = df.drop(index=list(silinecek_indexler)).copy()
