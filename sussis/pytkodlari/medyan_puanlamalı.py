@@ -93,6 +93,7 @@ print(confusion_matrix(y_test, y_pred))
 print("\nSınıflandırma Raporu:\n", classification_report(y_test, y_pred))
 
 print("-----------------------------------------------------")
+
 # Web kısmı için dosya kaydetme
 # =====================================================
 joblib.dump(scaler, "scaler_kural.joblib")
@@ -101,8 +102,9 @@ print("\nModel ve scaler başarıyla kaydedildi!")
 
 # =====================================================
 # Öğrenme eğrisini görselleştirme 
-# =====================================================
-# X_test_sc yerine X_train_sc, y_test yerine y_train kullanıldı
+
+
+
 train_sizes, train_scores, test_scores = learning_curve(
     estimator=model,
     X=X_train_sc,
