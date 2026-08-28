@@ -147,26 +147,26 @@ print("-----------------------------------------------------")
 
 hesaplamainfo("Sulfate")
 
-# #Sulfate sütununu kNN ile doldurmak için eğitecek 2 başka sütun seçtim.
-# #Kopya bir dataframe oluşturuldu.
-# df_knn=df.filter(["Sulfate","ph","Hardness"],axis=1).copy()
+#Sulfate sütununu kNN ile doldurmak için eğitecek 2 başka sütun seçtim.
+#Kopya bir dataframe oluşturuldu.
+df_knn=df.filter(["Sulfate","ph","Hardness"],axis=1).copy()
 
 
-# scaler=MinMaxScaler()
-# df_knn = pd.DataFrame(scaler.fit_transform(df_knn), columns = df_knn.columns)
+scaler=MinMaxScaler()
+df_knn = pd.DataFrame(scaler.fit_transform(df_knn), columns = df_knn.columns)
 
-# # Daha doğru sonuç için d
-# knn_imputer = KNNImputer(n_neighbors=5, weights='distance')
-# df_knn_imputed = pd.DataFrame(knn_imputer.fit_transform(df_knn), columns=df_knn.columns)
+# Daha doğru sonuç için d
+knn_imputer = KNNImputer(n_neighbors=5, weights='distance')
+df_knn_imputed = pd.DataFrame(knn_imputer.fit_transform(df_knn), columns=df_knn.columns)
 
-# # print(df_knn_imputed)
-# df_imputed = pd.DataFrame(scaler.inverse_transform(df_knn_imputed), columns=df_knn.columns)
+# print(df_knn_imputed)
+df_imputed = pd.DataFrame(scaler.inverse_transform(df_knn_imputed), columns=df_knn.columns)
 
-# # Doldurulmuş Sulfate sütununu, tekrar main dataframe eklendi.
-# df["Sulfate"] = df_imputed["Sulfate"]
+# Doldurulmuş Sulfate sütununu, tekrar main dataframe eklendi.
+df["Sulfate"] = df_imputed["Sulfate"]
 
 
-medyanladoldurma("Sulfate")
+# medyanladoldurma("Sulfate")
 nansızsütuninfo("Sulfate")
 
 #Histogram Grafiği
@@ -313,10 +313,10 @@ silinecek_indexler = set()
 
 for col in sutunlar:
     
-    zscore_outliers = zscore_aykirianalizi(df, col)
+    iqr_outliers = iqr_aykirianalizi(df, col)
     
     # Bulunan aykırı satırların index numaraları kümeye eklenir.
-    silinecek_indexler.update(zscore_outliers.index)
+    silinecek_indexler.update(iqr_outliers.index)
 
 # Toplanan tüm aykırı satırları veri setinden silinir
 df_temiz = df.drop(index=list(silinecek_indexler)).copy()
