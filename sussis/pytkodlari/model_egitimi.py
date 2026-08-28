@@ -143,7 +143,7 @@ print(korelasyonlar)
 
 
 # =====================================================
-# 5. GRID SEARCH (SINIFLANDIRMA İÇİN GÜNCELLENDİ)
+# GRID SEARCH (SINIFLANDIRMA İÇİN GÜNCELLENDİ)
 # =====================================================
 param_grid = {
     'n_estimators': [100, 200],
@@ -172,7 +172,7 @@ print(f"Optimize Doğruluk (Accuracy): {best_acc:.4f}")
 print("-" * 50)
 
 # =====================================================
-# 6. ÖZELLİK ÖNEM SIRALAMASI
+#  ÖZELLİK ÖNEM SIRALAMASI
 # =====================================================
 importances = best_rf.feature_importances_
 indices = np.argsort(importances)[-15:]
@@ -188,7 +188,7 @@ plt.show()
 
 
 # =====================================================
-# 3. MODEL EĞİTİMLERİ VE TEST (CLASS WEIGHTS İLE)
+# MODEL EĞİTİMLERİ VE TEST (CLASS WEIGHTS İLE)
 # =====================================================
 
 # --- A. CATBOOST MODELİ ---
@@ -305,7 +305,7 @@ print("Sınıflandırma Raporu:")
 print(classification_report(y_test, y_pred_xgb))
 
 # =====================================================
-# 4. GÖRSELLEŞTİRME (EN İYİ MODELİN ÖZELLİK ÖNEM DÜZEYİ)
+# GÖRSELLEŞTİRME (EN İYİ MODELİN ÖZELLİK ÖNEM DÜZEYİ)
 # =====================================================
 # CatBoost genellikle bu tarz verilerde en iyi sonucu verir, onun grafiğini çizdirdim
 
@@ -357,7 +357,7 @@ print(f"Yeni Uçurum (Fark)       : {(train_accuracy - test_accuracy):.4f}")
 
 
 # =====================================================
-# 7. LEARNING CURVE (SINIFLANDIRMA SKORU İLE)
+# LEARNING CURVE (SINIFLANDIRMA SKORU İLE)
 # =====================================================
 train_sizes, train_scores, test_scores = learning_curve(
     best_rf, x_train_sc, y_train, cv=5, n_jobs=-1,

@@ -231,13 +231,13 @@ plt.show()
 print("-----------------------------------------------------")
 
 # # ─────────────────────────────────────────────────────
-# # 4. GELİŞMİŞ EKSİK VERİ DOLDURMA (MICE / IterativeImputer)
+# # GELİŞMİŞ EKSİK VERİ DOLDURMA (MICE / IterativeImputer)
 # # ─────────────────────────────────────────────────────
 # from sklearn.experimental import enable_iterative_imputer
 # from sklearn.impute import IterativeImputer
 
 # print("\nEksik veriler makine öğrenmesi (MICE) ile dolduruluyor...")
-# # Modelin öğreneceği (X) özellikleri belirliyoruz. "Potability" ve "deney_id" hariç.
+# # Modelin öğreneceği (X) özellikleri . "Potability" ve "deney_id" hariç.
 # x_sutunlari = [col for col in df.columns if col not in ['Potability', 'deney_id']]
 
 # X_raw = df[x_sutunlari]
@@ -248,7 +248,7 @@ print("-----------------------------------------------------")
 # X_imputed = pd.DataFrame(mice_imputer.fit_transform(X_raw), columns=x_sutunlari)
 
 # ─────────────────────────────────────────────────────
-# ADIM 5 — AYKIRI DEĞER (IQR ve Z-SCORE)
+#  AYKIRI DEĞER (IQR ve Z-SCORE)
 # ─────────────────────────────────────────────────────
 
 def iqr_aykirianalizi(df, column):
