@@ -100,7 +100,7 @@ joblib.dump(model, "rf_kural_su_model.joblib")
 print("\nModel ve scaler başarıyla kaydedildi!")
 
 # =====================================================
-# 7. LEARNING CURVE (ÖĞRENME EĞRİSİ GÖRSELLEŞTİRME)
+# Öğrenme eğrisini görselleştirme 
 # =====================================================
 # X_test_sc yerine X_train_sc, y_test yerine y_train kullanıldı
 train_sizes, train_scores, test_scores = learning_curve(
@@ -125,6 +125,7 @@ plt.plot(
 )
 
 # Standart sapma alanlarını renklendirerek güven aralığı ekleme
+
 plt.fill_between(
     train_sizes,
     train_mean - train_std,
