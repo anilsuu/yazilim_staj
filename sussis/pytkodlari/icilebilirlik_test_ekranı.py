@@ -8,6 +8,11 @@ Created on Mon Aug 31 11:10:52 2026
 import streamlit as st
 import pandas as pd
 import joblib
+import streamlit as st
+
+# Sayfa ayarlarını geniş modda ve modern bir başlıkla başlatın
+st.set_page_config(page_title="Su Kalite Analizi", layout="wide")
+
 # Modern ve koyu bir "su" teması CSS'i
 page_bg_css = """
 <style>
@@ -68,10 +73,7 @@ st.write=("Lütfen tahmin için değerleri giriniz.")
 # Turbidity=float(st.number_input("Turbidity(Bulanıklık)",step=1.0,min_value=1.45,help="Turbidity(Bulanıklık) değerini giriniz."))
 
 
-import streamlit as st
 
-# Sayfa ayarlarını geniş modda ve modern bir başlıkla başlatın
-st.set_page_config(page_title="Su Kalite Analizi", layout="wide")
 
 # Modern Slider Kullanımları (Klavye yerine fare/dokunmatik ile kaydırma)
 col1, col2 = st.columns(2) # Ekranı iki sütuna bölerek şık bir görünüm elde edin
