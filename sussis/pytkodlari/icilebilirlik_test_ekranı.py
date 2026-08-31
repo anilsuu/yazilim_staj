@@ -8,56 +8,160 @@ Created on Mon Aug 31 11:10:52 2026
 import streamlit as st
 import pandas as pd
 import joblib
-import streamlit as st
+import base64
+import os
 
-# Sayfa ayarlarını geniş modda ve modern bir başlıkla başlatın
-st.set_page_config(page_title="Su Kalite Analizi", layout="wide")
+# 1. SAYFA AYARLARI (Mutlaka en üstte olmalı)
+# 'centered' layout, buzlu cam kartımızın ortada şık durmasını sağlar.
+st.set_page_config(page_title="Su Kalite Analizi", layout="centered", page_icon="💧")
 
-# Modern ve koyu bir "su" teması CSS'i
-page_bg_css = """
-<style>
-/* Arka plan degrade (gradient) rengi */
-.stApp {
-    background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
-}
+# 2. ARKA PLAN RESMİNİ YÜKLEME FONKSİYONU
+def get_base64_of_bin_file(bin_file):
+    try:
+        with open(bin_file, 'rb') as f:
+            data = f.read()
+        return base64.b64encode(data).decode()
+    except FileNotFoundError:
+        st.error(f"HATA: '{bin_file}' adlı resim dosyası bulunamadı! Lütfen resmi Python dosyasıyla aynı klasöre koyun.")
+        return ""
 
-/* Başlık ve metin renklerini beyaza çevirme */
-h1, h2, h3, p, label {
-    color: #ffffff !important;
-}
+# Resim dosyanızın adı (Aynı klasörde olduklarına emin olun)
+# suweb.webp veya suweb2.webp olarak değiştirebilirsiniz
+img_base64 = get_base64_of_bin_file("suweb.webp")
 
-/* Butonu modernleştirme */
-.stButton>button {
-    background-color: #00d2ff;
-    color: #000000;
-    border-radius: 20px;
-    border: none;
-    padding: 10px 24px;
-    font-weight: bold;
-    transition: all 0.3s ease 0s;
-}
-.stButton>button:hover {
-    background-color: #3a7bd5;
-    color: white;
-    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
-}
-</style>
-"""
-st.markdown(page_bg_css, unsafe_allow_html=True)
+# 3. MODERN CSS (BUZLU CAM EFEKTİ VE ARKA PLAN)
+if img_base64:
+    custom_css = f"""
+    <style>
+    /* Arka plan resmini tam ekran yapma */
+    .stApp {{
+        background-image: url("data:image/webp;base64,{img_base64}");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }}
+
+    /* Ortadaki veri giriş kartına BUZLU CAM (Glassmorphism) efekti */
+    .block-container {{
+        background: rgba(255, 255, 255, 0.15) !important; /* Yarı saydamlık */
+        backdrop-filter: blur(12px) !important;          /* Arkasını bulanıklaştırma */
+        -webkit-backdrop-filter: blur(12px) !important;
+        border-radius: 25px;                             /* Köşeleri yuvarlatma */
+        border: 1px solid rgba(255, 255, 255, 0.4);      /* Hafif beyaz çerçeve */
+        padding: 2rem 3rem;
+        margin-top: 3rem;
+        margin-bottom: 3rem;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);    /* Derinlik gölgesi */
+    }}
+
+    /* Yazıları okunabilir yapmak için beyaz renk ve gölge */
+    h1, h2, h3, h4, p, label, .stMarkdown {{
+        color: #ffffff !important;
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+    }}
+
+    /* Slider (Kaydırma Çubuğu) değer yazılarının rengi */
+    .stSlider [data-testid="stThumbValue"] {{
+        color: #ffffff !important;
+    }}
+
+    /* Modern Buton Tasarımı */
+    .stButton>button {{
+        background: linear-gradient(90deg, #e3ffe7 0%, #d9e7ff 100%);
+        color: #000000 !important;
+        font-weight: bold;
+        font-size: 18px;
+        border-radius: 20px;
+        border: none;
+        padding: 10px 24px;
+        width: 100%; /* Butonu yatayda tam genişlik yapar */
+        transition: all 0.3s ease;
+    }}
+    
+    .stButton>button:hover {{
+        transform: scale(1.02); /* Üzerine gelince hafif büyür */
+        box-shadow: 0px 5px 15px rgba(255, 255, 255, 0.5);
+    }}
+    </style>
+    """
+    st.markdown(custom_css, unsafe_allow_html=True)
+
+# 4. UYGULAMA ARAYÜZÜ (KULLANICI GİRİŞLERİ)
+st.title("💧 SU KALİTE ANALİZİ")
+st.markdown("#### GİRİŞ PARAMETRELERİ")
+st.markdown("<hr style='border:1px solid white'>", unsafe_allow_html=True)
+
+# Değişkenleri form veya slider ile alıyoruz (Küçük harfle tanımlıyoruz)
+ph = st.slider("pH (0.0 - 14.0)", min_value=0.0, max_value=14.0, value=7.0, step=0.1)
+hardness = st.slider("Sertlik (Hardness, 0 - 400)", min_value=0.0, max_value=400.0, value=150.0, step=1.0)
+chloramines = st.slider("Kloramin (0 - 15)", min_value=0.0, max_value=15.0, value=7.0, step=0.1)
+tds = st.slider("TDS (Toplam Çözünmüş Madde)", min_value=0.0, max_value=1000.0, value=300.0, step=1.0)
+
+# Daha fazla parametreniz varsa buraya slider olarak ekleyebilirsiniz...
+
+st.markdown("<br>", unsafe_allow_html=True)
+
+# 5. BUTON VE MODEL TAHMİNİ
+if st.button("Analiz Et 🚀"):
+    
+    # Kendi modelinize göre burayı düzenleyebilirsiniz
+    # input_data = pd.DataFrame({"ph": [ph], "Hardness": [hardness], "Chloramines": [chloramines], ...})
+    # prediction = model.predict(input_data)
+    
+    # Örnek Sonuç (Model entegre edilene kadar test amaçlı):
+    st.success("✅ Analiz tamamlandı! Su İçilebilir.")
+    # st.error("❌ Dikkat! Su İçilemez (Güvenli Değil)")
+    
+    
+
+# # Sayfa ayarlarını geniş modda ve modern bir başlıkla başlatın
+# st.set_page_config(page_title="Su Kalite Analizi", layout="wide")
+
+# # Modern ve koyu bir "su" teması CSS'i
+# page_bg_css = """
+# <style>
+# /* Arka plan degrade (gradient) rengi */
+# .stApp {
+#     background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+# }
+
+# /* Başlık ve metin renklerini beyaza çevirme */
+# h1, h2, h3, p, label {
+#     color: #ffffff !important;
+# }
+
+# /* Butonu modernleştirme */
+# .stButton>button {
+#     background-color: #00d2ff;
+#     color: #000000;
+#     border-radius: 20px;
+#     border: none;
+#     padding: 10px 24px;
+#     font-weight: bold;
+#     transition: all 0.3s ease 0s;
+# }
+# .stButton>button:hover {
+#     background-color: #3a7bd5;
+#     color: white;
+#     box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+# }
+# </style>
+# """
+# st.markdown(page_bg_css, unsafe_allow_html=True)
 
 
-#icilebilirlik su testi web sitesinin iskeletini hazırlamak
+# #icilebilirlik su testi web sitesinin iskeletini hazırlamak
 
-model = joblib.load(r"C:\Users\nilsu\OneDrive\Masaüstü\yazilim_staj\sussis\pytkodlari\rf_kural_su_model.pkl")
-# Sayfa ayarlarını geniş modda ve modern bir başlıkla başlatın
+# model = joblib.load(r"C:\Users\nilsu\OneDrive\Masaüstü\yazilim_staj\sussis\pytkodlari\rf_kural_su_model.pkl")
+# # Sayfa ayarlarını geniş modda ve modern bir başlıkla başlatın
 
-# st.set_page_config(
-#     page_title="SASKİ Su İçilebilirlik Testi",layout="wide",
-#     page_icon=r"C:\Users\nilsu\OneDrive\Masaüstü\yazilim_staj\sussis\pytkodlari\test_icon.png"
-#     )
+# # st.set_page_config(
+# #     page_title="SASKİ Su İçilebilirlik Testi",layout="wide",
+# #     page_icon=r"C:\Users\nilsu\OneDrive\Masaüstü\yazilim_staj\sussis\pytkodlari\test_icon.png"
+# #     )
 
-st.title=("SASKİ Su İçilebilirlik Testi")
-st.write=("Lütfen tahmin için değerleri giriniz.")
+# st.title=("SASKİ Su İçilebilirlik Testi")
+# st.write=("Lütfen tahmin için değerleri giriniz.")
 
 
 #Girilecek Veri tiplerini belirtmek,minimum değerlerin girilmesi.Help (?) açıklamasının infonun verilmesi
@@ -75,17 +179,22 @@ st.write=("Lütfen tahmin için değerleri giriniz.")
 
 
 
-# Modern Slider Kullanımları (Klavye yerine fare/dokunmatik ile kaydırma)
-col1, col2 = st.columns(2) # Ekranı iki sütuna bölerek şık bir görünüm elde edin
+# # Modern Slider Kullanımları (Klavye yerine fare/dokunmatik ile kaydırma)
+# col1, col2 = st.columns(2) # Ekranı iki sütuna bölerek şık bir görünüm elde edin
 
-with col1:
-    ph = st.slider("💧 pH Seviyesi", min_value=0.0, max_value=14.0, value=7.0, step=0.1)
-    hardness = st.slider("🪨 Sertlik (Hardness)", min_value=0.0, max_value=400.0, value=150.0, step=1.0)
+# with col1:
+#     ph = st.slider("💧 pH Seviyesi", min_value=0.0, max_value=14.0, value=7.0, step=0.1)
+#     hardness = st.slider("🪨 Sertlik (Hardness)", min_value=0.0, max_value=400.0, value=150.0, step=1.0)
     
-with col2:
-    chloramines = st.slider("🧪 Kloramin", min_value=0.0, max_value=15.0, value=7.0, step=0.1)
-    # Diğer parametrelerinizi buraya ekleyin...
+# with col2:
+#     chloramines = st.slider("🧪 Kloramin", min_value=0.0, max_value=15.0, value=7.0, step=0.1)
+#     # Diğer parametrelerinizi buraya ekleyin...
    
+    
+   
+    
+   
+    
 # input_data = pd.DataFrame({
 #     "ph": [ph],
 #     "Hardness": [Hardness],
@@ -111,13 +220,17 @@ with col2:
 
 
 
-    tab1, tab2 = st.tabs(["📊 Parametre Girişi", "📈 Yapay Zeka Analizi"])
 
-with tab1:
-    st.markdown("### Lütfen su değerlerini kaydırarak belirleyin")
-    # Yukarıdaki slider'ları buraya koyabilirsiniz
+
+
+
+#     tab1, tab2 = st.tabs(["📊 Parametre Girişi", "📈 Yapay Zeka Analizi"])
+
+# with tab1:
+#     st.markdown("### Lütfen su değerlerini kaydırarak belirleyin")
+#     # Yukarıdaki slider'ları buraya koyabilirsiniz
     
-with tab2:
-    st.markdown("### Sonuç Ekranı")
-    if st.button("Analizi Başlat 🚀"):
-        st.success("✅ Su İçilebilir!")
+# with tab2:
+#     st.markdown("### Sonuç Ekranı")
+#     if st.button("Analizi Başlat 🚀"):
+#         st.success("✅ Su İçilebilir!")
