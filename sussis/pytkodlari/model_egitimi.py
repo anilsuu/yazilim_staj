@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+                          <# -*- coding: utf-8 -*-
 """
 Created on Wed Aug 26 15:53:06 2026
 
@@ -14,37 +14,24 @@ from sklearn.preprocessing import PowerTransformer
 import pyodbc
 from sqlalchemy import create_engine
 import urllib
-import missingno as msno
-import os #Dosya sistemi yollarınnı yönetmek için kullanılır
-
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
 import joblib
-
-from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from sklearn.decomposition import PCA
-
 from scipy.stats import zscore
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV, KFold, learning_curve
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
-from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import r2_score, roc_curve, auc
 from sklearn.metrics import accuracy_score, classification_report
 import xgboost as xgb
-from imblearn.over_sampling import SMOTE
 from imblearn.pipeline import Pipeline
 from imblearn.over_sampling import SMOTE
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import accuracy_score, classification_report
 from lightgbm import LGBMClassifier
 from catboost import CatBoostClassifier
-from sklearn.experimental import enable_iterative_imputer
-from sklearn.impute import IterativeImputer
 import lightgbm as lgb
 
 df_son = pd.read_csv("temizlenmis_su_kalitesi.csv")
@@ -64,15 +51,14 @@ tum_kimyasal_sutunlar = [
 silinecek_sutunlar = ['ph_ideal', 'safety_violations', 'Chemistry_reactivity', 'pollution_index'] 
 secili_sutunlar = [col for col in tum_kimyasal_sutunlar if col not in silinecek_sutunlar]
 
-# X ve y değişkenlerini tanımlama,güncelliyoruz
+# X ve y değişkenlerini tanımlama
 X_sade = df_son[secili_sutunlar]
 y_sutun_adi = [col for col in df_son.columns if col.lower() == 'potability'][0]
 y_sade = df_son[y_sutun_adi]
 
-print(f"\n--- GÜVENLİK KONTROLÜ ---")
+print("\n--- GÜVENLİK KONTROLÜ ---")
 print(f"Kullanılan Özellik Sayısı: {X_sade.shape[1]}")
 print("-------------------------\n")
-
 
 
 

@@ -166,7 +166,6 @@ df_imputed = pd.DataFrame(scaler.inverse_transform(df_knn_imputed), columns=df_k
 df["Sulfate"] = df_imputed["Sulfate"]
 
 
-# medyanladoldurma("Sulfate")
 nansızsütuninfo("Sulfate")
 
 #Histogram Grafiği
