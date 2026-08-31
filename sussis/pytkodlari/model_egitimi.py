@@ -63,7 +63,6 @@ print("-------------------------\n")
 
 
 #  Veriyi Bölme (Eğitim ve Test)
-# SMOTE KULLANMADAN veriyi böldüm.
 x_train, x_test, y_train, y_test = train_test_split(
     X_sade, y_sade, test_size=0.30, random_state=42, stratify=y_sade
 )
@@ -81,7 +80,7 @@ x_test_sc = sc.transform(x_test)
 scale_weight = (y_train == 0).sum() / (y_train == 1).sum() 
 
 
-
+nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
 print("\n=====================================================")
 print("--- 1. VERİ SIZINTISI (TARGET LEAKAGE) KONTROLÜ ---")
 print("=====================================================")

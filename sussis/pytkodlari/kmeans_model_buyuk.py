@@ -107,8 +107,8 @@ plt.show()
 # =====================================================
 # Web tarafı için kaydetme dosyası
 # =====================================================
-joblib.dump(scaler, "scaler_kmeans.joblib")
-joblib.dump(kmeans_final, "kmeans_su_model.joblib")
+joblib.dump(scaler, "scaler_kmeans.pkl")
+joblib.dump(kmeans_final, "kmeans_su_model.pkl")
 print("\nScaler ve K-Means modeli başarıyla kaydedildi!")
 
 
