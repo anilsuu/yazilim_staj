@@ -11,11 +11,18 @@ import joblib
 import base64
 import os
 
-# 1. SAYFA AYARLARI (Mutlaka en üstte olmalı)
+# SAYFA AYARLARI (Mutlaka en üstte olmalı)
 # 'centered' layout, buzlu cam kartımızın ortada şık durmasını sağlar.
-st.set_page_config(page_title="Su Kalite Analizi", layout="centered", page_icon="💧")
+st.set_page_config(page_title="Su Kalite Analizi", layout="centered", page_icon="🚰")
 
-# 2. ARKA PLAN RESMİNİ YÜKLEME FONKSİYONU
+
+#  STATE (DURUM) YÖNETİMİ - Formun kaybolması için
+if 'analiz_tamamlandi' not in st.session_state:
+    st.session_state.analiz_tamamlandi = False
+    st.session_state.sonuc = 0
+    
+    
+# ARKA PLAN RESMİNİ YÜKLEME FONKSİYONU
 def get_base64_of_bin_file(bin_file):
     try:
         with open(bin_file, 'rb') as f:
@@ -25,11 +32,10 @@ def get_base64_of_bin_file(bin_file):
         st.error(f"HATA: '{bin_file}' adlı resim dosyası bulunamadı! Lütfen resmi Python dosyasıyla aynı klasöre koyun.")
         return ""
 
-# Resim dosyanızın adı (Aynı klasörde olduklarına emin olun)
-# suweb.webp veya suweb2.webp olarak değiştirebilirsiniz
-img_base64 = get_base64_of_bin_file("suweb.webp")
 
-# 3. MODERN CSS (BUZLU CAM EFEKTİ VE ARKA PLAN)
+img_base64 = get_base64_of_bin_file("suweb2.webp")
+
+#  MODERN CSS (BUZLU CAM EFEKTİ VE ARKA PLAN)
 if img_base64:
     custom_css = f"""
     <style>
@@ -86,22 +92,27 @@ if img_base64:
     """
     st.markdown(custom_css, unsafe_allow_html=True)
 
-# 4. UYGULAMA ARAYÜZÜ (KULLANICI GİRİŞLERİ)
-st.title("💧 SU KALİTE ANALİZİ")
+#  UYGULAMA ARAYÜZÜ (KULLANICI GİRİŞLERİ)
+st.title("💧 SU KALİTE ANALİZİ 🚰")
 st.markdown("#### GİRİŞ PARAMETRELERİ")
 st.markdown("<hr style='border:1px solid white'>", unsafe_allow_html=True)
 
-# Değişkenleri form veya slider ile alıyoruz (Küçük harfle tanımlıyoruz)
-ph = st.slider("pH (0.0 - 14.0)", min_value=0.0, max_value=14.0, value=7.0, step=0.1)
-hardness = st.slider("Sertlik (Hardness, 0 - 400)", min_value=0.0, max_value=400.0, value=150.0, step=1.0)
-chloramines = st.slider("Kloramin (0 - 15)", min_value=0.0, max_value=15.0, value=7.0, step=0.1)
-tds = st.slider("TDS (Toplam Çözünmüş Madde)", min_value=0.0, max_value=1000.0, value=300.0, step=1.0)
 
-# Daha fazla parametreniz varsa buraya slider olarak ekleyebilirsiniz...
+
+ph = float(st.number_input("💧 pH Seviyesi",step=1.0,min_value=0.22749905,max_value=14.0,help="Suyun ph değerini giriniz.")) 
+Hardness=float(st.number_input("🪨 (Hardness) Sertlik ",step=1.0,min_value=73.49223369,help="Sertlik(Hardness) değerini giriniz."))
+Solids=float(st.number_input("🧊 Solids (Katılar)",step=1.0,min_value=320.9426113,help="Solids(Katılar) değerini giriniz."))
+Chloramines=float(st.number_input("🧪 Chloramines(Kloramin)",step=1.0,min_value=1.390870905,help="Chloramines(Kloramin) değerini giriniz."))
+Sulfate=float(st.number_input("🟣 Sulfate(Sülfat)",step=1.0,min_value=129.0,help="Sulfate(Sülfat) değerini giriniz."))
+Conductivity=float(st.number_input("⚡ Conductivity(İletkenlik)",step=1.0,min_value=201.6197368,help="20°C Conductivity (İletkenlik) değerini giriniz."))
+Organic_carbon=float(st.number_input("💬 Organic_carbon (Organik karbon)",step=1.0,min_value=2.2,help="Organic_carbon (Organik karbon) değerini giriniz."))
+Trihalomethanes=float(st.number_input("🟠 Trihalomethanes(Trihalometanlar)",step=1.0,min_value=8.577012933,help="Trihalomethanes(Trihalometanlar) değerini giriniz."))
+Turbidity=float(st.number_input("🌀 Turbidity(Bulanıklık)",step=1.0,min_value=1.45,help="Turbidity(Bulanıklık) değerini giriniz."))
+
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# 5. BUTON VE MODEL TAHMİNİ
+# BUTON VE MODEL TAHMİNİ
 if st.button("Analiz Et 🚀"):
     
     # Kendi modelinize göre burayı düzenleyebilirsiniz
@@ -109,7 +120,7 @@ if st.button("Analiz Et 🚀"):
     # prediction = model.predict(input_data)
     
     # Örnek Sonuç (Model entegre edilene kadar test amaçlı):
-    st.success("✅ Analiz tamamlandı! Su İçilebilir.")
+    st.success("📊 Analiz tamamlandı! Su İçilebilir.✅🚰")
     # st.error("❌ Dikkat! Su İçilemez (Güvenli Değil)")
     
     
