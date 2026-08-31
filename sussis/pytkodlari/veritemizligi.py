@@ -57,6 +57,7 @@ def hesaplamainfo(column):
     print(f"Medyan:{column}",df[column].median())
     print(f"Standart Sapma:{column}",df[column].std())
     print(f"Eksik değerler:{column}",df[column].isna().sum())
+ 
     
 def medyanladoldurma(column):
     df[column] = df[column].fillna(df[column].median())
