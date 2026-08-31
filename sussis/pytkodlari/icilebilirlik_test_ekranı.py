@@ -9,6 +9,8 @@ import streamlit as st
 import pandas as pd
 import joblib
 
+#icilebilirlik su testi web sitesinin iskeletini hazırlamak
+
 model = joblib.load(r"C:\Users\nilsu\OneDrive\Masaüstü\yazilim_staj\sussis\pytkodlari\rf_kural_su_model.pkl")
 
 st.set_page_config(
@@ -18,6 +20,9 @@ st.set_page_config(
 
 st.title=("SASKİ Su İçilebilirlik Testi")
 st.write=("Lütfen tahmin için değerleri giriniz.")
+
+
+#Girilecek Veri tiplerini belirtmek,minimum değerlerin girilmesi.Help (?) açıklamasının infonun verilmesi
 
 ph = float(st.number_input("ph",step=1.0,min_value=0.22749905,max_value=14.0,help="Suyun ph değerini giriniz.")) 
 Hardness=float(st.number_input("Hardness(Sertlik)",step=1.0,min_value=73.49223369,help="Sertlik(Hardness) değerini giriniz."))
