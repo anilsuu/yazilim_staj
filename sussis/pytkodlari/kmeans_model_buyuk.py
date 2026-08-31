@@ -4,10 +4,7 @@ Created on Fri Aug 28 11:39:56 2026
 
 @author: nilsu
 """
-
-
 # -*- coding: utf-8 -*-
-
 
 import os #Dosya sistemi yollarınnı yönetmek için kullanılır
 import pandas as pd
