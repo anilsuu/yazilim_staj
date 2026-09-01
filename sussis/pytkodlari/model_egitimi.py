@@ -1,4 +1,4 @@
-                          <# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Created on Wed Aug 26 15:53:06 2026
 
@@ -80,7 +80,6 @@ x_test_sc = sc.transform(x_test)
 scale_weight = (y_train == 0).sum() / (y_train == 1).sum() 
 
 
-nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
 print("\n=====================================================")
 print("--- 1. VERİ SIZINTISI (TARGET LEAKAGE) KONTROLÜ ---")
 print("=====================================================")

@@ -85,7 +85,7 @@ model.fit(X_train_sc, y_train)
 print("-----------------------------------------------------")
 # Modeli değerlendirme
 # =====================================================
-y_pred = model.predict(scaler.transform(X_test_sc))
+y_pred = model.predict(X_test_sc)
 
 print(f"\nModel Doğruluk Oranı (Accuracy): {accuracy_score(y_test, y_pred):.4f}")
 print("\nKarmaşıklık Matrisi (Confusion Matrix):")
