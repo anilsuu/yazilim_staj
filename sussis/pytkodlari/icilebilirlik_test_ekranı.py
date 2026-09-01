@@ -13,8 +13,8 @@ import joblib  # Modeli yüklemek için gerekli
 
 # Modeli ve Scaler'ı yükledim (Streamlit arayüzü başlarken bir kere yüklenir)
 try:
-    model = joblib.load("kmeans_su_model.pkl")
-    scaler = joblib.load("scaler_kmeans.pkl")
+    model = joblib.load("rf_kural_su_model.pkl")
+    scaler = joblib.load("scaler_kural.pkl")
 except FileNotFoundError:
     st.error("Model dosyaları (pkl) bulunamadı! Lütfen eğitim kodunuzu çalıştırdığınıza ve aynı klasörde olduğunuza emin olun.")
 
