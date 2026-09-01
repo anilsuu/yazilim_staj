@@ -88,6 +88,7 @@ print(kume_ortalamalari.T)
 # =====================================================
 # Scatter Grafik (PCA ile)
 # =====================================================
+
 pca = PCA(n_components=2)
 pca_sonuc = pca.fit_transform(X_scaled)
 df['PCA1'] = pca_sonuc[:, 0]
