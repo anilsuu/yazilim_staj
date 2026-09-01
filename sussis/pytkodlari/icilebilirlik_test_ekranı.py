@@ -159,7 +159,7 @@ with sol_kolon:
         st.markdown("<br>", unsafe_allow_html=True)
         
         # Yeni Hali:
-        if st.button("Yeni Test Yap 🔄",key="yeni_test_buton"):
+        if st.button("Yeni Test Yap 🔄", key="yeni_test_buton"):
             st.session_state.analiz_tamamlandi = False
             st.rerun() # Sayfayı yenile ve formu geri getir
 
