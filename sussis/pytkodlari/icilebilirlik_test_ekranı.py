@@ -11,6 +11,10 @@ import pandas as pd
 import base64
 import joblib  # Modeli yüklemek için gerekli
 
+
+#  SAYFA AYARLARI (Geniş mod - layout="wide" ekranın daha büyük)
+st.set_page_config(page_title="Su Kalite Analizi", layout="wide", page_icon="🚰")
+
 # Modeli ve Scaler'ı yükledim (Streamlit arayüzü başlarken bir kere yüklenir)
 try:
     model = joblib.load("rf_kural_su_model.pkl")
@@ -18,8 +22,6 @@ try:
 except FileNotFoundError:
     st.error("Model dosyaları (pkl) bulunamadı! Lütfen eğitim kodunuzu çalıştırdığınıza ve aynı klasörde olduğunuza emin olun.")
 
-#  SAYFA AYARLARI (Geniş mod - layout="wide" ekranın daha büyük)
-st.set_page_config(page_title="Su Kalite Analizi", layout="wide", page_icon="💧")
 
 #  STATE (DURUM) YÖNETİMİ - Formun kaybolması için
 if 'analiz_tamamlandi' not in st.session_state:
@@ -49,7 +51,7 @@ if img_base64:
     }}
 
     /* Ortadaki veri giriş kartına BUZLU CAM (Glassmorphism) efekti (Köşeli parantez düzeltildi) */
-    [data-testid="column"]:nth-of-type(1) {{
+    [data-testid="column"]:nth-of-type(2) {{
         background: rgba(255, 255, 255, 0.15) !important;
         backdrop-filter: blur(12px) !important;
         -webkit-backdrop-filter: blur(12px) !important;
@@ -59,13 +61,16 @@ if img_base64:
         margin-top: 3rem;
         margin-bottom: 3rem;
         box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        display:flex;
+        flex-direction: center;
     }}
 
     /* Yazıları okunabilir yapmak için beyaz renk ve gölge */
-    h1, h2, h3, h4, p, label, .stMarkdown {{
+    h1,h2, h3, h4, p, label, .stMarkdown {{
         color: #ffffff !important;
         text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
     }}
+    
 
     /* Slider (Kaydırma Çubuğu) değer yazılarının rengi */
     .stSlider [data-testid="stThumbValue"] {{
@@ -75,7 +80,7 @@ if img_base64:
     /* Modern Buton Tasarımı */
     .stButton>button {{
         background: linear-gradient(90deg, #e3ffe7 0%, #d9e7ff 100%);
-        color: #000000 !important;
+        color: #800000 !important;
         font-weight: bold;
         font-size: 18px;
         border-radius: 20px;
@@ -94,14 +99,14 @@ if img_base64:
     st.markdown(custom_css, unsafe_allow_html=True)
 
 #  SAYFA YERLEŞİMİ (Sol kolon veri girişi, sağ kolon boşluk)
-sol_kolon, sag_kolon = st.columns([1, 2])
+sol_kolon, sag_kolon = st.columns([2, 1])
 
 
 # Sadece sol kolonun içine içerik ekler
-with sol_kolon:
+with sag_kolon:
     # EĞER ANALİZ YAPILMADIYSA FORMU GÖSTER
     if not st.session_state.analiz_tamamlandi:
-        st.markdown("### 💧 SU KALİTE ANALİZİ 🚰")
+        st.markdown("<h3 style='color: #ADD8E6 !important; text-shadow: 1px 1px 3px rgba(0,0,0,0.8); margin-bottom: 0px;'>💧 SU KALİTE ANALİZİ 🚰</h3>", unsafe_allow_html=True)
         st.markdown("#### GİRİŞ PARAMETRELERİ")
         st.markdown("<hr style='border:1px solid white'>", unsafe_allow_html=True)
 
@@ -151,13 +156,21 @@ with sol_kolon:
         st.markdown("### 📊 ANALİZ SONUCU")
         st.markdown("<hr style='border:1px solid white'>", unsafe_allow_html=True)
         
-        if st.session_state.sonuc == 1:
+        # if st.session_state.sonuc == 1:
+        #     st.success("✅ Afiyet olsun, su **İÇİLEBİLİR!**")
+        # else:
+        #     st.error("❌ Dikkat! Su **İÇİLEMEZ** (Güvenli Değil).")
+            
+        
+        
+        #  1'i 0 yaptık:
+        if st.session_state.sonuc == 0: 
             st.success("✅ Afiyet olsun, su **İÇİLEBİLİR!**")
         else:
             st.error("❌ Dikkat! Su **İÇİLEMEZ** (Güvenli Değil).")
+            st.markdown("<br>", unsafe_allow_html=True)
             
-        st.markdown("<br>", unsafe_allow_html=True)
-        
+            
         # Yeni Hali:
         if st.button("Yeni Test Yap 🔄", key="yeni_test_buton"):
             st.session_state.analiz_tamamlandi = False
@@ -235,26 +248,6 @@ with sol_kolon:
 #             st.rerun() # Sayfayı yenile ve formu geri getir
 
 
-
-# # Sadece sol kolonun içine içerik ekler
-# with sol_kolon:
-#     # EĞER ANALİZ YAPILMADIYSA FORMU GÖSTER
-#     if not st.session_state.analiz_tamamlandi:
-#         st.markdown("### 💧 SU KALİTE ANALİZİ 🚰")
-#         st.markdown("#### GİRİŞ PARAMETRELERİ")
-#         st.markdown("<hr style='border:1px solid white'>", unsafe_allow_html=True)
-
-
-
-# ph = float(st.number_input("💧 pH Seviyesi",step=1.0,min_value=0.22749905,max_value=14.0,help="Suyun ph değerini giriniz.")) 
-# Hardness=float(st.number_input("🪨 (Hardness) Sertlik ",step=1.0,min_value=73.49223369,help="Sertlik(Hardness) değerini giriniz."))
-# Solids=float(st.number_input("🧊 Solids (Katılar)",step=1.0,min_value=320.9426113,help="Solids(Katılar) değerini giriniz."))
-# Chloramines=float(st.number_input("🧪 Chloramines(Kloramin)",step=1.0,min_value=1.390870905,help="Chloramines(Kloramin) değerini giriniz."))
-# Sulfate=float(st.number_input("🟣 Sulfate(Sülfat)",step=1.0,min_value=129.0,help="Sulfate(Sülfat) değerini giriniz."))
-# Conductivity=float(st.number_input("⚡ Conductivity(İletkenlik)",step=1.0,min_value=201.6197368,help="20°C Conductivity (İletkenlik) değerini giriniz."))
-# Organic_carbon=float(st.number_input("💬 Organic_carbon (Organik karbon)",step=1.0,min_value=2.2,help="Organic_carbon (Organik karbon) değerini giriniz."))
-# Trihalomethanes=float(st.number_input("🟠 Trihalomethanes(Trihalometanlar)",step=1.0,min_value=8.577012933,help="Trihalomethanes(Trihalometanlar) değerini giriniz."))
-# Turbidity=float(st.number_input("🌀 Turbidity(Bulanıklık)",step=1.0,min_value=1.45,help="Turbidity(Bulanıklık) değerini giriniz."))
 
 
 #         # # Değişken isimleri (küçük harflerle) ve max_value sınırları düzeltildi
@@ -354,22 +347,6 @@ with sol_kolon:
 
 
 
-
-# import streamlit as st
-# import pandas as pd
-# import base64
-# import streamlit as st
-# import pandas as pd
-# import joblib  # Modeli yüklemek için gerekli
-
-# # Modeli ve Scaler'ı yükle (Streamlit arayüzü başlarken bir kere yüklenir)
-# try:
-#     model = joblib.load("rf_kural_su_model.pkl")
-#     scaler = joblib.load("scaler_kural.pkl")
-# except FileNotFoundError:
-#     st.error("Model dosyaları (pkl) bulunamadı! Lütfen eğitim kodunuzu çalıştırdığınıza ve aynı klasörde olduğunuza emin olun.")
-    
-    
     
 # # 1. SAYFA AYARLARI (Geniş mod - layout="wide")
 # st.set_page_config(page_title="Su Kalite Analizi", layout="centered", page_icon="💧")
@@ -446,69 +423,6 @@ with sol_kolon:
 #     """
 #     st.markdown(custom_css, unsafe_allow_html=True)
 
-# #  SAYFA YERLEŞİMİ (Sol kolon daha dar, sağ kolon boş/geniş)
-# sol_kolon, sag_kolon = st.columns([1, 3])
-
-# # Sadece sol kolonun içine içerik ekliyoruz
-# with sol_kolon:
-#     # EĞER ANALİZ YAPILMADIYSA FORMU GÖSTER
-#     if not st.session_state.analiz_tamamlandi:
-#         st.markdown("### 💧 SU KALİTE ANALİZİ 🚰")
-#         st.markdown("#### GİRİŞ PARAMETRELERİ")
-#         st.markdown("<hr style='border:1px solid white'>", unsafe_allow_html=True)
-
-#         # ph = st.slider("pH (0.0 - 14.0)", 0.0, 14.0, 7.0, 0.1)
-#         # hardness = st.slider("Sertlik (Hardness)", 0.0, 400.0, 150.0, 1.0)
-#         # chloramines = st.slider("Kloramin", 0.0, 15.0, 7.0, 0.1)
-#         # tds = st.slider("TDS", 0.0, 1000.0, 300.0, 1.0)
-
-# ph = st.slider("💧 pH Seviyesi",step=1.0,min_value=0.22749905,max_value=14.0,help="Suyun ph değerini giriniz.")
-# Hardness=st.slider("🪨 (Hardness) Sertlik ",step=1.0,min_value=73.49223369,help="Sertlik(Hardness) değerini giriniz.")
-# Solids=st.slider("🧊 Solids (Katılar)",step=1.0,min_value=320.9426113,help="Solids(Katılar) değerini giriniz.")
-# Chloramines=st.slider("🧪 Chloramines(Kloramin)",step=1.0,min_value=1.390870905,help="Chloramines(Kloramin) değerini giriniz.")
-# Sulfate=st.slider("🟣 Sulfate(Sülfat)",step=1.0,min_value=129.0,help="Sulfate(Sülfat) değerini giriniz.")
-# Conductivity=st.slider("⚡ Conductivity(İletkenlik)",step=1.0,min_value=201.6197368,help="20°C Conductivity (İletkenlik) değerini giriniz.")
-# Organic_carbon=st.slider("💬 Organic_carbon (Organik karbon)",step=1.0,min_value=2.2,help="Organic_carbon (Organik karbon) değerini giriniz.")
-# Trihalomethanes=st.slider("🟠 Trihalomethanes(Trihalometanlar)",step=1.0,min_value=8.577012933,help="Trihalomethanes(Trihalometanlar) değerini giriniz.")
-# Turbidity=st.slider("🌀 Turbidity(Bulanıklık)",step=1.0,min_value=1.45,help="Turbidity(Bulanıklık) değerini giriniz.")
-
-#         # st.markdown("<br>", unsafe_allow_html=True)
-
-#         if st.button("Analiz Et 🚀"):
-#             # Model kodunuzu buraya entegre edin:
-#             # prediction = model.predict(pd.DataFrame({"ph": [ph], ...}))
-#             # st.session_state.sonuc = prediction[0]
-            
-#             # Şimdilik örnek bir mantık (pH 6.5 ile 8.5 arasıysa içilebilir varsayalım):
-#             if 6.5 <= ph <= 8.5:
-#                 st.session_state.sonuc = 1
-#             else:
-#                 st.session_state.sonuc = 0
-                
-#             st.session_state.analiz_tamamlandi = True
-#             st.rerun() # Sayfayı yenile ve formu sil
-            
-#     # EĞER ANALİZ YAPILDIYSA SADECE SONUÇ KARTINI GÖSTER
-#     else:
-#         st.markdown("### 📊 ANALİZ SONUCU")
-#         st.markdown("<hr style='border:1px solid white'>", unsafe_allow_html=True)
-        
-#         if st.session_state.sonuc == 1:
-#             st.success("✅ Afiyet olsun, su içilebilir!")
-#         else:
-#             st.error("❌ Dikkat! Su içilemez (Güvenli Değil).")
-            
-#         st.markdown("<br>", unsafe_allow_html=True)
-        
-#         if st.button("Yeni Test Yap 🔄"):
-#             st.session_state.analiz_tamamlandi = False
-#             st.rerun() # Sayfayı yenile ve formu geri getir
-            
-
-    
-    
-   
-    
    
     
    
