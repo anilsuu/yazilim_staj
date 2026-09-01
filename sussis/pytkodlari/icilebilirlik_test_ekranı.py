@@ -18,7 +18,7 @@ try:
 except FileNotFoundError:
     st.error("Model dosyaları (pkl) bulunamadı! Lütfen eğitim kodunuzu çalıştırdığınıza ve aynı klasörde olduğunuza emin olun.")
 
-#  SAYFA AYARLARI (Geniş mod - layout="wide" ekranın daha iyi durmasını sağlar)
+#  SAYFA AYARLARI (Geniş mod - layout="wide" ekranın daha büyük)
 st.set_page_config(page_title="Su Kalite Analizi", layout="wide", page_icon="💧")
 
 #  STATE (DURUM) YÖNETİMİ - Formun kaybolması için
@@ -96,6 +96,7 @@ if img_base64:
 #  SAYFA YERLEŞİMİ (Sol kolon veri girişi, sağ kolon boşluk)
 sol_kolon, sag_kolon = st.columns([1, 2])
 
+
 # Sadece sol kolonun içine içerik ekler
 with sol_kolon:
     # EĞER ANALİZ YAPILMADIYSA FORMU GÖSTER
@@ -104,32 +105,29 @@ with sol_kolon:
         st.markdown("#### GİRİŞ PARAMETRELERİ")
         st.markdown("<hr style='border:1px solid white'>", unsafe_allow_html=True)
 
-        # Değişken isimleri (küçük harflerle) ve max_value sınırları düzeltildi
-        ph = st.slider("💧 pH Seviyesi", min_value=0.0, max_value=14.0, value=7.0, step=0.1, help="Suyun ph değerini giriniz.")
-        hardness = st.slider("🪨 Sertlik (Hardness)", min_value=70.0, max_value=400.0, value=150.0, step=1.0, help="Sertlik değerini giriniz.")
-        solids = st.slider("🧊 Katılar (Solids)", min_value=300.0, max_value=65000.0, value=20000.0, step=10.0, help="Katı madde miktarını giriniz.")
-        chloramines = st.slider("🧪 Kloramin (Chloramines)", min_value=0.0, max_value=15.0, value=7.0, step=0.1, help="Kloramin değerini giriniz.")
-        sulfate = st.slider("🟣 Sülfat (Sulfate)", min_value=120.0, max_value=500.0, value=330.0, step=1.0, help="Sülfat değerini giriniz.")
-        conductivity = st.slider("⚡ İletkenlik (Conductivity)", min_value=180.0, max_value=800.0, value=400.0, step=1.0, help="İletkenlik değerini giriniz.")
-        organic_carbon = st.slider("💬 Organik Karbon", min_value=2.0, max_value=30.0, value=14.0, step=0.1, help="Organik karbon değerini giriniz.")
-        trihalomethanes = st.slider("🟠 Trihalometanlar", min_value=5.0, max_value=130.0, value=65.0, step=1.0, help="Trihalometan değerini giriniz.")
-        turbidity = st.slider("🌀 Bulanıklık (Turbidity)", min_value=1.0, max_value=7.0, value=4.0, step=0.1, help="Bulanıklık değerini giriniz.")
-
-        st.markdown("<br>", unsafe_allow_html=True)
+        ph = float(st.number_input("💧 pH Seviyesi", step=1.0, min_value=0.22749905, max_value=14.0, help="Suyun ph değerini giriniz.")) 
+        Hardness = float(st.number_input("🪨 (Hardness) Sertlik ", step=1.0, min_value=73.49223369, help="Sertlik(Hardness) değerini giriniz."))
+        Solids = float(st.number_input("🧊 Solids (Katılar)", step=1.0, min_value=320.9426113, help="Solids(Katılar) değerini giriniz."))
+        Chloramines = float(st.number_input("🧪 Chloramines(Kloramin)", step=1.0, min_value=1.390870905, help="Chloramines(Kloramin) değerini giriniz."))
+        Sulfate = float(st.number_input("🟣 Sulfate(Sülfat)", step=1.0, min_value=129.0, help="Sulfate(Sülfat) değerini giriniz."))
+        Conductivity = float(st.number_input("⚡ Conductivity(İletkenlik)", step=1.0, min_value=201.6197368, help="20°C Conductivity (İletkenlik) değerini giriniz."))
+        Organic_carbon = float(st.number_input("💬 Organic_carbon (Organik karbon)", step=1.0, min_value=2.2, help="Organic_carbon (Organik karbon) değerini giriniz."))
+        Trihalomethanes = float(st.number_input("🟠 Trihalomethanes(Trihalometanlar)", step=1.0, min_value=8.577012933, help="Trihalomethanes(Trihalometanlar) değerini giriniz."))
+        Turbidity = float(st.number_input("🌀 Turbidity(Bulanıklık)", step=1.0, min_value=1.45, help="Turbidity(Bulanıklık) değerini giriniz."))
 
         if st.button("Analiz Et 🚀"):
             # 1. Arayüzden gelen tüm değerler Pandas DataFrame'e dönüştürülüyor
-            # Sözlük anahtarları modelinizin eğitimindeki sütun isimleriyle birebir aynı olmalı.
+            # Değişken isimleri (Hardness, Solids vs.) tam olarak yukarıda tanımlandığı gibi düzeltildi.
             input_data = pd.DataFrame({
                 "ph": [ph],
-                "Hardness": [hardness],
-                "Solids": [solids],                 
-                "Chloramines": [chloramines],
-                "Sulfate": [sulfate],               
-                "Conductivity": [conductivity],     
-                "Organic_carbon": [organic_carbon], 
-                "Trihalomethanes": [trihalomethanes],
-                "Turbidity": [turbidity]            
+                "Hardness": [Hardness],
+                "Solids": [Solids],                 
+                "Chloramines": [Chloramines],
+                "Sulfate": [Sulfate],                
+                "Conductivity": [Conductivity],      
+                "Organic_carbon": [Organic_carbon], 
+                "Trihalomethanes": [Trihalomethanes],
+                "Turbidity": [Turbidity]            
             })
             
             try:
@@ -163,6 +161,195 @@ with sol_kolon:
         if st.button("Yeni Test Yap 🔄"):
             st.session_state.analiz_tamamlandi = False
             st.rerun() # Sayfayı yenile ve formu geri getir
+
+
+
+
+
+
+
+
+with sol_kolon:
+    # EĞER ANALİZ YAPILMADIYSA FORMU GÖSTER
+    if not st.session_state.analiz_tamamlandi:
+        st.markdown("### 💧 SU KALİTE ANALİZİ 🚰")
+        st.markdown("#### GİRİŞ PARAMETRELERİ")
+        st.markdown("<hr style='border:1px solid white'>", unsafe_allow_html=True)
+
+        ph = float(st.number_input("💧 pH Seviyesi", step=1.0, min_value=0.22749905, max_value=14.0, help="Suyun ph değerini giriniz.")) 
+        Hardness = float(st.number_input("🪨 (Hardness) Sertlik ", step=1.0, min_value=73.49223369, help="Sertlik(Hardness) değerini giriniz."))
+        Solids = float(st.number_input("🧊 Solids (Katılar)", step=1.0, min_value=320.9426113, help="Solids(Katılar) değerini giriniz."))
+        Chloramines = float(st.number_input("🧪 Chloramines(Kloramin)", step=1.0, min_value=1.390870905, help="Chloramines(Kloramin) değerini giriniz."))
+        Sulfate = float(st.number_input("🟣 Sulfate(Sülfat)", step=1.0, min_value=129.0, help="Sulfate(Sülfat) değerini giriniz."))
+        Conductivity = float(st.number_input("⚡ Conductivity(İletkenlik)", step=1.0, min_value=201.6197368, help="20°C Conductivity (İletkenlik) değerini giriniz."))
+        Organic_carbon = float(st.number_input("💬 Organic_carbon (Organik karbon)", step=1.0, min_value=2.2, help="Organic_carbon (Organik karbon) değerini giriniz."))
+        Trihalomethanes = float(st.number_input("🟠 Trihalomethanes(Trihalometanlar)", step=1.0, min_value=8.577012933, help="Trihalomethanes(Trihalometanlar) değerini giriniz."))
+        Turbidity = float(st.number_input("🌀 Turbidity(Bulanıklık)", step=1.0, min_value=1.45, help="Turbidity(Bulanıklık) değerini giriniz."))
+
+        if st.button("Analiz Et 🚀"):
+            # 1. Arayüzden gelen tüm değerler Pandas DataFrame'e dönüştürülüyor
+            # Değişken isimleri (Hardness, Solids vs.) tam olarak yukarıda tanımlandığı gibi düzeltildi.
+            input_data = pd.DataFrame({
+                "ph": [ph],
+                "Hardness": [Hardness],
+                "Solids": [Solids],                 
+                "Chloramines": [Chloramines],
+                "Sulfate": [Sulfate],                
+                "Conductivity": [Conductivity],      
+                "Organic_carbon": [Organic_carbon], 
+                "Trihalomethanes": [Trihalomethanes],
+                "Turbidity": [Turbidity]            
+            })
+            
+            try:
+                # 2. Veriyi, eğitilmiş scaler ile ölçeklendir
+                input_scaled = scaler.transform(input_data)
+                
+                # 3. Modelden tahmini al
+                prediction = model.predict(input_scaled)
+                
+                # 4. Çıkan sonucu (1 veya 0) oturum durumuna (session_state) kaydet
+                st.session_state.sonuc = int(prediction[0])
+                st.session_state.analiz_tamamlandi = True
+                
+                # Sayfayı yenile ve sonuç kartını göster
+                st.rerun()
+            except Exception as e:
+                st.error(f"Tahmin sırasında bir hata oluştu: {e}")
+            
+    # EĞER ANALİZ YAPILDIYSA SADECE SONUÇ KARTINI GÖSTER
+    else:
+        st.markdown("### 📊 ANALİZ SONUCU")
+        st.markdown("<hr style='border:1px solid white'>", unsafe_allow_html=True)
+        
+        if st.session_state.sonuc == 1:
+            st.success("✅ Afiyet olsun, su **İÇİLEBİLİR!**")
+        else:
+            st.error("❌ Dikkat! Su **İÇİLEMEZ** (Güvenli Değil).")
+            
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        if st.button("Yeni Test Yap 🔄"):
+            st.session_state.analiz_tamamlandi = False
+            st.rerun() # Sayfayı yenile ve formu geri getir
+# # Sadece sol kolonun içine içerik ekler
+# with sol_kolon:
+#     # EĞER ANALİZ YAPILMADIYSA FORMU GÖSTER
+#     if not st.session_state.analiz_tamamlandi:
+#         st.markdown("### 💧 SU KALİTE ANALİZİ 🚰")
+#         st.markdown("#### GİRİŞ PARAMETRELERİ")
+#         st.markdown("<hr style='border:1px solid white'>", unsafe_allow_html=True)
+
+
+
+# ph = float(st.number_input("💧 pH Seviyesi",step=1.0,min_value=0.22749905,max_value=14.0,help="Suyun ph değerini giriniz.")) 
+# Hardness=float(st.number_input("🪨 (Hardness) Sertlik ",step=1.0,min_value=73.49223369,help="Sertlik(Hardness) değerini giriniz."))
+# Solids=float(st.number_input("🧊 Solids (Katılar)",step=1.0,min_value=320.9426113,help="Solids(Katılar) değerini giriniz."))
+# Chloramines=float(st.number_input("🧪 Chloramines(Kloramin)",step=1.0,min_value=1.390870905,help="Chloramines(Kloramin) değerini giriniz."))
+# Sulfate=float(st.number_input("🟣 Sulfate(Sülfat)",step=1.0,min_value=129.0,help="Sulfate(Sülfat) değerini giriniz."))
+# Conductivity=float(st.number_input("⚡ Conductivity(İletkenlik)",step=1.0,min_value=201.6197368,help="20°C Conductivity (İletkenlik) değerini giriniz."))
+# Organic_carbon=float(st.number_input("💬 Organic_carbon (Organik karbon)",step=1.0,min_value=2.2,help="Organic_carbon (Organik karbon) değerini giriniz."))
+# Trihalomethanes=float(st.number_input("🟠 Trihalomethanes(Trihalometanlar)",step=1.0,min_value=8.577012933,help="Trihalomethanes(Trihalometanlar) değerini giriniz."))
+# Turbidity=float(st.number_input("🌀 Turbidity(Bulanıklık)",step=1.0,min_value=1.45,help="Turbidity(Bulanıklık) değerini giriniz."))
+
+
+#         # # Değişken isimleri (küçük harflerle) ve max_value sınırları düzeltildi
+#         # ph = st.slider("💧 pH Seviyesi", min_value=0.0, max_value=14.0, value=7.0, step=0.1, help="Suyun ph değerini giriniz.")
+#         # hardness = st.slider("🪨 Sertlik (Hardness)", min_value=70.0, max_value=400.0, value=150.0, step=1.0, help="Sertlik değerini giriniz.")
+#         # solids = st.slider("🧊 Katılar (Solids)", min_value=300.0, max_value=65000.0, value=20000.0, step=10.0, help="Katı madde miktarını giriniz.")
+#         # chloramines = st.slider("🧪 Kloramin (Chloramines)", min_value=0.0, max_value=15.0, value=7.0, step=0.1, help="Kloramin değerini giriniz.")
+#         # sulfate = st.slider("🟣 Sülfat (Sulfate)", min_value=120.0, max_value=500.0, value=330.0, step=1.0, help="Sülfat değerini giriniz.")
+#         # conductivity = st.slider("⚡ İletkenlik (Conductivity)", min_value=180.0, max_value=800.0, value=400.0, step=1.0, help="İletkenlik değerini giriniz.")
+#         # organic_carbon = st.slider("💬 Organik Karbon", min_value=2.0, max_value=30.0, value=14.0, step=0.1, help="Organik karbon değerini giriniz.")
+#         # trihalomethanes = st.slider("🟠 Trihalometanlar", min_value=5.0, max_value=130.0, value=65.0, step=1.0, help="Trihalometan değerini giriniz.")
+#         # turbidity = st.slider("🌀 Bulanıklık (Turbidity)", min_value=1.0, max_value=7.0, value=4.0, step=0.1, help="Bulanıklık değerini giriniz.")
+
+#         # st.markdown("<br>", unsafe_allow_html=True)
+
+#         if st.button("Analiz Et 🚀"):
+#             # 1. Arayüzden gelen tüm değerler Pandas DataFrame'e dönüştürülüyor
+#             # Sözlük anahtarları modelinizin eğitimindeki sütun isimleriyle birebir aynı olmalı.
+#             input_data = pd.DataFrame({
+#                 "ph": [ph],
+#                 "Hardness": [hardness],
+#                 "Solids": [solids],                 
+#                 "Chloramines": [chloramines],
+#                 "Sulfate": [sulfate],               
+#                 "Conductivity": [conductivity],     
+#                 "Organic_carbon": [organic_carbon], 
+#                 "Trihalomethanes": [trihalomethanes],
+#                 "Turbidity": [turbidity]            
+#             })
+            
+#             try:
+#                 # 2. Veriyi, eğitilmiş scaler ile ölçeklendir
+#                 input_scaled = scaler.transform(input_data)
+                
+#                 # 3. Modelden tahmini al
+#                 prediction = model.predict(input_scaled)
+                
+#                 # 4. Çıkan sonucu (1 veya 0) oturum durumuna (session_state) kaydet
+#                 st.session_state.sonuc = int(prediction[0])
+#                 st.session_state.analiz_tamamlandi = True
+                
+#                 # Sayfayı yenile ve sonuç kartını göster
+#                 st.rerun()
+#             except Exception as e:
+#                 st.error(f"Tahmin sırasında bir hata oluştu: {e}")
+            
+#     # EĞER ANALİZ YAPILDIYSA SADECE SONUÇ KARTINI GÖSTER
+#     else:
+#         st.markdown("### 📊 ANALİZ SONUCU")
+#         st.markdown("<hr style='border:1px solid white'>", unsafe_allow_html=True)
+        
+#         if st.session_state.sonuc == 1:
+#             st.success("✅ Afiyet olsun, su **İÇİLEBİLİR!**")
+#         else:
+#             st.error("❌ Dikkat! Su **İÇİLEMEZ** (Güvenli Değil).")
+            
+#         st.markdown("<br>", unsafe_allow_html=True)
+        
+#         if st.button("Yeni Test Yap 🔄"):
+#             st.session_state.analiz_tamamlandi = False
+#             st.rerun() # Sayfayı yenile ve formu geri getir
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # import streamlit as st
 # import pandas as pd

@@ -22,6 +22,7 @@ from sklearn.decomposition import PCA
 # =====================================================
 # Veriyi Yükleme
 # =====================================================
+
 df = pd.read_csv("buyuk_veri_su.csv")
 
 tum_kimyasal_sutunlar = [
@@ -31,13 +32,14 @@ tum_kimyasal_sutunlar = [
 
 X = df[tum_kimyasal_sutunlar].copy()
 
-# K-Means mesafe bazlı çalıştığı için ölçeklendirme kesin lazım
+# K-Means mesafe bazlı çalıştığı için ölçeklendirme zorunlu
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
 
 # =====================================================
 # En uygun küme sayısını bulma (ELBOW & SILHOUETTE)
 # =====================================================
+
 k_degerleri = range(2, 7)
 wcss = []
 silhouette_degerleri = []
@@ -70,6 +72,7 @@ plt.show()
 # =====================================================
 # K-MEANS MODELİNİ KURMA VE ETİKET ATAMA (k=2)
 # =====================================================
+
 # 2 küme (İçilebilir / İçilemez veya Kalite Seviyeleri)
 kmeans_final = KMeans(n_clusters=2, random_state=42, n_init=10)
 df['Cluster'] = kmeans_final.fit_predict(X_scaled)
@@ -104,6 +107,7 @@ plt.show()
 # =====================================================
 # Web tarafı için kaydetme dosyası
 # =====================================================
+
 joblib.dump(scaler, "scaler_kmeans.pkl")
 joblib.dump(kmeans_final, "kmeans_su_model.pkl")
 print("\nScaler ve K-Means modeli başarıyla kaydedildi!")
@@ -189,6 +193,14 @@ print("\nScaler ve K-Means modeli başarıyla kaydedildi!")
 # sc = StandardScaler()
 # x_train_sc = sc.fit_transform(x_train)
 # x_test_sc = sc.transform(x_test)
+
+
+
+
+
+
+
+
 
 # print("\n=====================================================")
 # print("--- 1. VERİ SIZINTISI (TARGET LEAKAGE) KONTROLÜ ---")

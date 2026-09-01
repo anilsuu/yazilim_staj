@@ -55,6 +55,8 @@ def hesaplamainfo(column):
     print(f"Eksik değerler:{column}",df[column].isna().sum())
     print(f"Minimum değer:{column}",df[column].min())
     print(f"Maximum değer:{column}",df[column].max())
+    
+    
 def medyanladoldurma(column):
     df[column] = df[column].fillna(df[column].median())
     
