@@ -48,7 +48,7 @@ if img_base64:
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
-    }}
+        }}
 
     /* Ortadaki veri giriş kartına BUZLU CAM (Glassmorphism) efekti (Köşeli parantez düzeltildi) */
     [data-testid="column"]:nth-of-type(2) {{
@@ -62,11 +62,11 @@ if img_base64:
         margin-bottom: 3rem;
         box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         display:flex;
-        flex-direction: center;
+        flex-direction: column;
     }}
 
     /* Yazıları okunabilir yapmak için beyaz renk ve gölge */
-    h1,h2, h3, h4, p, label, .stMarkdown {{
+    h1,h2, h4, p, label, .stMarkdown {{
         color: #ffffff !important;
         text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
     }}
@@ -106,7 +106,7 @@ sol_kolon, sag_kolon = st.columns([2, 1])
 with sag_kolon:
     # EĞER ANALİZ YAPILMADIYSA FORMU GÖSTER
     if not st.session_state.analiz_tamamlandi:
-        st.markdown("<h3 style='color: #ADD8E6 !important; text-shadow: 1px 1px 3px rgba(0,0,0,0.8); margin-bottom: 0px;'>💧 SU KALİTE ANALİZİ 🚰</h3>", unsafe_allow_html=True)
+        st.markdown("<h3 style='color: lightblue !important; text-shadow: 1px 1px 3px rgba(0,0,0,0.8); margin-bottom: 0px;'>💧 SU KALİTE ANALİZİ 🚰</h3>", unsafe_allow_html=True)
         st.markdown("#### GİRİŞ PARAMETRELERİ")
         st.markdown("<hr style='border:1px solid white'>", unsafe_allow_html=True)
 
@@ -163,7 +163,7 @@ with sag_kolon:
             
         
         
-        #  1'i 0 yaptık:
+        #  1'i 0 yaptım
         if st.session_state.sonuc == 0: 
             st.success("✅ Afiyet olsun, su **İÇİLEBİLİR!**")
         else:
