@@ -115,7 +115,7 @@ with sol_kolon:
         Trihalomethanes = float(st.number_input("🟠 Trihalomethanes(Trihalometanlar)", step=1.0, min_value=8.577012933, help="Trihalomethanes(Trihalometanlar) değerini giriniz."))
         Turbidity = float(st.number_input("🌀 Turbidity(Bulanıklık)", step=1.0, min_value=1.45, help="Turbidity(Bulanıklık) değerini giriniz."))
 
-        if st.button("Analiz Et 🚀"):
+        if st.button("Analiz Et 🚀",key="yeni_test_butonu"):
             # 1. Arayüzden gelen tüm değerler Pandas DataFrame'e dönüştürülüyor
             # Değişken isimleri (Hardness, Solids vs.) tam olarak yukarıda tanımlandığı gibi düzeltildi.
             input_data = pd.DataFrame({
@@ -158,7 +158,8 @@ with sol_kolon:
             
         st.markdown("<br>", unsafe_allow_html=True)
         
-        if st.button("Yeni Test Yap 🔄"):
+        # Yeni Hali:
+        if st.button("Yeni Test Yap 🔄",key="yeni_test_buton"):
             st.session_state.analiz_tamamlandi = False
             st.rerun() # Sayfayı yenile ve formu geri getir
 
@@ -169,69 +170,72 @@ with sol_kolon:
 
 
 
-with sol_kolon:
-    # EĞER ANALİZ YAPILMADIYSA FORMU GÖSTER
-    if not st.session_state.analiz_tamamlandi:
-        st.markdown("### 💧 SU KALİTE ANALİZİ 🚰")
-        st.markdown("#### GİRİŞ PARAMETRELERİ")
-        st.markdown("<hr style='border:1px solid white'>", unsafe_allow_html=True)
+# with sol_kolon:
+#     # EĞER ANALİZ YAPILMADIYSA FORMU GÖSTER
+#     if not st.session_state.analiz_tamamlandi:
+#         st.markdown("### 💧 SU KALİTE ANALİZİ 🚰")
+#         st.markdown("#### GİRİŞ PARAMETRELERİ")
+#         st.markdown("<hr style='border:1px solid white'>", unsafe_allow_html=True)
 
-        ph = float(st.number_input("💧 pH Seviyesi", step=1.0, min_value=0.22749905, max_value=14.0, help="Suyun ph değerini giriniz.")) 
-        Hardness = float(st.number_input("🪨 (Hardness) Sertlik ", step=1.0, min_value=73.49223369, help="Sertlik(Hardness) değerini giriniz."))
-        Solids = float(st.number_input("🧊 Solids (Katılar)", step=1.0, min_value=320.9426113, help="Solids(Katılar) değerini giriniz."))
-        Chloramines = float(st.number_input("🧪 Chloramines(Kloramin)", step=1.0, min_value=1.390870905, help="Chloramines(Kloramin) değerini giriniz."))
-        Sulfate = float(st.number_input("🟣 Sulfate(Sülfat)", step=1.0, min_value=129.0, help="Sulfate(Sülfat) değerini giriniz."))
-        Conductivity = float(st.number_input("⚡ Conductivity(İletkenlik)", step=1.0, min_value=201.6197368, help="20°C Conductivity (İletkenlik) değerini giriniz."))
-        Organic_carbon = float(st.number_input("💬 Organic_carbon (Organik karbon)", step=1.0, min_value=2.2, help="Organic_carbon (Organik karbon) değerini giriniz."))
-        Trihalomethanes = float(st.number_input("🟠 Trihalomethanes(Trihalometanlar)", step=1.0, min_value=8.577012933, help="Trihalomethanes(Trihalometanlar) değerini giriniz."))
-        Turbidity = float(st.number_input("🌀 Turbidity(Bulanıklık)", step=1.0, min_value=1.45, help="Turbidity(Bulanıklık) değerini giriniz."))
+#         ph = float(st.number_input("💧 pH Seviyesi", step=1.0, min_value=0.22749905, max_value=14.0, help="Suyun ph değerini giriniz.")) 
+#         Hardness = float(st.number_input("🪨 (Hardness) Sertlik ", step=1.0, min_value=73.49223369, help="Sertlik(Hardness) değerini giriniz."))
+#         Solids = float(st.number_input("🧊 Solids (Katılar)", step=1.0, min_value=320.9426113, help="Solids(Katılar) değerini giriniz."))
+#         Chloramines = float(st.number_input("🧪 Chloramines(Kloramin)", step=1.0, min_value=1.390870905, help="Chloramines(Kloramin) değerini giriniz."))
+#         Sulfate = float(st.number_input("🟣 Sulfate(Sülfat)", step=1.0, min_value=129.0, help="Sulfate(Sülfat) değerini giriniz."))
+#         Conductivity = float(st.number_input("⚡ Conductivity(İletkenlik)", step=1.0, min_value=201.6197368, help="20°C Conductivity (İletkenlik) değerini giriniz."))
+#         Organic_carbon = float(st.number_input("💬 Organic_carbon (Organik karbon)", step=1.0, min_value=2.2, help="Organic_carbon (Organik karbon) değerini giriniz."))
+#         Trihalomethanes = float(st.number_input("🟠 Trihalomethanes(Trihalometanlar)", step=1.0, min_value=8.577012933, help="Trihalomethanes(Trihalometanlar) değerini giriniz."))
+#         Turbidity = float(st.number_input("🌀 Turbidity(Bulanıklık)", step=1.0, min_value=1.45, help="Turbidity(Bulanıklık) değerini giriniz."))
 
-        if st.button("Analiz Et 🚀"):
-            # 1. Arayüzden gelen tüm değerler Pandas DataFrame'e dönüştürülüyor
-            # Değişken isimleri (Hardness, Solids vs.) tam olarak yukarıda tanımlandığı gibi düzeltildi.
-            input_data = pd.DataFrame({
-                "ph": [ph],
-                "Hardness": [Hardness],
-                "Solids": [Solids],                 
-                "Chloramines": [Chloramines],
-                "Sulfate": [Sulfate],                
-                "Conductivity": [Conductivity],      
-                "Organic_carbon": [Organic_carbon], 
-                "Trihalomethanes": [Trihalomethanes],
-                "Turbidity": [Turbidity]            
-            })
+#         if st.button("Analiz Et 🚀"):
+#             # 1. Arayüzden gelen tüm değerler Pandas DataFrame'e dönüştürülüyor
+#             # Değişken isimleri (Hardness, Solids vs.) tam olarak yukarıda tanımlandığı gibi düzeltildi.
+#             input_data = pd.DataFrame({
+#                 "ph": [ph],
+#                 "Hardness": [Hardness],
+#                 "Solids": [Solids],                 
+#                 "Chloramines": [Chloramines],
+#                 "Sulfate": [Sulfate],                
+#                 "Conductivity": [Conductivity],      
+#                 "Organic_carbon": [Organic_carbon], 
+#                 "Trihalomethanes": [Trihalomethanes],
+#                 "Turbidity": [Turbidity]            
+#             })
             
-            try:
-                # 2. Veriyi, eğitilmiş scaler ile ölçeklendir
-                input_scaled = scaler.transform(input_data)
+#             try:
+#                 # 2. Veriyi, eğitilmiş scaler ile ölçeklendir
+#                 input_scaled = scaler.transform(input_data)
                 
-                # 3. Modelden tahmini al
-                prediction = model.predict(input_scaled)
+#                 # 3. Modelden tahmini al
+#                 prediction = model.predict(input_scaled)
                 
-                # 4. Çıkan sonucu (1 veya 0) oturum durumuna (session_state) kaydet
-                st.session_state.sonuc = int(prediction[0])
-                st.session_state.analiz_tamamlandi = True
+#                 # 4. Çıkan sonucu (1 veya 0) oturum durumuna (session_state) kaydet
+#                 st.session_state.sonuc = int(prediction[0])
+#                 st.session_state.analiz_tamamlandi = True
                 
-                # Sayfayı yenile ve sonuç kartını göster
-                st.rerun()
-            except Exception as e:
-                st.error(f"Tahmin sırasında bir hata oluştu: {e}")
+#                 # Sayfayı yenile ve sonuç kartını göster
+#                 st.rerun()
+#             except Exception as e:
+#                 st.error(f"Tahmin sırasında bir hata oluştu: {e}")
             
-    # EĞER ANALİZ YAPILDIYSA SADECE SONUÇ KARTINI GÖSTER
-    else:
-        st.markdown("### 📊 ANALİZ SONUCU")
-        st.markdown("<hr style='border:1px solid white'>", unsafe_allow_html=True)
+#     # EĞER ANALİZ YAPILDIYSA SADECE SONUÇ KARTINI GÖSTER
+#     else:
+#         st.markdown("### 📊 ANALİZ SONUCU")
+#         st.markdown("<hr style='border:1px solid white'>", unsafe_allow_html=True)
         
-        if st.session_state.sonuc == 1:
-            st.success("✅ Afiyet olsun, su **İÇİLEBİLİR!**")
-        else:
-            st.error("❌ Dikkat! Su **İÇİLEMEZ** (Güvenli Değil).")
+#         if st.session_state.sonuc == 1:
+#             st.success("✅ Afiyet olsun, su **İÇİLEBİLİR!**")
+#         else:
+#             st.error("❌ Dikkat! Su **İÇİLEMEZ** (Güvenli Değil).")
             
-        st.markdown("<br>", unsafe_allow_html=True)
+#         st.markdown("<br>", unsafe_allow_html=True)
         
-        if st.button("Yeni Test Yap 🔄"):
-            st.session_state.analiz_tamamlandi = False
-            st.rerun() # Sayfayı yenile ve formu geri getir
+#         if st.button("Yeni Test Yap 🔄"):
+#             st.session_state.analiz_tamamlandi = False
+#             st.rerun() # Sayfayı yenile ve formu geri getir
+
+
+
 # # Sadece sol kolonun içine içerik ekler
 # with sol_kolon:
 #     # EĞER ANALİZ YAPILMADIYSA FORMU GÖSTER
