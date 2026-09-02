@@ -159,6 +159,19 @@ if st.button("Analiz Et 🚀", key="yeni_test_butonu"):
     try:
         # Girilen verileri , eğitilmiş scaler ile ölçeklendirme
         input_scaled=scaler.transform(input_data)
+        
+        #Eğitilen modelden tahmini alma
+        prediction=model.predict(input_scaled)
+        
+        #Çıkan sonucu (1-0) oturum durumuna (session_state) kaydeder.
+        st.session_state.sonuc=int(prediction[0])
+        st.session_state.analiz_tamamlandi=True
+        
+        #Sayfayı yenileme ve sonuç kartını gösterme
+        st.rerun()
+    except Exception as e:
+        st.error(f"Tahmin sırasında bir hata oluştu:{e}")
+        
     
 #         if st.button("Analiz Et 🚀",key="yeni_test_butonu"):
 #             # 1. Arayüzden gelen tüm değerler Pandas DataFrame'e dönüştürülüyor
@@ -190,6 +203,8 @@ if st.button("Analiz Et 🚀", key="yeni_test_butonu"):
 #                 st.rerun()
 #             except Exception as e:
 #                 st.error(f"Tahmin sırasında bir hata oluştu: {e}")
+
+
             
 #     # Eğer analiz yapıldıysa sayfada formu kaldırır sadece sonuç kartını gösterir.
 #     else:
