@@ -35,6 +35,8 @@ def get_base64_of_bin_file(bin_file):
     except FileNotFoundError:
         return ""
 
+
+# Tüm sayfanın arka planı için kullanılacak resim
 img_base64 = get_base64_of_bin_file("suweb2.webp")
 
 
@@ -48,7 +50,7 @@ if img_base64:
         background-image: url("data:image/webp;base64,{img_base64}");
         background-size: cover;
         background-position: center;
-        background-attachment: scrool,fixed;
+        background-attachment:fixed;
         }}
 
     /* Ortadaki veri giriş kartına BUZLU CAM  */
@@ -104,13 +106,23 @@ if img_base64:
     st.markdown(custom_css, unsafe_allow_html=True)
 
 #  Sayfanın yerleşimi (Sol kolon veri girişi, sağ kolon boşluk)
-sol_kolon, sag_kolon = st.columns([1, 2])
+sol_kolon, sag_kolon = st.columns([1, 1])
 
 
 #Sadece sağ kolonun içine içerik ekleme
 # rgba (0,0,0,0.8) demek renklerin oranlarıyla karışım yapıyor.
+
+
+# --- SOL KOLON (Su Bardağı Resmi) ---
+with sol_kolon:
+    try:
+        
+        st.image("suweb.webp", use_column_width=True)
+    except FileNotFoundError:
+        st.info("Sol tarafta gösterilecek resim bulunamadı. Lütfen dosya adını güncelleyin.")
+
 with sag_kolon:
-    #Analiz yapıladıysa formu göstermeye devam eder.
+#Analiz yapıladıysa formu göstermeye devam eder.
     if not st.session_state.analiz_tamamlandi:
         st.markdown("<h3 style='color : lightblue' !important; text-shadow : 1px 1px 3px rgba (0,0,0,0.8); margin-bottom : 0px;'>💧 SU KALİTE ANALİZİ 🚰</h3>", unsafe_allow_html=True)
         st.markdown("### GİRİLMESİ GEREKEN DEĞERLER")
@@ -129,7 +141,7 @@ with sag_kolon:
         Trihalomethanes = float(st.number_input("🟠 Trihalomethanes(Trihalometanlar)", step=1.0, min_value=8.577012933, help="Trihalomethanes(Trihalometanlar) için sınır değer, 2005 yılından beri gereği 100 µg/L olarak belirlenmiştir."))
         Turbidity = float(st.number_input("🌀 Turbidity(Bulanıklık)", step=1.0, min_value=1.45, help="Turbidity(Bulanıklık):Suyun içindeki askıda katı maddelerin ışığı dağıtmasıyla suyun berraklığının azalmasına denir."))
 
-if st.button("Analiz Et 🚀", key="yeni_test_butonu"):
+if st.button("Analiz Et 🚀", key="analiz_butonu_1"):
     #Arayüzden gelen tüm değerler Pandas ile DataFrame'e dönüştürülüyor.
     #Değişken isimleri (Hardness,Solids vs.) yukarıda tanımlandığı gibi DataFrame ekledim.
     
