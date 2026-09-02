@@ -120,17 +120,13 @@ with sol_kolon:
         st.image("suweb.webp", use_column_width=True)
     except FileNotFoundError:
         st.info("Sol tarafta gösterilecek resim bulunamadı. Lütfen dosya adını güncelleyin.")
-
 with sag_kolon:
-#Analiz yapıladıysa formu göstermeye devam eder.
+    # 1. DURUM: Analiz YAPILMADIYSA sadece formu ve "Analiz Et" butonunu göster
     if not st.session_state.analiz_tamamlandi:
-        st.markdown("<h3 style='color : lightblue' !important; text-shadow : 1px 1px 3px rgba (0,0,0,0.8); margin-bottom : 0px;'>💧 SU KALİTE ANALİZİ 🚰</h3>", unsafe_allow_html=True)
+        st.markdown("<h3 style='color : #ADD8E6' !important; text-shadow : 1px 1px 3px rgba (0,0,0,0.8); margin-bottom : 0px;'>💧 SU KALİTE ANALİZİ 🚰</h3>", unsafe_allow_html=True)
         st.markdown("### GİRİLMESİ GEREKEN DEĞERLER")
         st.markdown("<hr style='border:1px solid white'>" , unsafe_allow_html=True)
         
-
-
-#Girilecek parametrelerin .input olarak veri tipini belirterek,help kutusundaki mesaj açılması.
         ph = float(st.number_input("💧 pH Seviyesi", step=1.0, min_value=0.22749905, max_value=14.0, help="ph bilgisi 0-14 değerleri arasında olmalıdır.")) 
         Hardness = float(st.number_input("🪨 (Hardness) Sertlik ", step=1.0, min_value=73.49223369, help="Sertlik(Hardness):Suyun bir yüzeye temas etmeye karşı gösterdiği dirençtir."))
         Solids = float(st.number_input("🧊 Solids (Katılar)", step=1.0, min_value=320.9426113, help="Solids(Katılar):Suyun içinde çözünmüş halde bulunan mineral, tuz ve iyonların toplam miktarını ifade eder."))
@@ -141,64 +137,44 @@ with sag_kolon:
         Trihalomethanes = float(st.number_input("🟠 Trihalomethanes(Trihalometanlar)", step=1.0, min_value=8.577012933, help="Trihalomethanes(Trihalometanlar) için sınır değer, 2005 yılından beri gereği 100 µg/L olarak belirlenmiştir."))
         Turbidity = float(st.number_input("🌀 Turbidity(Bulanıklık)", step=1.0, min_value=1.45, help="Turbidity(Bulanıklık):Suyun içindeki askıda katı maddelerin ışığı dağıtmasıyla suyun berraklığının azalmasına denir."))
 
-if st.button("Analiz Et 🚀", key="yeni_test_butonu"):
-    #Arayüzden gelen tüm değerler Pandas ile DataFrame'e dönüştürülüyor.
-    #Değişken isimleri (Hardness,Solids vs.) yukarıda tanımlandığı gibi DataFrame ekledim.
-    
-    input_data=pd.DataFrame({
-        "ph": [ph],
-        "Hardness": [Hardness],
-        "Solids":[Solids],
-        "Chloramines":[Chloramines],
-        "Sulfate":[Sulfate],
-        "Conductivity":[Conductivity],
-        "Organic_carbon":[Organic_carbon],
-        "Trihalomethanes":[Trihalomethanes],
-        "Turbidity":[Turbidity]
-        })
-    try:
-        # Girilen verileri , eğitilmiş scaler ile ölçeklendirme
-        input_scaled=scaler.transform(input_data)
-        
-        #Eğitilen modelden tahmini alma
-        prediction=model.predict(input_scaled)
-        
-        #Çıkan sonucu (1-0) oturum durumuna (session_state) kaydeder.
-        st.session_state.sonuc=int(prediction[0])
-        st.session_state.analiz_tamamlandi=True
-        
-        #Sayfayı yenileme ve sonuç kartını gösterme
-        st.rerun()
-    except Exception as e:
-        st.error(f"Tahmin sırasında bir hata oluştu:{e}")
-        
-
+        if st.button("Analiz Et 🚀", key="analiz_butonu1"):
+            input_data = pd.DataFrame({
+                "ph": [ph],
+                "Hardness": [Hardness],
+                "Solids":[Solids],
+                "Chloramines":[Chloramines],
+                "Sulfate":[Sulfate],
+                "Conductivity":[Conductivity],
+                "Organic_carbon":[Organic_carbon],
+                "Trihalomethanes":[Trihalomethanes],
+                "Turbidity":[Turbidity]
+            })
             
-    # Eğer analiz yapıldıysa sayfada formu kaldırır sadece sonuç kartını gösterir.
+            try:
+                input_scaled = scaler.transform(input_data)
+                prediction = model.predict(input_scaled)
+                
+                st.session_state.sonuc = int(prediction[0])
+                st.session_state.analiz_tamamlandi = True
+                st.rerun()
+                
+            except Exception as e:
+                st.error(f"Tahmin sırasında bir hata oluştu: {e}")
+                
+    # 2. DURUM: Analiz YAPILDIYSA formu tamamen gizle, sadece sonucu ve "Yeni Test Yap" butonunu göster
     else:
         st.markdown("### 📊 ANALİZ SONUCU")
         st.markdown("<hr style='border:1px solid white'>", unsafe_allow_html=True)
         
-        # if st.session_state.sonuc == 1:
-        #     st.success("✅ Afiyet olsun, su **İÇİLEBİLİR!**")
-        # else:
-        #     st.error("❌ Dikkat! Su **İÇİLEMEZ** (Güvenli Değil).")
-            
-        
-        
-        #  1'i 0 yaptım
         if st.session_state.sonuc == 0: 
             st.success("✅ Afiyet olsun, su **İÇİLEBİLİR!**")
         else:
             st.error("❌ Dikkat! Su **İÇİLEMEZ** (Güvenli Değil).")
             st.markdown("<br>", unsafe_allow_html=True)
             
-            
-        # Yeni Hali:
         if st.button("Yeni Test Yap 🔄", key="yeni_test_buton"):
             st.session_state.analiz_tamamlandi = False
-            st.rerun() # Sayfayı yenile ve formu geri getir
-
+            st.rerun()
 
 
 
