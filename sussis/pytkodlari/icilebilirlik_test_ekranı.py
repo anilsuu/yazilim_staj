@@ -12,22 +12,31 @@ import joblib  # Modeli yüklemek için gerekli
 
 
 # Geniş mod - layout="wide" ekranın daha büyük
+
 st.set_page_config(page_title="Su İçilebilirlik Analizi", layout="wide", page_icon="🚰")
 
 
+
 # Modeli medyan_puanlamalıdan ve Scaler'ı yükledim 
+
 try:
     model = joblib.load("rf_kural_su_model.pkl")
     scaler = joblib.load("scaler_kural.pkl")
 except FileNotFoundError:
     st.error("Model dosyaları (pkl) bulunamadı! Lütfen eğitim kodunuzu çalıştırdığınıza ve aynı klasörde olduğunuza emin olun.")
 
+
+
 #  Sayfanın durum yönetimi - Formun kaybolması için
+
 if 'analiz_tamamlandi' not in st.session_state:
     st.session_state.analiz_tamamlandi = False
     st.session_state.sonuc = 0
 
+
+
 #  Web arka sayfasına su-bardak resmi yükleme 
+
 def get_base64_of_bin_file(bin_file):
     try:
         with open(bin_file, 'rb') as f:
@@ -35,10 +44,16 @@ def get_base64_of_bin_file(bin_file):
     except FileNotFoundError:
         return ""
 
+
+
 # Tüm sayfanın arka planı için kullanılacak resim
+
 img_base64 = get_base64_of_bin_file("suweb2.webp")
 
+
+
 #  CSS Özelleştirme kodları
+
 if img_base64:
     custom_css = f"""
     <style>
@@ -54,7 +69,13 @@ if img_base64:
     [data-testid="stHorizontalBlock"]:has(#su_resmi):has(#su_formu) {{
         align-items: stretch !important;
     }}
-
+        
+   # /*  Sonuç ekranında buzlu boyutu küçültüp ortalama */
+   #  [data-testid="stHorizontalBlock"]:has(#su_sonuc) {{
+   #      align-items: center !important; 
+   #  }}
+        
+        
     /* RESİM KOLONU (Sol) */
     [data-testid="column"]:has(#su_resmi) {{
         display: flex;
@@ -69,6 +90,7 @@ if img_base64:
         height: 100% !important;
         display: flex;
     }}
+        
     [data-testid="column"]:has(#su_resmi) img {{
         height: 100% !important;
         object-fit: cover !important; 
@@ -77,7 +99,7 @@ if img_base64:
     }}
 
     /* FORM KOLONU (Sağ) - BUZLU  */
-    [data-testid="column"]:has(#su_formu) {{
+    [data-testid="column"]:has(#su_formu){{
         background: rgba(255, 255, 255, 0.15) !important;
         backdrop-filter: blur(12px) !important; 
         -webkit-backdrop-filter: blur(12px) !important; 
@@ -96,6 +118,7 @@ if img_base64:
         color: #ffffff !important;
         text-shadow: 1px 1px 3px rgba(0,0,0,0.8); 
     }}
+    
     .stSlider [data-testid="stThumbValue"] {{
         color: #ffffff !important;
     }}
@@ -106,6 +129,7 @@ if img_base64:
         color: #800000 !important;
         font-weight: bold;
     }}
+                                    
     .stButton>button:hover {{
         transform: scale(1.02);
         box-shadow: 0px 5px 15px rgba(255, 255, 255, 0.5);
@@ -138,9 +162,11 @@ if img_base64:
         [data-testid="column"]:has(#su_resmi) {{
             z-index: 1 !important; 
         }}
+            
         [data-testid="column"]:has(#su_resmi) img {{
             min-height: 90vh !important; 
         }}
+            
     }}
     </style>
     """
@@ -221,7 +247,7 @@ with sag_kolon:
             except Exception as e:
                 st.error(f"Tahmin sırasında bir hata oluştu: {e}")
                 
-    # 2. DURUM: Analiz YAPILDIYSA
+    # Analiz YAPILDIYSA
     else:
         st.markdown("### 📊 ANALİZ SONUCU")
         st.markdown("<hr style='border:1px solid white'>", unsafe_allow_html=True)
@@ -408,9 +434,7 @@ with sag_kolon:
 #         box-shadow: 0px 5px 15px rgba(255, 255, 255, 0.5);
 #     }}
     
-#     /* =========================================
-#        MOBİL GÖRÜNÜM (TELEFON) İÇİN ÖZEL AYARLAR
-#        ========================================= */
+    
 #     @media (max-width: 768px) {{
 #         /* Kolonların yatay bloğunu CSS Grid'e çevir */
 #         [data-testid="stHorizontalBlock"] {{
