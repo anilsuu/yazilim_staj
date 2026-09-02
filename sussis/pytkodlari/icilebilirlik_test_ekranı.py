@@ -4,12 +4,6 @@ Created on Mon Aug 31 11:10:52 2026
 
 @author: nilsu
 """
-
-
-
-
-
-# #SAYFA DA 2 RESİM VAR , FORM KAYBOLUYOR.
             
 import streamlit as st
 import pandas as pd
@@ -47,7 +41,7 @@ img_base64 = get_base64_of_bin_file("suweb2.webp")
 
 #  CSS Özelleştirme kodları , buzlu görüntü , display ayarı vb.
 if img_base64:
-    custom_css = """
+    custom_css = f"""
     <style>
     /* Arka plan resmini tam ekran yapma */
     .stApp {{
@@ -60,23 +54,25 @@ if img_base64:
     /* Ortadaki veri giriş kartına BUZLU CAM  */
     [data-testid="column"]:nth-of-type(2) {{
         background: rgba(255, 255, 255, 0.15) !important;
-        backdrop-filter: blur(12px) !important; #Kutunun buzlu olması 12px
-        -webkit-backdrop-filter: blur(12px) !important; #Aykırı arka tarafı blurlaması
-        border-radius: 25px; #Kutunun köşelerini yuvarlatmak
+        backdrop-filter: blur(12px) !important; /*Kutunun buzlu olması 12px*\
+        -webkit-backdrop-filter: blur(12px) !important; /*Aykırı arka tarafı blurlaması*\
+        border-radius: 25px; /*Kutunun köşelerini yuvarlatmak*\
         border: 1px solid rgba(255, 255, 255, 0.4); 
-        padding: 2rem 3rem;  #Sayfa da kenarlara boşluk bırakmak için
-        margin-top: 3rem; # Sayfa üstüne boşluk
-        margin-bottom: 3rem; # Sayfa altına boşluk
+        padding: 2rem 3rem;  /*Sayfa da kenarlara boşluk bırakmak için*\
+        margin-top: 1rem; /* Sayfa üstüne boşluk *\
+        margin-bottom: 1rem; /* Sayfa altına boşluk *\
         box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); 
-        display:flex; # flex özelliğe sahip bir kutu içerisinde öğeler uygun boyutlandırılır.
+        display:flex; /* flex özelliğe sahip bir kutu içerisinde öğeler uygun boyutlandırılır.*\
         flex-direction: column;
+        
+    
     }}
 
     /* Yazıları okunabilir yapmak için beyaz renk ve gölge */
     h1,h2, h4, p, label, .stMarkdown {{
         color: #ffffff !important;
         text-shadow: 1px 1px 3px rgba(0,0,0,0.8); 
-        #Shadow +ile başlıyorsa sağa doğru,- ile başlıyorsa sola doğru
+        /*Shadow +ile başlıyorsa sağa doğru,- ile başlıyorsa sola doğru*\
     }}
     
 
@@ -97,6 +93,7 @@ if img_base64:
         width: 100%;
         transition: all 0.3s ease;
     }}
+                            
     
     .stButton>button:hover {{
         transform: scale(1.02);
@@ -119,15 +116,6 @@ with sag_kolon:
         st.markdown("### GİRİLMESİ GEREKEN DEĞERLER")
         st.markdown("<hr style='border:1px solid white'>" , unsafe_allow_html=True)
         
-        
-# # Sadece sağ kolonun içine içerik ekleme
-# with sag_kolon:
-#     # Analiz yapılmadıysa formu göstermeye devam eder
-#     if not st.session_state.analiz_tamamlandi:
-#         st.markdown("<h3 style='color: lightblue !important; text-shadow: 1px 1px 3px rgba(0,0,0,0.8); margin-bottom: 0px;'>💧 SU KALİTE ANALİZİ 🚰</h3>", unsafe_allow_html=True)
-#         st.markdown("#### GİRİŞ PARAMETRELERİ")
-#         st.markdown("<hr style='border:1px solid white'>", unsafe_allow_html=True)
-
 
 
 #Girilecek parametrelerin .input olarak veri tipini belirterek,help kutusundaki mesaj açılması.
@@ -173,6 +161,19 @@ if st.button("Analiz Et 🚀", key="yeni_test_butonu"):
         st.error(f"Tahmin sırasında bir hata oluştu:{e}")
         
     
+    
+    
+    
+            
+# # Sadece sağ kolonun içine içerik ekleme
+# with sag_kolon:
+#     # Analiz yapılmadıysa formu göstermeye devam eder
+#     if not st.session_state.analiz_tamamlandi:
+#         st.markdown("<h3 style='color: lightblue !important; text-shadow: 1px 1px 3px rgba(0,0,0,0.8); margin-bottom: 0px;'>💧 SU KALİTE ANALİZİ 🚰</h3>", unsafe_allow_html=True)
+#         st.markdown("#### GİRİŞ PARAMETRELERİ")
+#         st.markdown("<hr style='border:1px solid white'>", unsafe_allow_html=True)
+
+
 #         if st.button("Analiz Et 🚀",key="yeni_test_butonu"):
 #             # 1. Arayüzden gelen tüm değerler Pandas DataFrame'e dönüştürülüyor
 #             # Değişken isimleri (Hardness, Solids vs.) yukarıda tanımlandığı gibi dataframe eklendi.
@@ -206,30 +207,30 @@ if st.button("Analiz Et 🚀", key="yeni_test_butonu"):
 
 
             
-#     # Eğer analiz yapıldıysa sayfada formu kaldırır sadece sonuç kartını gösterir.
-#     else:
-#         st.markdown("### 📊 ANALİZ SONUCU")
-#         st.markdown("<hr style='border:1px solid white'>", unsafe_allow_html=True)
+    # Eğer analiz yapıldıysa sayfada formu kaldırır sadece sonuç kartını gösterir.
+    else:
+        st.markdown("### 📊 ANALİZ SONUCU")
+        st.markdown("<hr style='border:1px solid white'>", unsafe_allow_html=True)
         
-#         # if st.session_state.sonuc == 1:
-#         #     st.success("✅ Afiyet olsun, su **İÇİLEBİLİR!**")
-#         # else:
-#         #     st.error("❌ Dikkat! Su **İÇİLEMEZ** (Güvenli Değil).")
+        # if st.session_state.sonuc == 1:
+        #     st.success("✅ Afiyet olsun, su **İÇİLEBİLİR!**")
+        # else:
+        #     st.error("❌ Dikkat! Su **İÇİLEMEZ** (Güvenli Değil).")
             
         
         
-#         #  1'i 0 yaptım
-#         if st.session_state.sonuc == 0: 
-#             st.success("✅ Afiyet olsun, su **İÇİLEBİLİR!**")
-#         else:
-#             st.error("❌ Dikkat! Su **İÇİLEMEZ** (Güvenli Değil).")
-#             st.markdown("<br>", unsafe_allow_html=True)
+        #  1'i 0 yaptım
+        if st.session_state.sonuc == 0: 
+            st.success("✅ Afiyet olsun, su **İÇİLEBİLİR!**")
+        else:
+            st.error("❌ Dikkat! Su **İÇİLEMEZ** (Güvenli Değil).")
+            st.markdown("<br>", unsafe_allow_html=True)
             
             
-#         # Yeni Hali:
-#         if st.button("Yeni Test Yap 🔄", key="yeni_test_buton"):
-#             st.session_state.analiz_tamamlandi = False
-#             st.rerun() # Sayfayı yenile ve formu geri getir
+        # Yeni Hali:
+        if st.button("Yeni Test Yap 🔄", key="yeni_test_buton"):
+            st.session_state.analiz_tamamlandi = False
+            st.rerun() # Sayfayı yenile ve formu geri getir
 
 
 
