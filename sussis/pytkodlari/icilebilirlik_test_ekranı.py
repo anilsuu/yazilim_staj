@@ -56,15 +56,15 @@ if img_base64:
     /* Ortadaki veri giriş kartına BUZLU CAM  */
     [data-testid="column"]:nth-of-type(2) {{
         background: rgba(255, 255, 255, 0.15) !important;
-        backdrop-filter: blur(12px) !important; /*Kutunun buzlu olması 12px*\
-        -webkit-backdrop-filter: blur(12px) !important; /*Aykırı arka tarafı blurlaması*\
-        border-radius: 25px; /*Kutunun köşelerini yuvarlatmak*\
+        backdrop-filter: blur(12px) !important; /*Kutunun buzlu olması 12px*/
+        -webkit-backdrop-filter: blur(12px) !important; /*Aykırı arka tarafı blurlaması*/
+        border-radius: 25px; /*Kutunun köşelerini yuvarlatmak*/
         border: 1px solid rgba(255, 255, 255, 0.4); 
-        padding: 2rem 3rem;  /*Sayfa da kenarlara boşluk bırakmak için*\
-        margin-top: 1rem; /* Sayfa üstüne boşluk *\
-        margin-bottom: 1rem; /* Sayfa altına boşluk *\
+        padding: 2rem 3rem;  /*Sayfa da kenarlara boşluk bırakmak için*/
+        margin-top: 1rem; /* Sayfa üstüne boşluk */
+        margin-bottom: 1rem; /* Sayfa altına boşluk */
         box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); 
-        display:flex; /* flex özelliğe sahip bir kutu içerisinde öğeler uygun boyutlandırılır.*\
+        display:flex; /* flex özelliğe sahip bir kutu içerisinde öğeler uygun boyutlandırılır.*/
         flex-direction: column;
         
     
@@ -74,7 +74,7 @@ if img_base64:
     h1,h2, h4, p, label, .stMarkdown {{
         color: #ffffff !important;
         text-shadow: 1px 1px 3px rgba(0,0,0,0.8); 
-        /*Shadow +ile başlıyorsa sağa doğru,- ile başlıyorsa sola doğru*\
+        /*Shadow +ile başlıyorsa sağa doğru,- ile başlıyorsa sola doğru*/
     }}
     
 
@@ -87,13 +87,13 @@ if img_base64:
     .stButton>button {{
         background: linear-gradient(90deg, #e3ffe7 0%, #d9e7ff 100%);
         color: #800000 !important;
-        font-weight: bold;
-        font-size: 18px;
-        border-radius: 20px;
-        border: none;
-        padding: 10px 24px;
-        width: 100%;
-        transition: all 0.3s ease;
+        # font-weight: bold;
+        # font-size: 18px;
+        # border-radius: 20px;
+        # border: none;
+        # padding: 10px 24px;
+        # width: 100%;
+        # transition: all 0.3s ease;
     }}
                             
     
@@ -141,7 +141,7 @@ with sag_kolon:
         Trihalomethanes = float(st.number_input("🟠 Trihalomethanes(Trihalometanlar)", step=1.0, min_value=8.577012933, help="Trihalomethanes(Trihalometanlar) için sınır değer, 2005 yılından beri gereği 100 µg/L olarak belirlenmiştir."))
         Turbidity = float(st.number_input("🌀 Turbidity(Bulanıklık)", step=1.0, min_value=1.45, help="Turbidity(Bulanıklık):Suyun içindeki askıda katı maddelerin ışığı dağıtmasıyla suyun berraklığının azalmasına denir."))
 
-if st.button("Analiz Et 🚀", key="analiz_butonu_1"):
+if st.button("Analiz Et 🚀", key="yeni_test_butonu"):
     #Arayüzden gelen tüm değerler Pandas ile DataFrame'e dönüştürülüyor.
     #Değişken isimleri (Hardness,Solids vs.) yukarıda tanımlandığı gibi DataFrame ekledim.
     
@@ -172,51 +172,6 @@ if st.button("Analiz Et 🚀", key="analiz_butonu_1"):
     except Exception as e:
         st.error(f"Tahmin sırasında bir hata oluştu:{e}")
         
-    
-    
-    
-    
-            
-# # Sadece sağ kolonun içine içerik ekleme
-# with sag_kolon:
-#     # Analiz yapılmadıysa formu göstermeye devam eder
-#     if not st.session_state.analiz_tamamlandi:
-#         st.markdown("<h3 style='color: lightblue !important; text-shadow: 1px 1px 3px rgba(0,0,0,0.8); margin-bottom: 0px;'>💧 SU KALİTE ANALİZİ 🚰</h3>", unsafe_allow_html=True)
-#         st.markdown("#### GİRİŞ PARAMETRELERİ")
-#         st.markdown("<hr style='border:1px solid white'>", unsafe_allow_html=True)
-
-
-#         if st.button("Analiz Et 🚀",key="yeni_test_butonu"):
-#             # 1. Arayüzden gelen tüm değerler Pandas DataFrame'e dönüştürülüyor
-#             # Değişken isimleri (Hardness, Solids vs.) yukarıda tanımlandığı gibi dataframe eklendi.
-#             input_data = pd.DataFrame({
-#                 "ph": [ph],
-#                 "Hardness": [Hardness],
-#                 "Solids": [Solids],                 
-#                 "Chloramines": [Chloramines],
-#                 "Sulfate": [Sulfate],                
-#                 "Conductivity": [Conductivity],      
-#                 "Organic_carbon": [Organic_carbon], 
-#                 "Trihalomethanes": [Trihalomethanes],
-#                 "Turbidity": [Turbidity]            
-#             })
-            
-#             try:
-#                 # Veriyi, eğitilmiş scaler ile ölçeklendirir
-#                 input_scaled = scaler.transform(input_data)
-                
-#                 #  Modelden tahmini al
-#                 prediction = model.predict(input_scaled)
-                
-#                 #  Çıkan sonucu (1 veya 0) oturum durumuna (session_state) kaydeder.
-#                 st.session_state.sonuc = int(prediction[0])
-#                 st.session_state.analiz_tamamlandi = True
-                
-#                 # Sayfayı yenile ve sonuç kartını göster
-#                 st.rerun()
-#             except Exception as e:
-#                 st.error(f"Tahmin sırasında bir hata oluştu: {e}")
-
 
             
     # Eğer analiz yapıldıysa sayfada formu kaldırır sadece sonuç kartını gösterir.
