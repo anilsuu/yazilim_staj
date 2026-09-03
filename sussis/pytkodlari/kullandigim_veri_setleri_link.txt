@@ -5,6 +5,6 @@ https://www.kaggle.com/datasets/balavashan/drinking-water-dataset
 
 ------------------------------------------------------------------------------------------------
 
-Veri ön işleme , Aykırı değer analizi , model eğitiminde kullandığım çok sütunlu veri seti potability (içilebilirlik) sütunu olmadığı için denetimsiz öğrenme algoritmaları uyguladım. kaggle water_quality_potability
+Veri ön işleme , Aykırı değer analizi , model eğitiminde kullandığım çok sütunlu veri seti potability (içilebilirlik) sütunu olmadığı için denetimsiz öğrenme algoritmaları uygulayacaktım ancak modele hedef (y) verdipim için denetimli öğrenme oldu .kaggle water_quality_potability
 
 https://www.kaggle.com/datasets/tamilamudan/water-quality-potability

@@ -12,17 +12,8 @@ from sklearn.preprocessing import PowerTransformer
 import pyodbc
 from sqlalchemy import create_engine
 import urllib
-import missingno as msno
 from sklearn.impute import KNNImputer
-from scipy.stats import zscore
-from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV, KFold, learning_curve
-from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
-from sklearn.preprocessing import LabelEncoder
-from sklearn.metrics import r2_score, roc_curve, auc
-from sklearn.metrics import accuracy_score, classification_report
-import xgboost as xgb
+
 
 #Server ve database bilgisi
 server = 'LAPTOP-MNJN06EU\\NILSS'

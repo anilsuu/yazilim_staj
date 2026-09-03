@@ -9,30 +9,11 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.preprocessing import LabelEncoder, MinMaxScaler, StandardScaler
-from sklearn.preprocessing import PowerTransformer
-import pyodbc
-from sqlalchemy import create_engine
-import urllib
-import joblib
-from sklearn.cluster import KMeans
-from sklearn.metrics import silhouette_score
-from sklearn.decomposition import PCA
-from scipy.stats import zscore
-from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV, KFold, learning_curve
-from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
-from sklearn.metrics import r2_score, roc_curve, auc
 from sklearn.metrics import accuracy_score, classification_report
 import xgboost as xgb
-from imblearn.pipeline import Pipeline
-from imblearn.over_sampling import SMOTE
 from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import accuracy_score, classification_report
 from lightgbm import LGBMClassifier
 from catboost import CatBoostClassifier
-import lightgbm as lgb
 
 df_son = pd.read_csv("temizlenmis_su_kalitesi.csv")
 

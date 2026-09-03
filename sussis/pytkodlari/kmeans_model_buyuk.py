@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Aug 28 11:39:56 2026
-
 @author: nilsu
+
 """
 # -*- coding: utf-8 -*-
 

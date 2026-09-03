@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 import pandas as pd
 import numpy as np
 import joblib
@@ -25,9 +26,11 @@ tum_kimyasal_sutunlar = [
 
 tummedyanlar = df[tum_kimyasal_sutunlar].median()
 
+
+    # pH: İdeal aralık 6.5 - 8.5
+    
 def dinamik_su_puani(row):
     puan = 0
-    # pH: İdeal aralık 6.5 - 8.5
     if 6.5 <= row['ph'] <= 8.5:
         puan += 1
     # Diğer parametreler verinin medyanından düşük/yakınsa temiz puanı alır
@@ -48,7 +51,7 @@ def dinamik_su_puani(row):
     if row['Turbidity'] <= tummedyanlar['Turbidity']:
         puan += 1
         
-    # 9 kriterden en az 5 tanesini sağlayanlar 'İçilebilir (1)', diğerleri '0'
+    # 9 kriterden en az 5 tanesini sağlayanlar 'İçilebilir (1)', diğerleri 'İçilemez (0)'
     return 1 if puan >= 5 else 0
 
 df['Potability_Kural'] = df.apply(dinamik_su_puani, axis=1)
@@ -59,8 +62,10 @@ print("-" * 45)
 
 print("-----------------------------------------------------")
 
-# hedefleri (y) modele verdiğiniz için bu denetimli (supervised) bir öğrenmedir Öğrenme için model eğitim seti
+# hedefleri (y) modele verdiğim için bu denetimli (supervised) bir öğrenmedir.
+# Öğrenme için model eğitim seti
 # =====================================================
+
 X = df[tum_kimyasal_sutunlar]
 y = df['Potability_Kural']
 
@@ -83,8 +88,12 @@ model = RandomForestClassifier(
 model.fit(X_train_sc, y_train)
 
 print("-----------------------------------------------------")
+
+
 # Modeli değerlendirme
 # =====================================================
+
+
 y_pred = model.predict(X_test_sc)
 
 print(f"\nModel Doğruluk Oranı (Accuracy): {accuracy_score(y_test, y_pred):.4f}")
@@ -100,10 +109,9 @@ joblib.dump(scaler, "scaler_kural.pkl")
 joblib.dump(model, "rf_kural_su_model.pkl")
 print("\nModel ve scaler başarıyla kaydedildi!")
 
+
 # =====================================================
 # Öğrenme eğrisini görselleştirme 
-
-
 
 train_sizes, train_scores, test_scores = learning_curve(
     estimator=model,
