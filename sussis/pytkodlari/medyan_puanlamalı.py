@@ -110,6 +110,11 @@ joblib.dump(model, "rf_kural_su_model.pkl")
 print("\nModel ve scaler başarıyla kaydedildi!")
 
 
+# Modeli ve Scaler'ı Kaydet
+joblib.dump(model, "rf_kural_su_model.joblib")
+joblib.dump(scaler, "scaler_kural.joblib")
+print("model hazır ve kaydedildi!")
+
 # =====================================================
 # Öğrenme eğrisini görselleştirme 
 
