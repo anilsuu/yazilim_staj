@@ -86,7 +86,7 @@ if img_base64:
         margin-bottom: 1rem; 
     }}
 
-    /* Resmi sündürmeden kırparak alanı doldurmasını sağla */
+    /* Resmi kırparak alanı doldurmasını sağla */
     [data-testid="column"]:has(#su_resmi) > div,
     [data-testid="column"]:has(#su_resmi) [data-testid="stImage"] {{
         height: 100% !important;
@@ -103,9 +103,9 @@ if img_base64:
     /* Form Kolonu (Sağ) - Buzlu  */
     [data-testid="column"]:has(#su_formu){{
         background: rgba(255, 255, 255, 0.15) !important;
-        backdrop-filter: blur(12px) !important; /*Kutunun buzlu olması 12px*/
+        backdrop-filter: blur(12px) !important;            /*Kutunun buzlu olması 12px*/
         -webkit-backdrop-filter: blur(12px) !important; 
-        border-radius: 25px; /*Kutunun köşelerini yuvarlatmak*/
+        border-radius: 25px;                               /*Kutunun köşelerini yuvarlatmak*/
         border: 1px solid rgba(255, 255, 255, 0.4); 
         padding: 2rem 3rem;  
         margin-top: 1rem; 
@@ -119,7 +119,7 @@ if img_base64:
     h1,h2, h4, p, label, .stMarkdown {{
         color: #ffffff !important;
         text-shadow: 1px 1px 3px rgba(0,0,0,0.8); 
-        /*Shadow +ile başlıyorsa sağa doğru,- ile başlıyorsa sola doğru*/
+                                                  /*Shadow + ile başlıyorsa sağa doğru,- ile başlıyorsa sola doğru*/
     
     }}
     
@@ -183,11 +183,15 @@ sol_kolon, sag_kolon = st.columns([1, 1])
 
 
 # --- sol kolon (Su Bardağı Resmi) ---
+
+
 with sol_kolon:
     
     # CSS'in sadece bu kolonu tanıması için id 
     # Burada su_resmi=.. gibi tanımlanmıyor 
     # Streamlitte Kolonların içine HTMLden (<div>) yazdım ve bunlara id='su_resmi', id='su_formu'
+    
+    
     st.markdown("<div id='su_resmi'></div>", unsafe_allow_html=True)
     
     try:
@@ -197,7 +201,10 @@ with sol_kolon:
         st.info("Sol tarafta gösterilecek resim bulunamadı. Lütfen dosya adını güncelleyin.")
 
 
+
 # --- sağ kolon (Form ve Sonuçlar) ---
+
+
 with sag_kolon:
     
     # CSS'in sadece bu kolonu tanıması için id
@@ -255,7 +262,7 @@ with sag_kolon:
             except Exception as e:
                 st.error(f"Tahmin sırasında bir hata oluştu: {e}")
                 
-    # Analiz YAPILDIYSA
+    # Analiz yapıldıysa sonuç ekranı gelir.
     else:
         st.markdown("### 📊 ANALİZ SONUCU")
         st.markdown("<hr style='border:1px solid white'>", unsafe_allow_html=True)
