@@ -1,0 +1,10 @@
+İlk kullandığım, veri temizliği , veri ön işleme gibi işlemleri yaptığım ancak model
+eğitimde 0.71 doğruluk aldığım için manuel test için kullandığım kaggle Drinking_Water Dataset
+
+https://www.kaggle.com/datasets/balavashan/drinking-water-dataset
+
+------------------------------------------------------------------------------------------------
+
+Veri ön işleme , Aykırı değer analizi , model eğitiminde kullandığım çok sütunlu veri seti potability (içilebilirlik) sütunu olmadığı için denetimsiz öğrenme algoritmaları uyguladım. kaggle water_quality_potability
+
+https://www.kaggle.com/datasets/tamilamudan/water-quality-potability
