@@ -206,7 +206,7 @@ with sag_kolon:
     # Analiz yapılmadıysa formu
     if not st.session_state.analiz_tamamlandi:
         st.markdown("<h3 style='color : #ADD8E6' !important; text-shadow : 1px 1px 3px rgba (0,0,0,0.8); margin-bottom : 0px;'>💧 SU KALİTE ANALİZİ 🚰</h3>", unsafe_allow_html=True)
-        st.markdown("### Su Analizi Parametreleri")
+        st.markdown("### Suyun Bileşen Analizi")
         st.markdown("<hr style='border:1px solid white'>" , unsafe_allow_html=True)
         
         # --- Formu 2 kolona bölme, parametrelerin girildiği ---
@@ -228,7 +228,7 @@ with sag_kolon:
             # Sağ kolonun sol kolonla (5 kutu vs 4 kutu) hizalı görünmesi için alt tarafa şeffaf bir boşluk 
             st.markdown("<div style='height: 80px;'></div>", unsafe_allow_html=True)
             
-        st.markdown("<br>", unsafe_allow_html=True) # Buton öncesi küçük bir boşluk
+        st.markdown("<br>", unsafe_allow_html=True) # Buton öncesi küçük boşluk
 
         # Butonu tüm alana yaymak için: use_container_width=True
         if st.button("Analiz Et 🚀", key="analiz_butonu1", use_container_width=True):
