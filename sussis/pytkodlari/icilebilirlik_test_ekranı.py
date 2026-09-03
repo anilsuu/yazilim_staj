@@ -17,7 +17,7 @@ st.set_page_config(page_title="Su İçilebilirlik Analizi", layout="wide", page_
 
 
 
-# Modeli medyan_puanlamalıdan ve Scaler'ı yükledim 
+# Modeli medyan_puanlamalıdan ve scaleri yükledim 
 
 try:
     model = joblib.load("rf_kural_su_model.pkl")
@@ -98,12 +98,12 @@ if img_base64:
         box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); 
     }}
 
-    /* FORM KOLONU (Sağ) - BUZLU  */
+    /* Form Kolonu (Sağ) - Buzlu  */
     [data-testid="column"]:has(#su_formu){{
         background: rgba(255, 255, 255, 0.15) !important;
-        backdrop-filter: blur(12px) !important; 
+        backdrop-filter: blur(12px) !important; /*Kutunun buzlu olması 12px*/
         -webkit-backdrop-filter: blur(12px) !important; 
-        border-radius: 25px; 
+        border-radius: 25px; /*Kutunun köşelerini yuvarlatmak*/
         border: 1px solid rgba(255, 255, 255, 0.4); 
         padding: 2rem 3rem;  
         margin-top: 1rem; 
@@ -117,6 +117,8 @@ if img_base64:
     h1,h2, h4, p, label, .stMarkdown {{
         color: #ffffff !important;
         text-shadow: 1px 1px 3px rgba(0,0,0,0.8); 
+        /*Shadow +ile başlıyorsa sağa doğru,- ile başlıyorsa sola doğru*/
+    
     }}
     
     .stSlider [data-testid="stThumbValue"] {{
@@ -172,6 +174,8 @@ if img_base64:
     """
     st.markdown(custom_css, unsafe_allow_html=True)
 
+
+
 #  Sayfanın yerleşimi (Sol kolon veri girişi, sağ kolon boşluk)
 sol_kolon, sag_kolon = st.columns([1, 1])
 
@@ -201,7 +205,7 @@ with sag_kolon:
         st.markdown("### Su Analizi Parametreleri")
         st.markdown("<hr style='border:1px solid white'>" , unsafe_allow_html=True)
         
-        # --- FORMU İKİ KOLONA BÖLME İŞLEMİ BURADA BAŞLIYOR ---
+        # --- Formu 2 kolona bölme, parametrelerin girildiği ---
         form_sol, form_sag = st.columns(2)
         
         with form_sol:
@@ -217,7 +221,7 @@ with sag_kolon:
             Conductivity = float(st.number_input("⚡ Conductivity(İletkenlik)", step=1.0, min_value=201.6197368, help="20°C Conductivity (İletkenlik) genellikle 50-500 değerleri arasında olur."))
             Trihalomethanes = float(st.number_input("🟠 Trihalometanlar", step=1.0, min_value=8.577012933, help="Trihalomethanes(Trihalometanlar) için sınır değer, 2005 yılından beri gereği 100 µg/L olarak belirlenmiştir."))
             
-            # Sağ kolonun sol kolonla (5 kutu vs 4 kutu) hizalı görünmesi için alt tarafa şeffaf bir boşluk ekliyoruz
+            # Sağ kolonun sol kolonla (5 kutu vs 4 kutu) hizalı görünmesi için alt tarafa şeffaf bir boşluk 
             st.markdown("<div style='height: 80px;'></div>", unsafe_allow_html=True)
             
         st.markdown("<br>", unsafe_allow_html=True) # Buton öncesi küçük bir boşluk
@@ -261,6 +265,15 @@ with sag_kolon:
         if st.button("Yeni Test Yap 🔄", key="yeni_test_buton", use_container_width=True):
             st.session_state.analiz_tamamlandi = False
             st.rerun()
+
+
+
+
+
+
+
+
+
 
 
 
