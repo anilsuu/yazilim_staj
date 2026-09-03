@@ -49,7 +49,7 @@ x_train, x_test, y_train, y_test = train_test_split(
     X_sade, y_sade, test_size=0.30, random_state=42, stratify=y_sade
 )
 
-# Ölçeklendirme (MaxAbsScaler olarak düzeltildi)
+# Ölçeklendirme (MaxAbsScaler)
 sc = MaxAbsScaler() 
 
 # Train setinde öğren (fit) ve uygula (transform)
@@ -61,7 +61,7 @@ scale_weight = (y_train == 0).sum() / (y_train == 1).sum()
 
 
 print("\n=====================================================")
-print("--- 1. VERİ SIZINTISI (TARGET LEAKAGE) KONTROLÜ ---")
+print("---  VERİ SIZINTISI (TARGET LEAKAGE) KONTROLÜ ---")
 print("=====================================================")
 
 # x_train Pandas DataFrame formunda olduğu için doğrudan kopyalanabilir
@@ -69,7 +69,7 @@ aktif_x_train = x_train
 df_check = aktif_x_train.copy()
 print("Eğitim setindeki sütunlar:", df_check.columns.tolist())
 
-# Hedef değişkeni güvenle tabloya ekle
+# Hedef değişkeni tabloya ekle
 df_check['HEDEF_POTABILITY'] = np.array(y_train).flatten()
 
 # Korelasyon hesabı
@@ -217,7 +217,7 @@ print("\n--- MODEL SÜRECİ BAŞARIYLA TAMAMLANDI! ---")
 
 
 print("\n=====================================================")
-print("--- DÜZENLİLEŞTİRİLMİŞ OVERFITTING KONTROLÜ ---")
+print("---  OVERFITTING KONTROLÜ ---")
 print("=====================================================")
 
 xgb_saglam_kontrol = xgb.XGBClassifier(

@@ -6,7 +6,7 @@
 import streamlit as st
 import pandas as pd
 import base64
-import joblib  # Modeli yüklemek için gerekli
+
 
 
 # Geniş mod - layout="wide" ekranın daha büyük
