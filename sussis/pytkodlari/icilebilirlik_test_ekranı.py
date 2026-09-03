@@ -54,6 +54,8 @@ img_base64 = get_base64_of_bin_file("suweb2.webp")
 
 #  CSS Özelleştirme kodları
 
+#  rgba(255, 255, 255, 0.4); ana renklerin ne oranda karıştırılacağını gösteriyor.
+
 if img_base64:
     custom_css = f"""
     <style>
@@ -76,7 +78,7 @@ if img_base64:
    #  }}
         
         
-    /* RESİM KOLONU (Sol) */
+    /* Su Bardağı Resmi (Sol) */
     [data-testid="column"]:has(#su_resmi) {{
         display: flex;
         flex-direction: column;
@@ -184,6 +186,8 @@ sol_kolon, sag_kolon = st.columns([1, 1])
 with sol_kolon:
     
     # CSS'in sadece bu kolonu tanıması için id 
+    # Burada su_resmi=.. gibi tanımlanmıyor 
+    # Streamlitte Kolonların içine HTMLden (<div>) yazdım ve bunlara id='su_resmi', id='su_formu'
     st.markdown("<div id='su_resmi'></div>", unsafe_allow_html=True)
     
     try:
