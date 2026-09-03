@@ -32,6 +32,7 @@ tum_kimyasal_sutunlar = [
 X = df[tum_kimyasal_sutunlar].copy()
 
 # K-Means mesafe bazlı çalıştığı için ölçeklendirme zorunlu
+
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
 

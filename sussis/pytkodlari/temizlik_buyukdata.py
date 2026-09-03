@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Aug 28 11:17:00 2026
 
 @author: nilsu
 """
