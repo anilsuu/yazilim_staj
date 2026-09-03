@@ -214,16 +214,16 @@ with sag_kolon:
         
         with form_sol:
             ph = float(st.number_input("💧 pH Seviyesi", step=1.0, min_value=0.22749905, max_value=14.0, help="ph bilgisi 0-14 değerleri arasında olmalıdır.")) 
-            Solids = float(st.number_input("🧊 Solids (Katılar)", step=1.0, min_value=320.9426113, help="Solids(Katılar):Suyun içinde çözünmüş halde bulunan mineral, tuz ve iyonların toplam miktarını ifade eder."))
-            Sulfate = float(st.number_input("🟣 Sulfate(Sülfat)", step=1.0, min_value=129.0, help="Sulfate(Sülfat):Suyun kalitesini değerlendirmek için ölçülür."))
-            Organic_carbon = float(st.number_input("💬 Organic Carbon", step=1.0, min_value=2.2, help="Organic_carbon (Organik karbon) değerini giriniz."))
-            Turbidity = float(st.number_input("🌀 Turbidity(Bulanıklık)", step=1.0, min_value=1.45, help="Turbidity(Bulanıklık):Suyun içindeki askıda katı maddelerin ışığı dağıtmasıyla suyun berraklığının azalmasına denir."))
+            Solids = float(st.number_input("🧊 Solids (Katılar)", step=1.0, min_value=320.9426113, help="Suyun içinde çözünmüş halde bulunan mineral, tuz ve iyonların toplam miktarını ifade eder."))
+            Sulfate = float(st.number_input("🟣 Sulfate(Sülfat)", step=1.0, min_value=129.0, help="Suyun kalitesini değerlendirmek için ölçülür."))
+            Organic_carbon = float(st.number_input("💬 Organic Carbon", step=1.0, min_value=2.2, help="(Organik karbon) değerini giriniz."))
+            Turbidity = float(st.number_input("🌀 Turbidity(Bulanıklık)", step=1.0, min_value=1.45, help="Suyun içindeki askıda katı maddelerin ışığı dağıtmasıyla suyun berraklığının azalmasıdır."))
 
         with form_sag:
-            Hardness = float(st.number_input("🪨 Hardness(Sertlik)", step=1.0, min_value=73.49223369, help="Sertlik(Hardness):Suyun bir yüzeye temas etmeye karşı gösterdiği dirençtir."))
-            Chloramines = float(st.number_input("🧪 Chloramines", step=1.0, min_value=1.390870905, help="Chloramines(Kloramin):Suyun dezenfeksiyon aşamasında klor kullanılınca oluşur"))
-            Conductivity = float(st.number_input("⚡ Conductivity(İletkenlik)", step=1.0, min_value=201.6197368, help="20°C Conductivity (İletkenlik) genellikle 50-500 değerleri arasında olur."))
-            Trihalomethanes = float(st.number_input("🟠 Trihalometanlar", step=1.0, min_value=8.577012933, help="Trihalomethanes(Trihalometanlar) için sınır değer, 2005 yılından beri gereği 100 µg/L olarak belirlenmiştir."))
+            Hardness = float(st.number_input("🪨 Hardness(Sertlik)", step=1.0, min_value=73.49223369, help="Suyun bir yüzeye temas etmeye karşı gösterdiği dirençtir."))
+            Chloramines = float(st.number_input("🧪 Chloramines", step=1.0, min_value=1.390870905, help="Suyun dezenfeksiyon aşamasında klor kullanılınca oluşur"))
+            Conductivity = float(st.number_input("⚡ Conductivity(İletkenlik)", step=1.0, min_value=201.6197368, help="20°C İletkenlik genellikle 50-500 değerleri arasında olur."))
+            Trihalomethanes = float(st.number_input("🟠 Trihalometanlar", step=1.0, min_value=8.577012933, help="Trihalometanlar için sınır değer,100 µg/L olarak belirlenmiştir."))
             
             # Sağ kolonun sol kolonla (5 kutu vs 4 kutu) hizalı görünmesi için alt tarafa şeffaf bir boşluk 
             st.markdown("<div style='height: 80px;'></div>", unsafe_allow_html=True)
