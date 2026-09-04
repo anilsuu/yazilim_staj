@@ -8,13 +8,15 @@ import pandas as pd
 import base64
 import joblib
 import time
-
 import numpy as np
+
 
 
 # Geniş mod - layout="wide" ekranın daha büyük
 
 st.set_page_config(page_title="Su İçilebilirlik Analizi", layout="wide", page_icon="🚰")
+
+
 
        
 # Modeli medyan_puanlamalıdan ve scaleri yükledim 
@@ -24,6 +26,7 @@ try:
     scaler = joblib.load("scaler_kural.pkl")
 except FileNotFoundError:
     st.error("Model dosyaları (pkl) bulunamadı! Lütfen eğitim kodunuzu çalıştırdığınıza ve aynı klasörde olduğunuza emin olun.")
+
 
 
 
@@ -72,10 +75,10 @@ if img_base64:
         align-items: stretch !important;
     }}
         
-   # /*  Sonuç ekranında buzlu boyutu küçültüp ortalama */
-   #  [data-testid="stHorizontalBlock"]:has(#su_sonuc) {{
-   #      align-items: center !important; 
-   #  }}
+    # /*  Sonuç ekranında buzlu boyutu küçültüp ortalama */
+    #  [data-testid="stHorizontalBlock"]:has(#su_sonuc) {{
+    #      align-items: center !important; 
+    #  }}
         
         
     /* Su Bardağı Resmi (Sol) */
@@ -267,6 +270,7 @@ with sag_kolon:
                 st.error(f"Tahmin sırasında bir hata oluştu: {e}")
                 
     # Analiz yapıldıysa sonuç ekranı gelir.
+    
     else:
         st.markdown("### 📊 ANALİZ SONUCU")
         st.markdown("<hr style='border:1px solid white'>", unsafe_allow_html=True)
@@ -288,6 +292,54 @@ with sag_kolon:
 
 
  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
