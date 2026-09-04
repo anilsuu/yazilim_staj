@@ -15,32 +15,13 @@ import time
 
 st.set_page_config(page_title="Su İçilebilirlik Analizi", layout="wide", page_icon="🚰")
 
-# Uygulama ilk açıldığında hangi sayfanın görüneceği
+# Analiz sayfasını bir fonksiyon içine alıp @st.dialog 
 
-if 'sayfa' not in st.session_state:
-    st.session_state['sayfa'] = 'bilgilendirme'
 
-# --- İlk sayfa ise ---
-
-if st.session_state['sayfa'] == 'bilgilendirme':
-    st.title("Hoş Geldiniz")
-    st.warning("Bu sistemin tüm hakları saklıdır. Veriler izinsiz paylaşılamaz.")
-    st.info("Aşağıdaki butona tıklayarak test aşamasına geçebilirsiniz.")
-    
-    # Butona basıldığında durumu güncelleyip sayfayı yeniler
-    if st.button("Analiz Testine Git"):
-        st.session_state['sayfa'] = 'analiz'
-        st.rerun()
-        
-# # İsteğe bağlı olarak geri dön butonu ekleyebilirsiniz
-# if st.button("Giriş Sayfasına Dön"):
-#     st.session_state['sayfa'] = 'bilgilendirme'
-#     st.rerun()
-    
-# --- test sayfası  ---
-elif st.session_state['sayfa'] == 'analiz':
-    
-    st.title("Analiz Testi Ekranı")
+@st.dialog("Analiz Testi")
+def analiz_sayfasini_goster():
+    st.write("Lütfen verilerinizi yükleyin...")
+    # Tüm analiz kodlarınızı, grafiklerinizi buraya yazabilirsiniz.
     
        
 # Modeli medyan_puanlamalıdan ve scaleri yükledim 
@@ -126,18 +107,7 @@ if img_base64:
         box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); 
     }}
         
-        [data-testid="column"]:has(#anagiris) > div,
-        [data-testid="column"]:has(#anagiris) [data-testid="stImage"] {{
-            height: 100% !important;
-            display: flex;
-        }}
-            
-        [data-testid="column"]:has(#anagiris) img {{
-            height: 100% !important;
-            object-fit: cover !important; 
-            border-radius: 25px; 
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); 
-        }}
+        
 
     /* Form Kolonu (Sağ) - Buzlu  */
     [data-testid="column"]:has(#su_formu){{
@@ -210,19 +180,7 @@ if img_base64:
             min-height: 90vh !important; 
         }}
             
-        [data-testide="column"]:has(#anagiris) img{{
-            min-height : 90vh !important;
-            background: rgba(255, 255, 255, 0.15) !important;
-            backdrop-filter: blur(12px) !important;            /*Kutunun buzlu olması 12px*/
-            -webkit-backdrop-filter: blur(12px) !important; 
-            border-radius: 25px;                               /*Kutunun köşelerini yuvarlatmak*/
-            border: 1px solid rgba(255, 255, 255, 0.4); 
-            padding: 2rem 3rem;  
-            margin-top: 1rem; 
-            margin-bottom: 1rem; 
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); 
-            display:flex; 
-            flex-direction: column;}}
+       
             
     }}
     </style>
@@ -233,17 +191,6 @@ if img_base64:
 
 #  Sayfanın yerleşimi (Sol kolon veri girişi, sağ kolon boşluk)
 sol_kolon, sag_kolon = st.columns([1, 1])
-
-
-st.markdown("<div id='anagiris'></div>", unsafe_allow_html=True)
-    
-try:
-      st.image("sakaryabelediye.webp", use_column_width=True)
-      st.caption("This is a string that explains something above.")
-      st.caption("A caption with _italics_ :blue[colors] and emojis :sunglasses:")
-    
-except FileNotFoundError:
-     st.info("Sol tarafta gösterilecek resim bulunamadı. Lütfen dosya adını güncelleyin.")
 
 
 # --- sol kolon (Su Bardağı Resmi) ---
@@ -347,7 +294,17 @@ with sag_kolon:
             st.session_state.analiz_tamamlandi = False
             st.rerun()
 
+dosya = st.file_uploader("Dosya Seç")
+if dosya:
+        st.success("Yüklendi!")
 
+# --- ANA SAYFA ---
+st.title("Karşılama Sayfası")
+st.warning("Tüm hakları saklıdır.")
+
+# Butona basıldığında yukarıdaki pencere açılır
+if st.button("Analiz Testine Git (Pencerede Aç)"):
+    analiz_sayfasini_goster()
 
 
  
