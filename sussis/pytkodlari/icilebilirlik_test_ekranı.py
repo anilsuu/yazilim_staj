@@ -194,7 +194,8 @@ with sol_kolon:
     
     try:
         st.image("suweb.webp", use_column_width=True)
-        
+        st.caption("This is a string that explains something above.")
+        st.caption("A caption with _italics_ :blue[colors] and emojis :sunglasses:")
     except FileNotFoundError:
         st.info("Sol tarafta gösterilecek resim bulunamadı. Lütfen dosya adını güncelleyin.")
 
@@ -274,6 +275,60 @@ with sag_kolon:
         if st.button("Yeni Test Yap 🔄", key="yeni_test_buton", use_container_width=True):
             st.session_state.analiz_tamamlandi = False
             st.rerun()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
