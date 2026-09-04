@@ -7,53 +7,15 @@ import streamlit as st
 import pandas as pd
 import base64
 import joblib
-
-if 'anasayfa_giris' not in st.session_state:
-    st.session_state.anasayfa_giris=False
-    st.session_state.basla=0
-    
-    
-#  Web sayfasının ilki 
-
-def get_base64_of_bin_file(bin_file):
-    try:
-        with open(bin_file, 'rb') as f:
-            return base64.b64encode(f.read()).decode()
-    except FileNotFoundError:
-        return ""
-
-# Tüm sayfanın arka planı için kullanılacak resim
-
-img_base64 = get_base64_of_bin_file("saski.jpg")
-
+import time
+        
+  
 
 # Geniş mod - layout="wide" ekranın daha büyük
 
 st.set_page_config(page_title="Su İçilebilirlik Analizi", layout="wide", page_icon="🚰")
 
-# Using object notation
-add_selectbox = st.sidebar.selectbox(
-    "How would you like to be contacted?",
-    ("Email", "Home phone", "Mobile phone")
-)
 
-# Using "with" notation
-with st.sidebar:
-    add_radio = st.radio(
-        "Choose a shipping method",
-        ("Standard (5-15 days)", "Express (2-5 days)")
-    )
-
-import streamlit as st
-import time
-
-with st.sidebar:
-    with st.echo():
-        st.write("This code will be printed to the sidebar.")
-
-    with st.spinner("Loading..."):
-        time.sleep(5)
-    st.success("Done!")
 
 # Modeli medyan_puanlamalıdan ve scaleri yükledim 
 
@@ -306,9 +268,13 @@ with sag_kolon:
     else:
         st.markdown("### 📊 ANALİZ SONUCU")
         st.markdown("<hr style='border:1px solid white'>", unsafe_allow_html=True)
-        
+       
+            
         if st.session_state.sonuc == 0: 
-            st.success("✅ Afiyet olsun, su **İÇİLEBİLİR!**")
+            with st.spinner("Analiz ediliyor..."):
+                    time.sleep(5)
+                    # st.success("Done!")
+                    st.success("✅ Afiyet olsun, su **İÇİLEBİLİR!**")
         else:
             st.error("❌ Dikkat! Su **İÇİLEMEZ** (Güvenli Değil).")
             st.markdown("<br>", unsafe_allow_html=True)
