@@ -8,12 +8,52 @@ import pandas as pd
 import base64
 import joblib
 
+if 'anasayfa_giris' not in st.session_state:
+    st.session_state.anasayfa_giris=False
+    st.session_state.basla=0
+    
+    
+#  Web sayfasının ilki 
+
+def get_base64_of_bin_file(bin_file):
+    try:
+        with open(bin_file, 'rb') as f:
+            return base64.b64encode(f.read()).decode()
+    except FileNotFoundError:
+        return ""
+
+# Tüm sayfanın arka planı için kullanılacak resim
+
+img_base64 = get_base64_of_bin_file("saski.jpg")
+
 
 # Geniş mod - layout="wide" ekranın daha büyük
 
 st.set_page_config(page_title="Su İçilebilirlik Analizi", layout="wide", page_icon="🚰")
 
+# Using object notation
+add_selectbox = st.sidebar.selectbox(
+    "How would you like to be contacted?",
+    ("Email", "Home phone", "Mobile phone")
+)
 
+# Using "with" notation
+with st.sidebar:
+    add_radio = st.radio(
+        "Choose a shipping method",
+        ("Standard (5-15 days)", "Express (2-5 days)")
+    )
+
+import streamlit as st
+import time
+
+with st.sidebar:
+    with st.echo():
+        st.write("This code will be printed to the sidebar.")
+
+    with st.spinner("Loading..."):
+        time.sleep(5)
+    st.success("Done!")
 
 # Modeli medyan_puanlamalıdan ve scaleri yükledim 
 
@@ -196,6 +236,7 @@ with sol_kolon:
         st.image("suweb.webp", use_column_width=True)
         st.caption("This is a string that explains something above.")
         st.caption("A caption with _italics_ :blue[colors] and emojis :sunglasses:")
+       
     except FileNotFoundError:
         st.info("Sol tarafta gösterilecek resim bulunamadı. Lütfen dosya adını güncelleyin.")
 
