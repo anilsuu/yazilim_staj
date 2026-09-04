@@ -173,8 +173,6 @@ if img_base64:
             min-height: 90vh !important; 
         }}
             
-       
-            
     }}
     </style>
     """
