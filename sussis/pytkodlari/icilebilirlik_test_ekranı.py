@@ -8,21 +8,14 @@ import pandas as pd
 import base64
 import joblib
 import time
-        
-  
+
+import numpy as np
+
 
 # Geniş mod - layout="wide" ekranın daha büyük
 
 st.set_page_config(page_title="Su İçilebilirlik Analizi", layout="wide", page_icon="🚰")
 
-# Analiz sayfasını bir fonksiyon içine alıp @st.dialog 
-
-
-@st.dialog("Analiz Testi")
-def analiz_sayfasini_goster():
-    st.write("Lütfen verilerinizi yükleyin...")
-    # Tüm analiz kodlarınızı, grafiklerinizi buraya yazabilirsiniz.
-    
        
 # Modeli medyan_puanlamalıdan ve scaleri yükledim 
 
@@ -294,17 +287,6 @@ with sag_kolon:
             st.session_state.analiz_tamamlandi = False
             st.rerun()
 
-dosya = st.file_uploader("Dosya Seç")
-if dosya:
-        st.success("Yüklendi!")
-
-# --- ANA SAYFA ---
-st.title("Karşılama Sayfası")
-st.warning("Tüm hakları saklıdır.")
-
-# Butona basıldığında yukarıdaki pencere açılır
-if st.button("Analiz Testine Git (Pencerede Aç)"):
-    analiz_sayfasini_goster()
 
 
  
