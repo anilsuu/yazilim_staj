@@ -313,7 +313,8 @@ if img_base64:
 
 if st.button("Analize Git 🚀", type="primary"):
     # st.Page içinde tanımladığınız dosya adını birebir aynı şekilde yazın
-    st.switch_page("icilebilirlik_test_ekranı.py")
+    sayfa_test = st.Page("icilebilirlik_test_ekranı.py")
+    st.switch_page(sayfa_test)
 
 # Ekranı iki eşit parçaya bölüyoruz (Sol kolon resim için, Sağ kolon form için)
 sol_kolon, sag_kolon = st.columns([1, 1])
