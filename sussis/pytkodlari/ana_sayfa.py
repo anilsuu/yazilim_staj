@@ -8,7 +8,7 @@ import streamlit as st
 import base64
 
 
-st.set_page_config(page_title="SASKİ Analiz Ana Sayfa", layout="wide", page_icon="🚰")
+st.set_page_config(page_title="SASKİ Analiz Ana Sayfa", layout="wide", page_icon="🚰",initial_sidebar_state="collapsed")
 
 
 # İçilebilirlik test sayfası yolu 
@@ -41,7 +41,7 @@ def karsilama_sayfasi():
 
         /* Sağ Kolon (İçerik) - Buzlu Cam Efekti */
         [data-testid="column"]:has(#ana_sayfa_icerik) {{
-            background: rgb(60, 179, 113) !important;
+            background: rgb(173, 216, 230) !important;
             backdrop-filter: blur(12px) !important;            
             -webkit-backdrop-filter: blur(12px) !important; 
             border-radius: 25px;                               
@@ -57,15 +57,18 @@ def karsilama_sayfasi():
 
         /* Yazı renkleri ve gölgeleri */
         h1, h2, h3, h4, p, label, .stMarkdown {{
-            color: #ffffff !important;
+            color: #000080 !important;
             text-shadow: 1px 1px 3px rgba(0,0,0,0.8); 
         }}
 
         /* Sol Kolon (Resimler) Tasarımı */
         [data-testid="column"]:has(#sol_gorseller) img {{
+            width: 70% !important; /* Görsellerin boyutunu daralttık */
+            margin: 0 auto 1.5rem auto !important; /* Ortaladık ve altlarına boşluk ekledik */
+            display: block !important;
             border-radius: 15px; 
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); 
-            margin-bottom: 1rem;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            
         }}
 
         /* Buton Tasarımı */
@@ -87,14 +90,17 @@ def karsilama_sayfasi():
 
     # Sayfa yerleşimi kolonlar
     # Sol kolon biraz daha dar (1 birim), sağ kolon daha geniş (2 birim)
-    sol_kolon, sag_kolon = st.columns([1, 2])
+    sol_kolon, sag_kolon = st.columns([1, 2.5])
 
     #  SOL KOLON (Görseller Alt Alta)
     with sol_kolon:
         st.markdown("<div id='sol_gorseller'></div>", unsafe_allow_html=True)
         try:
-            st.image("sask_mobil.jpg", use_column_width=True)
+            
+            st.image("saski.jpg",use_column_width=True)
             st.image("slider_1.jpg", use_column_width=True)
+            st.image("sakaryabelediye.jpg", use_column_width=True)
+            
         except FileNotFoundError:
             st.info("Lütfen 'sask_mobil.jpg' ve 'slider_1.jpg' görsellerinin doğru klasörde olduğundan emin olun.")
 
@@ -115,12 +121,12 @@ def karsilama_sayfasi():
         
     
         st.markdown("<div style='height: 100px;'></div>", unsafe_allow_html=True)
-        
+        st.image("ai_nedensuicmeliyiz.webp", use_column_width=True)
         # Test Sayfasına Yönlendiren Buton (Sayfanın altında)
         if st.button("Hemen Analiz Testine Başla 🚀", use_container_width=True):
             st.switch_page(sayfa_test)
 
-# ---STREAMLIT NAVIGATION ÇALIŞTIRMA ---
+
 sayfa_ana = st.Page(karsilama_sayfasi, title="Ana Sayfa", icon="🏠")
 
 pg = st.navigation([sayfa_ana, sayfa_test])

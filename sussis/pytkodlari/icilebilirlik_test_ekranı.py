@@ -11,7 +11,7 @@ import time
 import numpy as np
 
 
-st.set_page_config(page_title="Su İçilebilirlik Analizi", layout="wide", page_icon="🚰")
+# st.set_page_config(page_title="Su İçilebilirlik Analizi", layout="wide", page_icon="🚰")
 
 # Modeli medyan_puanlamalıdan ve scaleri yükledim 
 try:
