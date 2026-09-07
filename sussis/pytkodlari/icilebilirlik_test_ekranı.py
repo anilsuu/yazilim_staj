@@ -11,12 +11,14 @@ import time
 import numpy as np
 
 
-# st.set_page_config(page_title="Su İçilebilirlik Analizi", layout="wide", page_icon="🚰")
+st.set_page_config(page_title="Su İçilebilirlik Analizi", layout="wide", page_icon="🚰")
 
 # Modeli medyan_puanlamalıdan ve scaleri yükledim 
 try:
     model = joblib.load("rf_kural_su_model.pkl")
     scaler = joblib.load("scaler_kural.pkl")
+    
+    
 except FileNotFoundError:
     st.error("Model dosyaları (pkl) bulunamadı! Lütfen eğitim kodunuzu çalıştırdığınıza ve aynı klasörde olduğunuza emin olun.")
 
@@ -154,7 +156,14 @@ if img_base64:
             min-height: 90vh !important; 
         }}
             
-       
+            
+        .block-container {{
+               max-width: 95% !important;
+               padding-top: 3rem !important;
+               padding-bottom: 2rem !important;
+               padding-left: 2rem !important;
+               padding-right: 2rem !important;
+           }}
             
     }}
     </style>
@@ -177,81 +186,75 @@ with sol_kolon:
     except FileNotFoundError:
         st.info("Sol tarafta gösterilecek resim bulunamadı. Lütfen dosya adını güncelleyin.")
 
-
 # --- sağ kolon (Form ve Sonuçlar) ---
 with sag_kolon:
     
     st.markdown("<div id='su_formu'></div>", unsafe_allow_html=True)
     
-    # Analiz yapılmadıysa formu
+    # Analiz yapılmadıysa formu göster
     if not st.session_state.analiz_tamamlandi:
         st.markdown("<h3 style='color : #ADD8E6 !important; text-shadow : 1px 1px 3px rgba (0,0,0,0.8); margin-bottom : 0px;'>💧 SU KALİTE ANALİZİ 🚰</h3>", unsafe_allow_html=True)
         st.markdown("### Suyun Bileşen Analizi")
         st.markdown("<hr style='border:1px solid white'>" , unsafe_allow_html=True)
         
-        # Tüm inputları st.form içine alıyoruz (Sayfa donmasını engeller)
         with st.form(key="su_analiz_formu", border=False):
-    
             form_sol, form_sag = st.columns(2)
             
             with form_sol:
-                ph = float(st.number_input("💧 pH Seviyesi", step=1.0, min_value=0.22749905, max_value=14.0, help="ph bilgisi 0-14 değerleri arasında olmalıdır.")) 
-                Solids = float(st.number_input("🧊 Solids (Katılar)", step=1.0, min_value=320.9426113, help="Suyun içinde çözünmüş halde bulunan mineral, tuz ve iyonların toplam miktarını ifade eder."))
-                Sulfate = float(st.number_input("🟣 Sulfate(Sülfat)", step=1.0, min_value=129.0, help="Suyun kalitesini değerlendirmek için ölçülür."))
-                Organic_carbon = float(st.number_input("💬 Organic Carbon", step=1.0, min_value=2.2, help="(Organik karbon) değerini giriniz."))
-                Turbidity = float(st.number_input("🌀 Turbidity(Bulanıklık)", step=1.0, min_value=1.45, help="Suyun içindeki askıda katı maddelerin ışığı dağıtmasıyla suyun berraklığının azalmasıdır."))
+                ph = float(st.number_input("💧 pH Seviyesi", step=1.0, min_value=0.227, max_value=14.0)) 
+                Solids = float(st.number_input("🧊 Solids (Katılar)", step=1.0, min_value=320.9))
+                Sulfate = float(st.number_input("🟣 Sulfate(Sülfat)", step=1.0, min_value=129.0))
+                Organic_carbon = float(st.number_input("💬 Organic Carbon", step=1.0, min_value=2.2))
+                Turbidity = float(st.number_input("🌀 Turbidity(Bulanıklık)", step=1.0, min_value=1.45))
 
             with form_sag:
-                Hardness = float(st.number_input("🪨 Hardness(Sertlik)", step=1.0, min_value=73.49223369, help="Suyun bir yüzeye temas etmeye karşı gösterdiği dirençtir."))
-                Chloramines = float(st.number_input("🧪 Chloramines", step=1.0, min_value=1.390870905, help="Suyun dezenfeksiyon aşamasında klor kullanılınca oluşur"))
-                Conductivity = float(st.number_input("⚡ Conductivity(İletkenlik)", step=1.0, min_value=201.6197368, help="20°C İletkenlik genellikle 50-500 değerleri arasında olur."))
-                Trihalomethanes = float(st.number_input("🟠 Trihalometanlar", step=1.0, min_value=8.577012933, help="Trihalometanlar için sınır değer,100 µg/L olarak belirlenmiştir."))
+                Hardness = float(st.number_input("🪨 Hardness(Sertlik)", step=1.0, min_value=73.4))
+                Chloramines = float(st.number_input("🧪 Chloramines", step=1.0, min_value=1.39))
+                Conductivity = float(st.number_input("⚡ Conductivity(İletkenlik)", step=1.0, min_value=201.6))
+                Trihalomethanes = float(st.number_input("🟠 Trihalometanlar", step=1.0, min_value=8.57))
                 
-                # Sağ kolonun sol kolonla hizalı görünmesi için alt tarafa şeffaf bir boşluk 
                 st.markdown("<div style='height: 80px;'></div>", unsafe_allow_html=True)
                 
-            st.markdown("<br>", unsafe_allow_html=True) # Buton öncesi küçük boşluk
-
-            # Butonu tüm alana yaymak için: use_container_width=True
+            st.markdown("<br>", unsafe_allow_html=True)
             analiz_baslat = st.form_submit_button("Analiz Et 🚀", use_container_width=True)
             
-        # Form gönderildiyse model tahmini yap
+        #  Bekleme ve analiz formu içindeyken yapılır!
         if analiz_baslat:
-            input_data = pd.DataFrame({
-                "ph": [ph],
-                "Hardness": [Hardness],
-                "Solids":[Solids],
-                "Chloramines":[Chloramines],
-                "Sulfate":[Sulfate],
-                "Conductivity":[Conductivity],
-                "Organic_carbon":[Organic_carbon],
-                "Trihalomethanes":[Trihalomethanes],
-                "Turbidity":[Turbidity]
-            })
+            #  Önce analiz ediliyor yazısı çıkar, döner, sonra ekran değişir.
+            with st.spinner("Su kalite verileri analiz ediliyor..."):
+                time.sleep(2) # 5 saniye kullanıcıyı yorabilir, 2 saniye idealdir.
+                
+                input_data = pd.DataFrame({
+                    "ph": [ph], "Hardness": [Hardness], "Solids":[Solids],
+                    "Chloramines":[Chloramines], "Sulfate":[Sulfate],
+                    "Conductivity":[Conductivity], "Organic_carbon":[Organic_carbon],
+                    "Trihalomethanes":[Trihalomethanes], "Turbidity":[Turbidity]
+                })
+                
+                try:
+                    input_scaled = scaler.transform(input_data)
+                    prediction = model.predict(input_scaled)
+                    
+                    # Verileri kaydet
+                    st.session_state.sonuc = int(prediction[0])
+                    st.session_state.analiz_tamamlandi = True
+                except Exception as e:
+                    st.error(f"Tahmin sırasında bir hata oluştu: {e}")
             
-            try:
-                input_scaled = scaler.transform(input_data)
-                prediction = model.predict(input_scaled)
+         
+            st.rerun()
                 
-                st.session_state.sonuc = int(prediction[0])
-                st.session_state.analiz_tamamlandi = True
-                st.rerun()
-                
-            except Exception as e:
-                st.error(f"Tahmin sırasında bir hata oluştu: {e}")
-                
-    # Analiz yapıldıysa sonuç ekranı gelir.
+    # Analiz bittikten sonra sonuç ekranı anında yüklenir
     else:
         st.markdown("### 📊 ANALİZ SONUCU")
         st.markdown("<hr style='border:1px solid white'>", unsafe_allow_html=True)
            
         if st.session_state.sonuc == 0: 
-            with st.spinner("Analiz ediliyor..."):
-                    time.sleep(5)
-                    st.success("✅ Afiyet olsun, su **İÇİLEBİLİR!**")
+            st.success("✅ Afiyet olsun, su **İÇİLEBİLİR!**")
         else:
             st.error("❌ Dikkat! Su **İÇİLEMEZ** (Güvenli Değil).")
-            st.markdown("<br>", unsafe_allow_html=True)
+            
+        st.markdown("<br>", unsafe_allow_html=True)
             
         if st.button("Yeni Test Yap 🔄", key="yeni_test_buton", use_container_width=True):
             st.session_state.analiz_tamamlandi = False
