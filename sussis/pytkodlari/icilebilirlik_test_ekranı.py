@@ -219,8 +219,7 @@ with sag_kolon:
         st.markdown("<hr style='border:1px solid white'>" , unsafe_allow_html=True)
         
         
-    #  Tüm inputları st.form içine alıyoruz
-    with st.form(key="su_analiz_formu", border=False):
+  
     
         # --- Formu 2 kolona bölme, parametrelerin girildiği ---
         form_sol, form_sag = st.columns(2)
