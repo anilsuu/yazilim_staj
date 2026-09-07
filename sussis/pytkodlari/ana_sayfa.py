@@ -7,9 +7,13 @@
 import streamlit as st
 import base64
 
-
-st.set_page_config(page_title="SASKİ Analiz Ana Sayfa", layout="wide", page_icon="🚰",initial_sidebar_state="collapsed")
-
+st.set_page_config(
+    page_title="SASKİ Analiz Ana Sayfa",
+    layout="wide",
+    page_icon="🚰",
+    initial_sidebar_state="collapsed"
+)
+st.set_option("client.toolbarMode", "viewer")
 
 # İçilebilirlik test sayfası yolu 
 sayfa_test = st.Page("icilebilirlik_test_ekranı.py", title="İçilebilirlik Testi", icon="💧")
