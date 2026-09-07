@@ -1,214 +1,464 @@
+
 # -*- coding: utf-8 -*-
 """
-Created on Fri Sep  4 15:25:51 2026
-
 @author: nilsu
 """
 
 import streamlit as st
-import pandas as pd
 import base64
-import joblib
-import time
-import numpy as np
 
-
-# Geniş mod - layout="wide" ekranın daha büyük
 
 st.set_page_config(page_title="SASKİ Analiz Ana Sayfa", layout="wide", page_icon="🚰")
 
 
-#  Sayfanın durum yönetimi - Formun kaybolması için
-
-if 'analiz_tamamlandi' not in st.session_state:
-    st.session_state.analiz_tamamlandi = False
-    st.session_state.sonuc = 0
+# İçilebilirlik test sayfası yolu 
+sayfa_test = st.Page("icilebilirlik_test_ekranı.py", title="İçilebilirlik Testi", icon="💧")
 
 
-
-#  Web arka sayfasına su-bardak resmi yükleme 
-
-def get_base64_of_bin_file(bin_file):
-    try:
-        with open(bin_file, 'rb') as f:
-            return base64.b64encode(f.read()).decode()
-    except FileNotFoundError:
-        return ""
-
-
-
-# Tüm sayfanın arka planı için kullanılacak resim
-
-img_base64 = get_base64_of_bin_file("doga_kaynak.webp")
-
-
-
-
-#  CSS Özelleştirme kodları
-
-#  rgba(255, 255, 255, 0.4); ana renklerin ne oranda karıştırılacağını gösteriyor.
-
-if img_base64:
-    custom_css = f"""
-    <style>
+def karsilama_sayfasi():
     
-    /* Arka plan resmini tam ekran yapma */
-    .stApp {{
-        background-image: url("data:image/webp;base64,{img_base64}");
-        background-size: cover;
-        background-position: center;
-        background-attachment:fixed;
-    }}
+    # Arka plan resmi yükleme fonksiyonu
+    def get_base64_of_bin_file(bin_file):
+        try:
+            with open(bin_file, 'rb') as f:
+                return base64.b64encode(f.read()).decode()
+        except FileNotFoundError:
+            return ""
 
-    # /* Sadece ana kolonları eşitlemek için özel ID'li seçiciler */
-    # [data-testid="stHorizontalBlock"]:has(#ana_sayfa):has(#slider) {{
-    #     align-items: stretch !important;
-    # }}
-        
-    # # /*  Sonuç ekranında buzlu boyutu küçültüp ortalama */
-    # #  [data-testid="stHorizontalBlock"]:has(#su_sonuc) {{
-    # #      align-items: center !important; 
-    # #  }}
-        
-        
-    # /* Su Bardağı Resmi (Sol) */
-    # [data-testid="column"]:has(#ana_sayfa) {{
-    #     display: flex;
-    #     flex-direction: column;
-    #     margin-top: 1rem; 
-    #     margin-bottom: 1rem; 
-    # }}
+    img_base64 = get_base64_of_bin_file("doga_kaynak.webp")
 
-    # /* Resmi kırparak alanı doldurmasını sağla */
-    # [data-testid="column"]:has(#ana_sayfa) > div,
-    # [data-testid="column"]:has(#ana_sayfa) [data-testid="stImage"] {{
-    #     height: 100% !important;
-    #     display: flex;
-    # }}
+    # CSS Özelleştirmeleri
+    if img_base64:
+        custom_css = f"""
+        <style>
+        /* Arka plan resmini tam ekran yapma */
+        .stApp {{
+            background-image: url("data:image/webp;base64,{img_base64}");
+            background-size: cover;
+            background-position: center;
+            background-attachment:fixed;
+        }}
+
+        /* Sağ Kolon (İçerik) - Buzlu Cam Efekti */
+        [data-testid="column"]:has(#ana_sayfa_icerik) {{
+            background: rgb(60, 179, 113) !important;
+            backdrop-filter: blur(12px) !important;            
+            -webkit-backdrop-filter: blur(12px) !important; 
+            border-radius: 25px;                               
+            border: 1px solid rgba(255, 255, 255, 0.4); 
+            padding: 2rem 3rem;  
+            margin-top: 1rem; 
+            margin-bottom: 1rem; 
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); 
+            display:flex; 
+            flex-direction: column;
+            justify-content: space-between; /* İçeriği yukarı, butonu aşağı iter */
+        }}
+
+        /* Yazı renkleri ve gölgeleri */
+        h1, h2, h3, h4, p, label, .stMarkdown {{
+            color: #ffffff !important;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.8); 
+        }}
+
+        /* Sol Kolon (Resimler) Tasarımı */
+        [data-testid="column"]:has(#sol_gorseller) img {{
+            border-radius: 15px; 
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); 
+            margin-bottom: 1rem;
+        }}
+
+        /* Buton Tasarımı */
+        .stButton>button {{
+            background: linear-gradient(90deg, #e3ffe7 0%, #d9e7ff 100%);
+            color: #191970 !important;
+            font-weight: bold;
+            padding: 1rem;
+            border-radius: 15px;
+        }}
+                                        
+        .stButton>button:hover {{
+            transform: scale(1.02);
+            box-shadow: 0px 5px 15px rgba(255, 255, 255, 0.5);
+        }}
+        </style>
+        """
+        st.markdown(custom_css, unsafe_allow_html=True)
+
+    # Sayfa yerleşimi kolonlar
+    # Sol kolon biraz daha dar (1 birim), sağ kolon daha geniş (2 birim)
+    sol_kolon, sag_kolon = st.columns([1, 2])
+
+    #  SOL KOLON (Görseller Alt Alta)
+    with sol_kolon:
+        st.markdown("<div id='sol_gorseller'></div>", unsafe_allow_html=True)
+        try:
+            st.image("sask_mobil.jpg", use_column_width=True)
+            st.image("slider_1.jpg", use_column_width=True)
+        except FileNotFoundError:
+            st.info("Lütfen 'sask_mobil.jpg' ve 'slider_1.jpg' görsellerinin doğru klasörde olduğundan emin olun.")
+
+    #  SAĞ KOLON (Tanıtım Metni ve Buton)
+    with sag_kolon:
+        st.markdown("<div id='ana_sayfa_icerik'></div>", unsafe_allow_html=True)
+        
+        st.markdown("<h1 style='text-align: center; color: #ADD8E6 !important;'>💧 SASKİ Su Kalite Analiz Sistemi</h1>", unsafe_allow_html=True)
+        st.markdown("<hr style='border:1px solid white'>", unsafe_allow_html=True)
+        
+        st.markdown("""
+        ### Sisteme Hoş Geldiniz
+        Bu platform, su kaynaklarından alınan numunelerin çeşitli bileşen (pH, Sertlik, İletkenlik vb.) analizlerini yaparak suyun içilebilirliğini makine öğrenmesi modelleriyle değerlendirmek üzere tasarlanmıştır.
+        
+        * **Güvenilir Sonuçlar:** Model algoritmaları, laboratuvar verileriyle eğitilmiştir.
+        * **Hızlı Analiz:** Değerleri forma girerek saniyeler içinde analiz sonucuna ulaşabilirsiniz.
+        """)
         
     
-    [data-testid="column"]:has(#ana_sayfa) img {{
-        height: 80% !important;
-        object-fit: cover !important; 
-        border-radius: 25px; 
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); 
-    }}
+        st.markdown("<div style='height: 100px;'></div>", unsafe_allow_html=True)
         
-        
+        # Test Sayfasına Yönlendiren Buton (Sayfanın altında)
+        if st.button("Hemen Analiz Testine Başla 🚀", use_container_width=True):
+            st.switch_page(sayfa_test)
 
-    # /* Form Kolonu (Sağ) - Buzlu  */
-    # [data-testid="column"]:has(#slider){{
-    #     background: rgba(255, 255, 255, 0.15) !important;
-    #     backdrop-filter: blur(12px) !important;            /*Kutunun buzlu olması 12px*/
-    #     -webkit-backdrop-filter: blur(12px) !important; 
-    #     border-radius: 25px;                               /*Kutunun köşelerini yuvarlatmak*/
-    #     border: 1px solid rgba(255, 255, 255, 0.4); 
-    #     padding: 2rem 3rem;  
-    #     margin-top: 1rem; 
-    #     margin-bottom: 1rem; 
-    #     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); 
-    #     display:flex; 
-    #     flex-direction: column;
-    # }}
+# ---STREAMLIT NAVIGATION ÇALIŞTIRMA ---
+sayfa_ana = st.Page(karsilama_sayfasi, title="Ana Sayfa", icon="🏠")
 
-        
-        
-    /* Yazı renkleri ve gölgeleri */
-    h1,h2, h4, p, label, .stMarkdown {{
-        color: #ffffff !important;
-        text-shadow: 1px 1px 3px rgba(0,0,0,0.8); 
-                                                  /*Shadow + ile başlıyorsa sağa doğru,- ile başlıyorsa sola doğru*/
+pg = st.navigation([sayfa_ana, sayfa_test])
+pg.run()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# # -*- coding: utf-8 -*-
+# """
+# Created on Fri Sep  4 15:25:51 2026
+
+# @author: nilsu
+# """
+
+# import streamlit as st
+# import pandas as pd
+# import base64
+# import joblib
+# import time
+# import numpy as np
+
+
+# # Geniş mod - layout="wide" ekranın daha büyük
+
+# st.set_page_config(page_title="SASKİ Analiz Ana Sayfa", layout="wide", page_icon="🚰")
+
+
+# #  Sayfanın durum yönetimi - Formun kaybolması için
+
+# if 'analiz_tamamlandi' not in st.session_state:
+#     st.session_state.analiz_tamamlandi = False
+#     st.session_state.sonuc = 0
+
+
+
+# #  Web arka sayfasına su-bardak resmi yükleme 
+
+# def get_base64_of_bin_file(bin_file):
+#     try:
+#         with open(bin_file, 'rb') as f:
+#             return base64.b64encode(f.read()).decode()
+#     except FileNotFoundError:
+#         return ""
+
+
+
+# # Tüm sayfanın arka planı için kullanılacak resim
+
+# img_base64 = get_base64_of_bin_file("doga_kaynak.webp")
+
+
+
+
+# #  CSS Özelleştirme kodları
+
+# #  rgba(255, 255, 255, 0.4); ana renklerin ne oranda karıştırılacağını gösteriyor.
+
+# if img_base64:
+#     custom_css = f"""
+#     <style>
     
-    }}
+#     /* Arka plan resmini tam ekran yapma */
+#     .stApp {{
+#         background-image: url("data:image/webp;base64,{img_base64}");
+#         background-size: cover;
+#         background-position: center;
+#         background-attachment:fixed;
+#     }}
+
+#     # /* Sadece ana kolonları eşitlemek için özel ID'li seçiciler */
+#     # [data-testid="stHorizontalBlock"]:has(#ana_sayfa):has(#slider) {{
+#     #     align-items: stretch !important;
+#     # }}
+        
+#     # # /*  Sonuç ekranında buzlu boyutu küçültüp ortalama */
+#     # #  [data-testid="stHorizontalBlock"]:has(#su_sonuc) {{
+#     # #      align-items: center !important; 
+#     # #  }}
+        
+        
+#     # /* Su Bardağı Resmi (Sol) */
+#     # [data-testid="column"]:has(#ana_sayfa) {{
+#     #     display: flex;
+#     #     flex-direction: column;
+#     #     margin-top: 1rem; 
+#     #     margin-bottom: 1rem; 
+#     # }}
+
+#     # /* Resmi kırparak alanı doldurmasını sağla */
+#     # [data-testid="column"]:has(#ana_sayfa) > div,
+#     # [data-testid="column"]:has(#ana_sayfa) [data-testid="stImage"] {{
+#     #     height: 100% !important;
+#     #     display: flex;
+#     # }}
+        
+    
+#     [data-testid="column"]:has(#ana_sayfa) img {{
+#         height: 80% !important;
+#         object-fit: cover !important; 
+#         border-radius: 25px; 
+#         box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); 
+#     }}
+        
+        
+
+#     # /* Form Kolonu (Sağ) - Buzlu  */
+#     # [data-testid="column"]:has(#slider){{
+#     #     background: rgba(255, 255, 255, 0.15) !important;
+#     #     backdrop-filter: blur(12px) !important;            /*Kutunun buzlu olması 12px*/
+#     #     -webkit-backdrop-filter: blur(12px) !important; 
+#     #     border-radius: 25px;                               /*Kutunun köşelerini yuvarlatmak*/
+#     #     border: 1px solid rgba(255, 255, 255, 0.4); 
+#     #     padding: 2rem 3rem;  
+#     #     margin-top: 1rem; 
+#     #     margin-bottom: 1rem; 
+#     #     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); 
+#     #     display:flex; 
+#     #     flex-direction: column;
+#     # }}
+
+        
+        
+#     /* Yazı renkleri ve gölgeleri */
+#     h1,h2, h4, p, label, .stMarkdown {{
+#         color: #ffffff !important;
+#         text-shadow: 1px 1px 3px rgba(0,0,0,0.8); 
+#                                                   /*Shadow + ile başlıyorsa sağa doğru,- ile başlıyorsa sola doğru*/
+    
+#     }}
     
   
-    /* Buton Tasarımı */
-    .stButton>button {{
-        background: linear-gradient(90deg, #e3ffe7 0%, #d9e7ff 100%);
-        color: #191970 !important;
-        font-weight: bold;
-    }}
+#     /* Buton Tasarımı */
+#     .stButton>button {{
+#         background: linear-gradient(90deg, #e3ffe7 0%, #d9e7ff 100%);
+#         color: #191970 !important;
+#         font-weight: bold;
+#     }}
                                     
-    .stButton>button:hover {{
-        transform: scale(1.02);
-        box-shadow: 0px 5px 15px rgba(255, 255, 255, 0.5);
-    }}
+#     .stButton>button:hover {{
+#         transform: scale(1.02);
+#         box-shadow: 0px 5px 15px rgba(255, 255, 255, 0.5);
+#     }}
 
-    /* Display için css ayarları */
-    @media (max-width: 768px) {{
-        /* Sadece ana bloğu Grid yap (içerideki 2'li form kolonları etkilenmesin) */
-        [data-testid="stHorizontalBlock"]:has(#ana_sayfa):has(#slider) {{
-            display: grid !important;
-            grid-template-columns: 1fr !important;
-        }}
+#     /* Display için css ayarları */
+#     @media (max-width: 768px) {{
+#         /* Sadece ana bloğu Grid yap (içerideki 2'li form kolonları etkilenmesin) */
+#         [data-testid="stHorizontalBlock"]:has(#ana_sayfa):has(#slider) {{
+#             display: grid !important;
+#             grid-template-columns: 1fr !important;
+#         }}
         
-        [data-testid="column"]:has(#ana_sayfa),
-        [data-testid="column"]:has(#slider) {{
-            grid-column: 1 / 2 !important;
-            grid-row: 1 / 2 !important;
-            width: 100% !important; 
-        }}
+#         [data-testid="column"]:has(#ana_sayfa),
+#         [data-testid="column"]:has(#slider) {{
+#             grid-column: 1 / 2 !important;
+#             grid-row: 1 / 2 !important;
+#             width: 100% !important; 
+#         }}
 
-        /* Form üste gelecek şekilde ayarla */
-        [data-testid="column"]:has(#slider) {{
-            z-index: 10 !important; 
-            width: 95% !important; 
-            margin: auto !important; 
-            padding: 1.5rem !important; 
-        }}
+#         /* Form üste gelecek şekilde ayarla */
+#         [data-testid="column"]:has(#slider) {{
+#             z-index: 10 !important; 
+#             width: 95% !important; 
+#             margin: auto !important; 
+#             padding: 1.5rem !important; 
+#         }}
         
-        /* Soldaki resim kutusunu altta kalacak şekilde ayarla */
-        [data-testid="column"]:has(#ana_sayfa) {{
-            z-index: 1 !important; 
-        }}
+#         /* Soldaki resim kutusunu altta kalacak şekilde ayarla */
+#         [data-testid="column"]:has(#ana_sayfa) {{
+#             z-index: 1 !important; 
+#         }}
             
-        [data-testid="column"]:has(#ana_sayfa) img {{
-            min-height: 90vh !important; 
-        }}
+#         [data-testid="column"]:has(#ana_sayfa) img {{
+#             min-height: 90vh !important; 
+#         }}
             
-        [data-testid="column"]:has(#st.sidebar){{
-                color:#800080;
-                }}
+#         [data-testid="column"]:has(#st.sidebar){{
+#                 color:#800080;
+#                 }}
             
-    }}
-    </style>
-    """
-    st.markdown(custom_css, unsafe_allow_html=True)
+#     }}
+#     </style>
+#     """
+#     st.markdown(custom_css, unsafe_allow_html=True)
 
 
 
 
-#  Sayfanın yerleşimi (Sol kolon boşluk, sağ kolon slider)
-slider, ana_sayfa = st.columns([1, 1])
+# #  Sayfanın yerleşimi (Sol kolon boşluk, sağ kolon slider)
+# slider, ana_sayfa = st.columns([1, 1])
 
 
 
 
-with ana_sayfa:
+# with ana_sayfa:
     
-    # CSS'in sadece bu kolonu tanıması için id
-    st.markdown("<div id='ana_sayfa'></div>", unsafe_allow_html=True)
+#     # CSS'in sadece bu kolonu tanıması için id
+#     st.markdown("<div id='ana_sayfa'></div>", unsafe_allow_html=True)
     
-    # Analiz yapılmadıysa formu
-    if not st.session_state.analiz_tamamlandi:
-        st.markdown("<h3 style='color : #ADD8E6' !important; text-shadow : 1px 1px 3px rgba (0,0,0,0.8); margin-bottom : 0px;'>💧 SU KALİTE ANALİZİ 🚰</h3>", unsafe_allow_html=True)
-        st.markdown("### Ana Sayfa ")
-        st.markdown("<hr style='border:1px solid white'>" , unsafe_allow_html=True)
+#     # Analiz yapılmadıysa formu
+#     if not st.session_state.analiz_tamamlandi:
+#         st.markdown("<h3 style='color : #ADD8E6' !important; text-shadow : 1px 1px 3px rgba (0,0,0,0.8); margin-bottom : 0px;'>💧 SU KALİTE ANALİZİ 🚰</h3>", unsafe_allow_html=True)
+#         st.markdown("### Ana Sayfa ")
+#         st.markdown("<hr style='border:1px solid white'>" , unsafe_allow_html=True)
         
-        # --- Formu 2 kolona bölme, parametrelerin girildiği ---
-        form_sol, form_sag = st.columns(2)
+#         # --- Formu 2 kolona bölme, parametrelerin girildiği ---
+#         form_sol, form_sag = st.columns(2)
         
-        with form_sol:
-            st.image("sask_mobil.jpg")
+#         with form_sol:
+#             st.image("sask_mobil.jpg")
             
             
-        with form_sag:
-            st.image("slider_1.jpg")
+#         with form_sag:
+#             st.image("slider_1.jpg")
            
            
-            # Sağ kolonun sol kolonla (5 kutu vs 4 kutu) hizalı görünmesi için alt tarafa şeffaf bir boşluk 
-        st.markdown("<div style='height: 80px;'></div>", unsafe_allow_html=True)
+#             # Sağ kolonun sol kolonla (5 kutu vs 4 kutu) hizalı görünmesi için alt tarafa şeffaf bir boşluk 
+#         st.markdown("<div style='height: 80px;'></div>", unsafe_allow_html=True)
             
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
