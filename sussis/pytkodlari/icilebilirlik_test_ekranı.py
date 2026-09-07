@@ -17,8 +17,6 @@ import numpy as np
 st.set_page_config(page_title="Su İçilebilirlik Analizi", layout="wide", page_icon="🚰")
 
 
-
-       
 # Modeli medyan_puanlamalıdan ve scaleri yükledim 
 
 try:
@@ -182,8 +180,7 @@ if img_base64:
     st.markdown(custom_css, unsafe_allow_html=True)
 
 
-
-#  Sayfanın yerleşimi (Sol kolon veri girişi, sağ kolon boşluk)
+#  Sayfanın yerleşimi (Sol kolon boşluk, sağ kolon veri girişi)
 sol_kolon, sag_kolon = st.columns([1, 1])
 
 
@@ -221,8 +218,13 @@ with sag_kolon:
         st.markdown("### Suyun Bileşen Analizi")
         st.markdown("<hr style='border:1px solid white'>" , unsafe_allow_html=True)
         
+        
+    #  Tüm inputları st.form içine alıyoruz
+    with st.form(key="su_analiz_formu", border=False):
+    
         # --- Formu 2 kolona bölme, parametrelerin girildiği ---
         form_sol, form_sag = st.columns(2)
+        
         
         with form_sol:
             ph = float(st.number_input("💧 pH Seviyesi", step=1.0, min_value=0.22749905, max_value=14.0, help="ph bilgisi 0-14 değerleri arasında olmalıdır.")) 
@@ -243,7 +245,7 @@ with sag_kolon:
         st.markdown("<br>", unsafe_allow_html=True) # Buton öncesi küçük boşluk
 
         # Butonu tüm alana yaymak için: use_container_width=True
-        if st.button("Analiz Et 🚀", key="analiz_butonu1", use_container_width=True):
+    if st.button("Analiz Et 🚀", key="analiz_butonu1", use_container_width=True):
             input_data = pd.DataFrame({
                 "ph": [ph],
                 "Hardness": [Hardness],
@@ -269,22 +271,22 @@ with sag_kolon:
                 
     # Analiz yapıldıysa sonuç ekranı gelir.
     
-    else:
-        st.markdown("### 📊 ANALİZ SONUCU")
-        st.markdown("<hr style='border:1px solid white'>", unsafe_allow_html=True)
+            else:
+                st.markdown("### 📊 ANALİZ SONUCU")
+                st.markdown("<hr style='border:1px solid white'>", unsafe_allow_html=True)
        
             
-        if st.session_state.sonuc == 0: 
-            with st.spinner("Analiz ediliyor..."):
+            if st.session_state.sonuc == 0: 
+              with st.spinner("Analiz ediliyor..."):
                     time.sleep(5)
                     # st.success("Done!")
                     st.success("✅ Afiyet olsun, su **İÇİLEBİLİR!**")
-        else:
-            st.error("❌ Dikkat! Su **İÇİLEMEZ** (Güvenli Değil).")
+            else:
+              st.error("❌ Dikkat! Su **İÇİLEMEZ** (Güvenli Değil).")
             st.markdown("<br>", unsafe_allow_html=True)
             
-        if st.button("Yeni Test Yap 🔄", key="yeni_test_buton", use_container_width=True):
-            st.session_state.analiz_tamamlandi = False
+            if st.button("Yeni Test Yap 🔄", key="yeni_test_buton", use_container_width=True):
+               st.session_state.analiz_tamamlandi = False
             st.rerun()
 
 
