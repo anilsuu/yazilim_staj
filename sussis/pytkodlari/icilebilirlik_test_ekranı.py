@@ -99,7 +99,60 @@ if img_base64:
         display:flex; 
         flex-direction: column;
     }}
+    
+        /* =====================================================
+           STREAMLIT ÜST ALANI TAMAMEN GİZLE
+           ===================================================== */
 
+        [data-testid="stHeader"] {{
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            min-height: 0 !important;
+        }}
+
+        .stApp > header {{
+            display: none !important;
+            visibility: hidden !important;
+        }}
+
+        .stAppToolbar {{
+            display: none !important;
+            visibility: hidden !important;
+        }}
+
+        [data-testid="stToolbar"] {{
+            display: none !important;
+            visibility: hidden !important;
+        }}
+
+        .stDeployButton {{
+            display: none !important;
+            visibility: hidden !important;
+        }}
+
+        [data-testid="stDecoration"] {{
+            display: none !important;
+            visibility: hidden !important;
+        }}
+
+        [data-testid="stStatusWidget"] {{
+            display: none !important;
+            visibility: hidden !important;
+        }}
+
+        #MainMenu {{
+            display: none !important;
+            visibility: hidden !important;
+            background: #6B8E23 !important;
+            backdrop-filter: blur(12px) !important;
+        }}
+
+        footer {{
+            display: none !important;
+            visibility: hidden !important;
+           
+        }}
     /* Yazı renkleri ve gölgeleri */
     h1,h2, h4, p, label, .stMarkdown {{
         color: #ffffff !important;

@@ -45,8 +45,9 @@ def karsilama_sayfasi():
 
         /* Sağ Kolon (İçerik) - Buzlu Cam Efekti */
         [data-testid="column"]:has(#ana_sayfa_icerik) {{
-            background: rgb(173, 216, 230) !important;
-            backdrop-filter: blur(12px) !important;            
+            
+            background: rgba(255, 255, 255, 0.15) !important;
+            backdrop-filter: blur(12px) !important; 
             -webkit-backdrop-filter: blur(12px) !important; 
             border-radius: 25px;                               
             border: 1px solid rgba(255, 255, 255, 0.4); 
@@ -58,10 +59,64 @@ def karsilama_sayfasi():
             flex-direction: column;
             justify-content: space-between; /* İçeriği yukarı, butonu aşağı iter */
         }}
+            
+            
+        /* =====================================================
+           STREAMLIT ÜST ALANI TAMAMEN GİZLE
+           ===================================================== */
 
+        [data-testid="stHeader"] {{
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            min-height: 0 !important;
+        }}
+
+        .stApp > header {{
+            display: none !important;
+            visibility: hidden !important;
+        }}
+
+        .stAppToolbar {{
+            display: none !important;
+            visibility: hidden !important;
+        }}
+
+        [data-testid="stToolbar"] {{
+            display: none !important;
+            visibility: hidden !important;
+        }}
+
+        .stDeployButton {{
+            display: none !important;
+            visibility: hidden !important;
+        }}
+
+        [data-testid="stDecoration"] {{
+            display: none !important;
+            visibility: hidden !important;
+        }}
+
+        [data-testid="stStatusWidget"] {{
+            display: none !important;
+            visibility: hidden !important;
+        }}
+
+        #MainMenu {{
+            display: none !important;
+            visibility: hidden !important;
+            background: #6B8E23 !important;
+            backdrop-filter: blur(12px) !important;
+        }}
+
+        footer {{
+            display: none !important;
+            visibility: hidden !important;
+           
+        }}
         /* Yazı renkleri ve gölgeleri */
         h1, h2, h3, h4, p, label, .stMarkdown {{
-            color: #000080 !important;
+            color: #F8F8FF !important;
             text-shadow: 1px 1px 3px rgba(0,0,0,0.8); 
         }}
 
@@ -101,8 +156,8 @@ def karsilama_sayfasi():
         st.markdown("<div id='sol_gorseller'></div>", unsafe_allow_html=True)
         try:
             
-            st.image("saski.jpg",use_column_width=True)
-            st.image("slider_1.jpg", use_column_width=True)
+            st.image("slider_1.jpg",use_column_width=True)
+            st.image("saski.jpg", use_column_width=True)
             st.image("sakaryabelediye.jpg", use_column_width=True)
             
         except FileNotFoundError:
@@ -112,15 +167,20 @@ def karsilama_sayfasi():
     with sag_kolon:
         st.markdown("<div id='ana_sayfa_icerik'></div>", unsafe_allow_html=True)
         
-        st.markdown("<h1 style='text-align: center; color: #ADD8E6 !important;'>💧 SASKİ Su Kalite Analiz Sistemi</h1>", unsafe_allow_html=True)
+        st.markdown("<h1 style='text-align: center; color: #ADD8E6 !important;'>💧 SASKİ Su Kalite Analiz Sistemi 💧</h1>", unsafe_allow_html=True)
         st.markdown("<hr style='border:1px solid white'>", unsafe_allow_html=True)
         
         st.markdown("""
         ### Sisteme Hoş Geldiniz
-        Bu platform, su kaynaklarından alınan numunelerin çeşitli bileşen (pH, Sertlik, İletkenlik vb.) analizlerini yaparak suyun içilebilirliğini makine öğrenmesi modelleriyle değerlendirmek üzere tasarlanmıştır.
-        
-        * **Güvenilir Sonuçlar:** Model algoritmaları, laboratuvar verileriyle eğitilmiştir.
-        * **Hızlı Analiz:** Değerleri forma girerek saniyeler içinde analiz sonucuna ulaşabilirsiniz.
+        İçilebilir suyun belirli gereklilikleri vardır. Bu gereklilikler, insan tüketimine uygun olarak arıtılmış, temiz ve sağlıklı bir içme suyu sağlamayı amaçlar. İçilebilir suyun temel özellikleri şunlardır:
+        * :blue-background[Berrak ve renksiz] olmalıdır.
+        * :blue-background[Kokusuz ve tatsız] olmalıdır.
+        * İçinde hastalık yapıcı bakteriler ve toksinler bulunmamalıdır.
+        * İçinde zararlı kimyasallar, ağır metaller ve diğer kirleticiler bulunmamalıdır.
+        * Vücudun İhtiyacı Olan Su Miktarı
+        * Vücudun sağlıklı bir şekilde çalışabilmesi için her gün yeterli miktarda su tüketmek önemlidir. Vücudun ihtiyacı olan su miktarı, cinsiyet, yaş, aktivite düzeyi ve çevresel faktörlere göre değişebilir. Genel olarak, erkekler günde ortalama 3,7 litre ve kadınlar günde 2,7 litre su tüketmelidir.
+        * Güvenilir Sonuçlar: Model algoritmaları, laboratuvar verileriyle eğitilmiştir.
+        * Hızlı Analiz: Değerleri forma girerek saniyeler içinde analiz sonucuna ulaşabilirsiniz.
         """)
         
     
