@@ -8,7 +8,7 @@ import streamlit as st
 import base64
 
 st.set_page_config(
-    page_title="SASKİ İçilebilirlik Analizi Ana Sayfa",
+    page_title="SASKİ Su Analizi",
     layout="wide",
     page_icon="🚰",
     initial_sidebar_state="collapsed"
@@ -155,6 +155,7 @@ def karsilama_sayfasi():
             st.image("saski.jpg", use_column_width=True)
             st.image("sakaryabelediye.jpg", use_column_width=True)
             
+            
         except FileNotFoundError:
             st.info("Lütfen 'sask_mobil.jpg' ve 'slider_1.jpg' görsellerinin doğru klasörde olduğundan emin olun.")
 
@@ -162,7 +163,7 @@ def karsilama_sayfasi():
     with sag_kolon:
         st.markdown("<div id='ana_sayfa_icerik'></div>", unsafe_allow_html=True)
         
-        st.markdown("<h1 style='text-align: center; color: #ADD8E6 !important;'>💧 SASKİ Su Kalite Analiz Sistemi 💧</h1>", unsafe_allow_html=True)
+        st.markdown("<h1 style='text-align: center; color: #ADD8E6 !important;'>💧 SASKİ Su Analiz Sistemi 💧</h1>", unsafe_allow_html=True)
         st.markdown("<hr style='border:1px solid white'>", unsafe_allow_html=True)
         
         st.markdown("""
@@ -171,11 +172,12 @@ def karsilama_sayfasi():
         * Berrak ve renksiz olmalıdır.
         * Kokusuz ve tatsız olmalıdır.
         * İçinde hastalık yapıcı bakteriler ve toksinler bulunmamalıdır.
-        * İçinde zararlı kimyasallar, ağır metaller ve diğer kirleticiler bulunmamalıdır.Bu parametreler ile suyun içilebilirlik testi yapılabilir.
+        * İçinde zararlı kimyasallar, ağır metaller ve diğer kirleticiler bulunmamalıdır.
           """)
+        st.markdown("""Bu parametreler ile suyun içilebilirlik testi yapılabilir.""")
         
-        st.markdown(""" * :blue-background[Güvenilir Sonuçlar:] Model algoritmaları, laboratuvar verileriyle eğitilmiştir.
-                     :blue-background[Hızlı Analiz:] Değerleri forma girerek saniyeler içinde analiz sonucuna ulaşabilirsiniz.""")
+        st.markdown(""" :blue-background[Güvenilir Sonuçlar:] Model algoritmaları, laboratuvar verileriyle eğitilmiştir.""")
+        st.markdown(""" :blue-background[Hızlı Analiz:] Değerleri forma girerek saniyeler içinde analiz sonucuna ulaşabilirsiniz.""")
        
         st.markdown("<div style='height: 100px;'></div>", unsafe_allow_html=True)
         st.image("ai_nedensuicmeliyiz.webp", use_column_width=True)
@@ -189,8 +191,7 @@ def karsilama_sayfasi():
 # sidebar bilgileri
 
 with st.sidebar:
-    st.markdown("---")
-
+    
     st.markdown(
         """
         <div style="text-align: center;">
@@ -222,7 +223,6 @@ with st.sidebar:
         """,
         unsafe_allow_html=True
     )
-
 
 sayfa_ana = st.Page(karsilama_sayfasi, title="Ana Sayfa", icon="🏠")
 
