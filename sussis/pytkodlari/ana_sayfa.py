@@ -8,7 +8,7 @@ import streamlit as st
 import base64
 
 st.set_page_config(
-    page_title="SASKİ Analiz Ana Sayfa",
+    page_title="SASKİ İçilebilirlik Analizi Ana Sayfa",
     layout="wide",
     page_icon="🚰",
     initial_sidebar_state="collapsed"
@@ -22,6 +22,7 @@ sayfa_test = st.Page("icilebilirlik_test_ekranı.py", title="İçilebilirlik Tes
 def karsilama_sayfasi():
     
     # Arka plan resmi yükleme fonksiyonu
+    
     def get_base64_of_bin_file(bin_file):
         try:
             with open(bin_file, 'rb') as f:
@@ -45,7 +46,6 @@ def karsilama_sayfasi():
 
         /* Sağ Kolon (İçerik) - Buzlu Cam Efekti */
         [data-testid="column"]:has(#ana_sayfa_icerik) {{
-            
             background: rgba(255, 255, 255, 0.15) !important;
             backdrop-filter: blur(12px) !important; 
             -webkit-backdrop-filter: blur(12px) !important; 
@@ -59,11 +59,6 @@ def karsilama_sayfasi():
             flex-direction: column;
             justify-content: space-between; /* İçeriği yukarı, butonu aşağı iter */
         }}
-            
-            
-        /* =====================================================
-           STREAMLIT ÜST ALANI TAMAMEN GİZLE
-           ===================================================== */
 
         [data-testid="stHeader"] {{
             display: none !important;
@@ -148,10 +143,10 @@ def karsilama_sayfasi():
         st.markdown(custom_css, unsafe_allow_html=True)
 
     # Sayfa yerleşimi kolonlar
-    # Sol kolon biraz daha dar (1 birim), sağ kolon daha geniş (2 birim)
+    # Sol kolon dar (1), sağ kolon geniş (2.5)
     sol_kolon, sag_kolon = st.columns([1, 2.5])
 
-    #  SOL KOLON (Görseller Alt Alta)
+    #  Sol taraf görseller
     with sol_kolon:
         st.markdown("<div id='sol_gorseller'></div>", unsafe_allow_html=True)
         try:
@@ -163,7 +158,7 @@ def karsilama_sayfasi():
         except FileNotFoundError:
             st.info("Lütfen 'sask_mobil.jpg' ve 'slider_1.jpg' görsellerinin doğru klasörde olduğundan emin olun.")
 
-    #  SAĞ KOLON (Tanıtım Metni ve Buton)
+    #  Sağ kolon (Tanıtım Metni ve Buton)
     with sag_kolon:
         st.markdown("<div id='ana_sayfa_icerik'></div>", unsafe_allow_html=True)
         
@@ -172,7 +167,7 @@ def karsilama_sayfasi():
         
         st.markdown("""
         ### Sisteme Hoş Geldiniz
-        İçilebilir suyun belirli gereklilikleri vardır. Bu gereklilikler, insan tüketimine uygun olarak arıtılmış, temiz ve sağlıklı bir içme suyu sağlamayı amaçlar. İçilebilir suyun temel özellikleri şunlardır:
+        İçilebilir suyun belirli özelliklerde olması gerekir .İçilebilir suyun temel özellikleri şunlardır:
         * Berrak ve renksiz olmalıdır.
         * Kokusuz ve tatsız olmalıdır.
         * İçinde hastalık yapıcı bakteriler ve toksinler bulunmamalıdır.
@@ -186,13 +181,14 @@ def karsilama_sayfasi():
     
         st.markdown("<div style='height: 100px;'></div>", unsafe_allow_html=True)
         st.image("ai_nedensuicmeliyiz.webp", use_column_width=True)
+        
         # Test Sayfasına Yönlendiren Buton (Sayfanın altında)
+        
         if st.button("Hemen Analiz Testine Başla 🚀", use_container_width=True):
             st.switch_page(sayfa_test)
 
-# =====================================================
-# SIDEBAR İLETİŞİM BİLGİLERİ
-# =====================================================
+
+# sidebar bilgileri
 
 with st.sidebar:
     st.markdown("---")
