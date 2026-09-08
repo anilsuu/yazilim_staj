@@ -142,7 +142,7 @@ def karsilama_sayfasi():
         """
         st.markdown(custom_css, unsafe_allow_html=True)
 
-    # Sayfa yerleşimi kolonlar
+    # Sayfa yerleşimi 
     # Sol kolon dar (1), sağ kolon geniş (2.5)
     sol_kolon, sag_kolon = st.columns([1, 2.5])
 
