@@ -117,8 +117,8 @@ def karsilama_sayfasi():
 
         /* Sol Kolon (Resimler) Tasarımı */
         [data-testid="column"]:has(#sol_gorseller) img {{
-            width: 70% !important; /* Görsellerin boyutunu daralttık */
-            margin: 0 auto 1.5rem auto !important; /* Ortaladık ve altlarına boşluk ekledik */
+            width: 70% !important; /* Görsellerin boyutunu daralttım */
+            margin: 0 auto 1.5rem auto !important; /* Ortala */
             display: block !important;
             border-radius: 15px; 
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
@@ -171,16 +171,16 @@ def karsilama_sayfasi():
         * Berrak ve renksiz olmalıdır.
         * Kokusuz ve tatsız olmalıdır.
         * İçinde hastalık yapıcı bakteriler ve toksinler bulunmamalıdır.
-        * İçinde zararlı kimyasallar, ağır metaller ve diğer kirleticiler bulunmamalıdır.
-         blue[Güvenilir Sonuçlar: ] Model algoritmaları, laboratuvar verileriyle eğitilmiştir.
-         blue[Hızlı Analiz:] Değerleri forma girerek saniyeler içinde analiz sonucuna ulaşabilirsiniz.
-        """)
+        * İçinde zararlı kimyasallar, ağır metaller ve diğer kirleticiler bulunmamalıdır.Bu parametreler ile suyun içilebilirlik testi yapılabilir.
+          """)
         
-    
+        st.markdown(""" * :blue-background[Güvenilir Sonuçlar:] Model algoritmaları, laboratuvar verileriyle eğitilmiştir.
+                     :blue-background[Hızlı Analiz:] Değerleri forma girerek saniyeler içinde analiz sonucuna ulaşabilirsiniz.""")
+       
         st.markdown("<div style='height: 100px;'></div>", unsafe_allow_html=True)
         st.image("ai_nedensuicmeliyiz.webp", use_column_width=True)
         
-        # Test Sayfasına Yönlendiren Buton (Sayfanın altında)
+        # Test Sayfasına Yönlendiren Buton 
         
         if st.button("Hemen Analiz Testine Başla 🔍 ", use_container_width=True):
             st.switch_page(sayfa_test)
