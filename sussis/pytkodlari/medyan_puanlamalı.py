@@ -164,3 +164,6 @@ plt.grid(True, linestyle="--", alpha=0.6)
 plt.tight_layout()
 plt.show()
 
+from sklearn.metrics import roc_auc_score
+y_prob = model.predict_proba(X_test_sc)[:, 1]
+print(f"ROC-AUC Skoru: {roc_auc_score(y_test, y_prob):.4f}")
