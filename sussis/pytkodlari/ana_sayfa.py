@@ -172,10 +172,8 @@ def karsilama_sayfasi():
         * Kokusuz ve tatsız olmalıdır.
         * İçinde hastalık yapıcı bakteriler ve toksinler bulunmamalıdır.
         * İçinde zararlı kimyasallar, ağır metaller ve diğer kirleticiler bulunmamalıdır.
-        * Vücudun İhtiyacı Olan Su Miktarı
-        * Vücudun sağlıklı bir şekilde çalışabilmesi için her gün yeterli miktarda su tüketmek önemlidir. Vücudun ihtiyacı olan su miktarı, cinsiyet, yaş, aktivite düzeyi ve çevresel faktörlere göre değişebilir. Genel olarak, erkekler günde ortalama 3,7 litre ve kadınlar günde 2,7 litre su tüketmelidir.
-        * Güvenilir Sonuçlar: Model algoritmaları, laboratuvar verileriyle eğitilmiştir.
-        * Hızlı Analiz: Değerleri forma girerek saniyeler içinde analiz sonucuna ulaşabilirsiniz.
+         blue[Güvenilir Sonuçlar: ] Model algoritmaları, laboratuvar verileriyle eğitilmiştir.
+         blue[Hızlı Analiz:] Değerleri forma girerek saniyeler içinde analiz sonucuna ulaşabilirsiniz.
         """)
         
     
@@ -184,7 +182,7 @@ def karsilama_sayfasi():
         
         # Test Sayfasına Yönlendiren Buton (Sayfanın altında)
         
-        if st.button("Hemen Analiz Testine Başla 🚀", use_container_width=True):
+        if st.button("Hemen Analiz Testine Başla 🔍 ", use_container_width=True):
             st.switch_page(sayfa_test)
 
 
@@ -205,7 +203,7 @@ with st.sidebar:
 
         <hr>
 
-        <h4>💬 Görüş ve Öneriler</h4>
+        <h4>📝 Görüş ve Öneriler</h4>
         <p>
         Görüş ve önerileriniz için<br>
         <a href="mailto:su.analizi.sistemi@gmail.com">
