@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 """
 @author: nilsu
@@ -6,6 +5,7 @@
 
 import streamlit as st
 import base64
+import os
 
 st.set_page_config(
     page_title="SASKİ Su Analizi",
@@ -15,14 +15,18 @@ st.set_page_config(
 )
 st.set_option("client.toolbarMode", "viewer")
 
-# İçilebilirlik test sayfası yolu 
-sayfa_test = st.Page("icilebilirlik_test_ekranı.py", title="İçilebilirlik Testi", icon="💧")
+# Mevcut dosyanın bulunduğu tam dizini alma
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# İçilebilirlik test sayfası yolu (Dinamik yol kullanıldı)
+
+test_sayfasi_yolu = os.path.join(BASE_DIR, "icilebilirlik_test_ekranı.py")
+sayfa_test = st.Page(test_sayfasi_yolu, title="İçilebilirlik Testi", icon="💧")
 
 
 def karsilama_sayfasi():
     
     # Arka plan resmi yükleme fonksiyonu
-    
     def get_base64_of_bin_file(bin_file):
         try:
             with open(bin_file, 'rb') as f:
@@ -30,7 +34,9 @@ def karsilama_sayfasi():
         except FileNotFoundError:
             return ""
 
-    img_base64 = get_base64_of_bin_file("doga_kaynak.webp")
+    # Arka plan görseli için dinamik yol
+    bg_path = os.path.join(BASE_DIR, "doga_kaynak.webp")
+    img_base64 = get_base64_of_bin_file(bg_path)
 
     # CSS Özelleştirmeleri
     if img_base64:
@@ -107,7 +113,7 @@ def karsilama_sayfasi():
         footer {{
             display: none !important;
             visibility: hidden !important;
-           
+            
         }}
         /* Yazı renkleri ve gölgeleri */
         h1, h2, h3, h4, p, label, .stMarkdown {{
@@ -146,19 +152,17 @@ def karsilama_sayfasi():
     # Sol kolon dar (1), sağ kolon geniş (2.5)
     sol_kolon, sag_kolon = st.columns([1, 2.5])
 
-    #  Sol taraf görseller
+#  Sol taraf görseller
     with sol_kolon:
         st.markdown("<div id='sol_gorseller'></div>", unsafe_allow_html=True)
         try:
-            
-            st.image("slider_1.jpg",use_column_width=True)
-            st.image("saski.jpg", use_column_width=True)
-            st.image("sakaryabelediye.jpg", use_column_width=True)
-            
+            # use_container_width yerine use_column_width olarak düzeltildi
+            st.image(os.path.join(BASE_DIR, "slider_1.jpg"), use_column_width=True)
+            st.image(os.path.join(BASE_DIR, "saski.jpg"), use_column_width=True)
+            st.image(os.path.join(BASE_DIR, "sakaryabelediye.jpg"), use_column_width=True)
             
         except FileNotFoundError:
-            st.info("Lütfen 'sask_mobil.jpg' ve 'slider_1.jpg' görsellerinin doğru klasörde olduğundan emin olun.")
-
+            st.info("Lütfen görsellerin doğru klasörde olduğundan emin olun.")
     #  Sağ kolon (Tanıtım Metni ve Buton)
     with sag_kolon:
         st.markdown("<div id='ana_sayfa_icerik'></div>", unsafe_allow_html=True)
@@ -180,18 +184,19 @@ def karsilama_sayfasi():
         st.markdown(""" :blue-background[Hızlı Analiz:] Değerlerini su içilebilirlik analiz formuna girerek saniyeler içinde analiz sonucuna ulaşabilirsiniz.""")
        
         st.markdown("<div style='height: 100px;'></div>", unsafe_allow_html=True)
-        st.image("ai_nedensuicmeliyiz.webp", use_column_width=True)
+        # Son görsel için düzeltme
+        try:
+            st.image(os.path.join(BASE_DIR, "ai_nedensuicmeliyiz.webp"), use_column_width=True)
+        except FileNotFoundError:
+            pass
         
         # Test Sayfasına Yönlendiren Buton 
-        
         if st.button("Hemen Analiz Testine Başla 🔍 ", use_container_width=True):
             st.switch_page(sayfa_test)
 
 
 # sidebar bilgileri
-
 with st.sidebar:
-    
     st.markdown(
         """
         <div style="text-align: center;">
@@ -228,52 +233,3 @@ sayfa_ana = st.Page(karsilama_sayfasi, title="Ana Sayfa", icon="🏠")
 
 pg = st.navigation([sayfa_ana, sayfa_test])
 pg.run()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
