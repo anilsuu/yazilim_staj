@@ -259,16 +259,16 @@ with sag_kolon:
             
             with form_sol:
                 ph = float(st.number_input("💧 pH Seviyesi", step=1.0, min_value=0.227, max_value=14.0)) 
-                Solids = float(st.number_input("🧊 Solids (Katılar)", step=1.0, min_value=320.9))
-                Sulfate = float(st.number_input("🟣 Sulfate(Sülfat)", step=1.0, min_value=129.0))
-                Organic_carbon = float(st.number_input("💬 Organic Carbon", step=1.0, min_value=2.2))
-                Turbidity = float(st.number_input("🌀 Turbidity(Bulanıklık)", step=1.0, min_value=1.45))
+                Solids = float(st.number_input("🧊 Solids (Katılar)", step=1.0, min_value=320.9,max_value=30000.0))
+                Sulfate = float(st.number_input("🟣 Sulfate(Sülfat)", step=1.0, min_value=129.0,max_value=400))
+                Organic_carbon = float(st.number_input("💬 Organic Carbon", step=1.0, min_value=2.2,max_value=8.0))
+                Turbidity = float(st.number_input("🌀 Turbidity(Bulanıklık)", step=1.0, min_value=1.45,max_value=5.0))
 
             with form_sag:
-                Hardness = float(st.number_input("🪨 Hardness(Sertlik)", step=1.0, min_value=73.4))
-                Chloramines = float(st.number_input("🧪 Chloramines", step=1.0, min_value=1.39))
-                Conductivity = float(st.number_input("⚡ Conductivity(İletkenlik)", step=1.0, min_value=201.6))
-                Trihalomethanes = float(st.number_input("🟠 Trihalometanlar", step=1.0, min_value=8.57))
+                Hardness = float(st.number_input("🪨 Hardness(Sertlik)", step=1.0, min_value=73.4,max_value=300))
+                Chloramines = float(st.number_input("🧪 Chloramines", step=1.0, min_value=1.39,max_value=10.0))
+                Conductivity = float(st.number_input("⚡ Conductivity(İletkenlik)", step=1.0, min_value=201.6,max_value=500))
+                Trihalomethanes = float(st.number_input("🟠 Trihalometanlar", step=1.0, min_value=8.57,max_value=100))
                 
                 st.markdown("<div style='height: 80px;'></div>", unsafe_allow_html=True)
                 
