@@ -47,50 +47,66 @@ def karsilama_sayfasi():
             background-image: url("data:image/webp;base64,{img_base64}");
             background-size: cover;
             background-position: center;
-            background-attachment:fixed;
+            background-attachment: fixed;
         }}
+        
+        /* Ana İçerik Konteyner Blur Efekti */
         [data-testid="column"]:has(#ana_sayfa_icerik),
         [data-testid="stColumn"]:has(#ana_sayfa_icerik) {{
             background: rgba(255, 255, 255, 0.15) !important;
             backdrop-filter: blur(12px) !important; 
             -webkit-backdrop-filter: blur(12px) !important; 
-            border-radius: 25px;                               
+            border-radius: 25px;                            
             border: 1px solid rgba(255, 255, 255, 0.4); 
-            padding: 2rem 3rem;  
+            padding: 2.5rem 3rem;  
             margin-top: 1rem; 
             margin-bottom: 1rem; 
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); 
-            display:flex; 
+            display: flex; 
             flex-direction: column;
             justify-content: space-between; 
         }}
         
-        /* Header (Üst Şerit) Kutusunu gizlemeden, sadece şeffaf yapalım */
+        /* Sidebar (Yan Menü) Blur ve Arka Plan Stili */
+        [data-testid="stSidebar"] {{
+            background-color: rgba(11, 61, 98, 0.75) !important;
+            backdrop-filter: blur(15px) !important;
+            -webkit-backdrop-filter: blur(15px) !important;
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+        }}
+
+        [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] *, 
+        [data-testid="stSidebar"] p, [data-testid="stSidebar"] h4, [data-testid="stSidebar"] span {{
+            color: #F8F8FF !important;
+        }}
+        
+        /* Header ve Araç Çubuğu Düzenlemeleri */
         [data-testid="stHeader"], .stApp > header {{
             background-color: transparent !important;
             background: transparent !important;
         }}
         
-        /* Sağ üstteki Menü ve Deploy butonlarını giliyorum. */
         .stDeployButton, [data-testid="stDecoration"], [data-testid="stStatusWidget"], #MainMenu {{
             display: none !important;
             visibility: hidden !important;
         }}
         
         [data-testid="collapsedControl"] {{
-            display: flex !important;
-            visibility: visible !important;
-            background-color: rgba(0, 0, 0, 0.5) !important;
-            border-radius: 50% !important;
+            background: #0b3d62 !important;
+            border-radius: 12px !important;
             margin: 10px !important;
-            z-index: 999999 !important; /* Her şeyin en üstünde olmasını garantiler */
+            width: 46px !important;
+            height: 46px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4) !important;
+            z-index: 999999 !important;
         }}
-        [data-testid="collapsedControl"] svg {{
-            fill: #ffffff !important;
-            color: #ffffff !important;
-            stroke: #ffffff !important;
-            width: 24px !important;
-            height: 24px !important;
+
+        [data-testid="collapsedControl"]:hover {{
+            background: #145a86 !important;
+            transform: scale(1.05);
         }}
 
         footer {{
@@ -101,6 +117,7 @@ def karsilama_sayfasi():
             color: #F8F8FF !important;
             text-shadow: 1px 1px 3px rgba(0,0,0,0.8); 
         }}
+        
         [data-testid="column"]:has(#sol_gorseller) img,
         [data-testid="stColumn"]:has(#sol_gorseller) img {{
             width: 70% !important; 
@@ -109,6 +126,7 @@ def karsilama_sayfasi():
             border-radius: 15px; 
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }}
+        
         .stButton>button {{
             background: linear-gradient(90deg, #e3ffe7 0%, #d9e7ff 100%);
             color: #191970 !important;
@@ -116,6 +134,7 @@ def karsilama_sayfasi():
             padding: 1rem;
             border-radius: 15px;
         }}
+        
         .stButton>button:hover {{
             transform: scale(1.02);
             box-shadow: 0px 5px 15px rgba(255, 255, 255, 0.5);
@@ -123,47 +142,44 @@ def karsilama_sayfasi():
         
         /* Mobil ve Küçük Ekranlar İçin Responsive Ayarları */
         @media (max-width: 768px) {{
-        [data-testid="stHorizontalBlock"]:has(#sol_gorseller):has(#ana_sayfa_icerik) {{
-            display: grid !important;
-            grid-template-columns: 1fr !important;
-        }}
-        
-        [data-testid="column"]:has(#sol_gorseller),
-        [data-testid="stColumn"]:has(#sol_gorseller),
-        [data-testid="column"]:has(#ana_sayfa_icerik),
-        [data-testid="stColumn"]:has(#ana_sayfa_icerik) {{
-            width: 100% !important;
-            max-width: 100% !important;
-        }}
+            [data-testid="stHorizontalBlock"]:has(#sol_gorseller):has(#ana_sayfa_icerik) {{
+                display: grid !important;
+                grid-template-columns: 1fr !important;
+            }}
+            
+            [data-testid="column"]:has(#sol_gorseller),
+            [data-testid="stColumn"]:has(#sol_gorseller),
+            [data-testid="column"]:has(#ana_sayfa_icerik),
+            [data-testid="stColumn"]:has(#ana_sayfa_icerik) {{
+                width: 100% !important;
+                max-width: 100% !important;
+            }}
 
-        /* Metin kutusunun mobildeki boşluklarını ve kenar paylarını rahatlatıyoruz */
-        [data-testid="column"]:has(#ana_sayfa_icerik),
-        [data-testid="stColumn"]:has(#ana_sayfa_icerik) {{
-            padding: 1.5rem !important;
-            margin-top: 0.5rem !important;
-            margin-bottom: 0.5rem !important;
-        }}
+            [data-testid="column"]:has(#ana_sayfa_icerik),
+            [data-testid="stColumn"]:has(#ana_sayfa_icerik) {{
+                padding: 1.5rem !important;
+                margin-top: 0.5rem !important;
+                margin-bottom: 0.5rem !important;
+            }}
 
-       /* Mobilde resimlerin devasa olmasını engellemek için sınırlandırıyoruz ve ortalıyoruz */
-        [data-testid="column"]:has(#sol_gorseller) img,
-        [data-testid="stColumn"]:has(#sol_gorseller) img {{
-            width: 60% !important;
-            max-width: 250px !important;
-            margin-left: auto !important;
-            margin-right: auto !important;
-            margin-bottom: 1rem !important;
-            display: block !important;
-        }}
+            [data-testid="column"]:has(#sol_gorseller) img,
+            [data-testid="stColumn"]:has(#sol_gorseller) img {{
+                width: 60% !important;
+                max-width: 250px !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
+                margin-bottom: 1rem !important;
+                display: block !important;
+            }}
 
-        /* Sayfa dış kenar boşluklarını mobile uyumlu hale getiriyoruz */
-        .block-container {{
-            max-width: 100% !important;
-            padding-top: 3rem !important;
-            padding-bottom: 2rem !important;
-            padding-left: 1rem !important;
-            padding-right: 1rem !important;
+            .block-container {{
+                max-width: 100% !important;
+                padding-top: 3rem !important;
+                padding-bottom: 2rem !important;
+                padding-left: 1rem !important;
+                padding-right: 1rem !important;
+            }}
         }}
-    }}
         </style>
         """
         st.markdown(custom_css, unsafe_allow_html=True)

@@ -53,6 +53,20 @@ if img_base64:
         background-position: center;
         background-attachment: fixed;
     }}
+    
+    /* Sidebar (Yan Menü) Blur ve Arka Plan Stili */
+    [data-testid="stSidebar"] {{
+        background-color: rgba(11, 61, 98, 0.75) !important;
+        backdrop-filter: blur(15px) !important;
+        -webkit-backdrop-filter: blur(15px) !important;
+        border-right: 1px solid rgba(255, 255, 255, 0.2);
+    }}
+
+    [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] *, 
+    [data-testid="stSidebar"] p, [data-testid="stSidebar"] h4, [data-testid="stSidebar"] span {{
+        color: #F8F8FF !important;
+    }}
+
     [data-testid="stHorizontalBlock"]:has(#su_resmi):has(#su_formu) {{
         align-items: stretch !important;
     }}
@@ -82,7 +96,7 @@ if img_base64:
         background: rgba(255, 255, 255, 0.15) !important;
         backdrop-filter: blur(12px) !important;            
         -webkit-backdrop-filter: blur(12px) !important; 
-        border-radius: 25px;                               
+        border-radius: 25px;                                        
         border: 1px solid rgba(255, 255, 255, 0.4); 
         padding: 2rem 3rem;  
         margin-top: 1rem; 
@@ -104,27 +118,25 @@ if img_base64:
         visibility: hidden !important;
     }}
 
-    /* Sidebar ok butonu zorla görünür, beyaz ve dairesel arka planlı yapıldı */
+    /* Sidebar ok butonu */
     [data-testid="collapsedControl"] {{
-        display: flex !important;
-        visibility: visible !important;
-        background-color: rgba(0, 0, 0, 0.5) !important;
-        border-radius: 50% !important;
+        background: #0b3d62 !important;
+        border-radius: 12px !important;
         margin: 10px !important;
+        width: 46px !important;
+        height: 46px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.4) !important;
         z-index: 999999 !important;
     }}
-    [data-testid="collapsedControl"] svg {{
-        fill: #ffffff !important;
-        color: #ffffff !important;
-        stroke: #ffffff !important;
-        width: 24px !important;
-        height: 24px !important;
+
+    [data-testid="collapsedControl"]:hover {{
+        background: #145a86 !important;
+        transform: scale(1.05);
     }}
 
-    #MainMenu {{
-        background: #6B8E23 !important;
-        backdrop-filter: blur(12px) !important;
-    }}
     h1, h2, h4, p, label, .stMarkdown {{
         color: #ffffff !important;
         text-shadow: 1px 1px 3px rgba(0,0,0,0.8); 
@@ -257,4 +269,3 @@ with sag_kolon:
         if st.button("Yeni Test Yap 🔄", key="yeni_test_buton", width='stretch'):
             st.session_state.analiz_tamamlandi = False
             st.rerun()
-
