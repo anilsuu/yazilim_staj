@@ -26,6 +26,8 @@ tum_kimyasal_sutunlar = [
 
 tummedyanlar = df[tum_kimyasal_sutunlar].median()
 
+print(tummedyanlar)
+
 
     # pH: İdeal aralık 6.5 - 8.5
     
@@ -54,6 +56,7 @@ def dinamik_su_puani(row):
     # 9 kriterden en az 5 tanesini sağlayanlar 'İçilebilir (1)', diğerleri 'İçilemez (0)'
     return 1 if puan >= 5 else 0
 
+
 df['Potability_Kural'] = df.apply(dinamik_su_puani, axis=1)
 
 print("--- Yeni Dengeli Etiket Dağılımı ---")
@@ -80,8 +83,8 @@ X_test_sc = scaler.transform(X_test)
 # Model Eğitimi
 
 model = RandomForestClassifier(
-    n_estimators=100, 
-    max_depth=10,
+    n_estimators=200, 
+    # max_depth=,
     random_state=42, 
     class_weight='balanced'
 )

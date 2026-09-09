@@ -311,7 +311,7 @@ with sag_kolon:
         st.markdown("### 📊 ANALİZ SONUCU")
         st.markdown("<hr style='border:1px solid white'>", unsafe_allow_html=True)
            
-        if st.session_state.sonuc == 0: 
+        if st.session_state.sonuc == 1: 
             st.success("✅ Afiyet olsun, su **İÇİLEBİLİR!**")
         else:
             st.error("❌ Dikkat! Su **İÇİLEMEZ** (Güvenli Değil).")

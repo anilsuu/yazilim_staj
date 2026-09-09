@@ -168,7 +168,7 @@ def karsilama_sayfasi():
         
         st.markdown("""
         ### Sisteme Hoş Geldiniz
-        İçilebilir suyun belirli özelliklerde olması gerekir .İçilebilir suyun temel özellikleri şunlardır:
+        İçilebilir suyun belirli özelliklerde olması gerekir:
         * Berrak ve renksiz olmalıdır.
         * Kokusuz ve tatsız olmalıdır.
         * İçinde hastalık yapıcı bakteriler ve toksinler bulunmamalıdır.
