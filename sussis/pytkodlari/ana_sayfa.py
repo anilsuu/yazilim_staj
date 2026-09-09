@@ -177,7 +177,7 @@ def karsilama_sayfasi():
         st.markdown("""Test ekranında gireceğiniz parametreler ile suyun içilebilirlik testi yapılabilir.""")
         
         st.markdown(""" :blue-background[Güvenilir Sonuçlar:] Model algoritmaları, laboratuvar verileriyle eğitilmiştir.""")
-        st.markdown(""" :blue-background[Hızlı Analiz:] Değerleri forma girerek saniyeler içinde analiz sonucuna ulaşabilirsiniz.""")
+        st.markdown(""" :blue-background[Hızlı Analiz:] Değerlerini su içilebilirlik analiz formuna girerek saniyeler içinde analiz sonucuna ulaşabilirsiniz.""")
        
         st.markdown("<div style='height: 100px;'></div>", unsafe_allow_html=True)
         st.image("ai_nedensuicmeliyiz.webp", use_column_width=True)
