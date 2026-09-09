@@ -108,6 +108,7 @@ print("-----------------------------------------------------")
 
 # Web kısmı için dosya kaydetme
 # =====================================================
+
 joblib.dump(scaler, "scaler_kural.pkl")
 joblib.dump(model, "rf_kural_su_model.pkl")
 print("\nModel ve scaler başarıyla kaydedildi!")
