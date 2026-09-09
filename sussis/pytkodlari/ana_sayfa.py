@@ -167,7 +167,7 @@ def karsilama_sayfasi():
         st.markdown("<hr style='border:1px solid white'>", unsafe_allow_html=True)
         
         st.markdown("""
-        ### Sisteme Hoş Geldiniz
+        ### Su Analiz Sistemine Hoş Geldiniz
         İçilebilir suyun belirli özelliklerde olması gerekir:
         * Berrak ve renksiz olmalıdır.
         * Kokusuz ve tatsız olmalıdır.
