@@ -163,7 +163,7 @@ def karsilama_sayfasi():
     with sag_kolon:
         st.markdown("<div id='ana_sayfa_icerik'></div>", unsafe_allow_html=True)
         
-        st.markdown("<h1 style='text-align: center; color: #ADD8E6 !important;'>💧 SASKİ Su Analiz Sistemi 💧</h1>", unsafe_allow_html=True)
+        st.markdown("<h1 style='text-align: center; color: #ADD8E6 !important;'>💧SASKİ Su Analiz Sistemi💧</h1>", unsafe_allow_html=True)
         st.markdown("<hr style='border:1px solid white'>", unsafe_allow_html=True)
         
         st.markdown("""
