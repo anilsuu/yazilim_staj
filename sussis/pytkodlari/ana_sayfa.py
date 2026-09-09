@@ -157,9 +157,9 @@ def karsilama_sayfasi():
         st.markdown("<div id='sol_gorseller'></div>", unsafe_allow_html=True)
         try:
             # use_container_width yerine use_column_width olarak düzeltildi
-            st.image(os.path.join(BASE_DIR, "slider_1.jpg"), use_column_width=True)
-            st.image(os.path.join(BASE_DIR, "saski.jpg"), use_column_width=True)
-            st.image(os.path.join(BASE_DIR, "sakaryabelediye.jpg"), use_column_width=True)
+            st.image(os.path.join(BASE_DIR, "slider_1.jpg"), use_container_width=True)
+            st.image(os.path.join(BASE_DIR, "saski.jpg"), use_container_width=True)
+            st.image(os.path.join(BASE_DIR, "sakaryabelediye.jpg"), use_container_width=True)
             
         except FileNotFoundError:
             st.info("Lütfen görsellerin doğru klasörde olduğundan emin olun.")
@@ -186,7 +186,7 @@ def karsilama_sayfasi():
         st.markdown("<div style='height: 100px;'></div>", unsafe_allow_html=True)
         # Son görsel için düzeltme
         try:
-            st.image(os.path.join(BASE_DIR, "ai_nedensuicmeliyiz.webp"), use_column_width=True)
+            st.image(os.path.join(BASE_DIR, "ai_nedensuicmeliyiz.webp"), use_container_width=True)
         except FileNotFoundError:
             pass
         

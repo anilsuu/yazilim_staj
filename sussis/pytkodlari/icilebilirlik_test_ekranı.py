@@ -238,7 +238,7 @@ with sol_kolon:
     
     try:
         su_resmi_path = os.path.join(BASE_DIR, "suweb.webp")
-        st.image(su_resmi_path, use_column_width=True)
+        st.image(su_resmi_path, use_container_width=True)
         
     except FileNotFoundError:
         st.info("Sol tarafta gösterilecek resim bulunamadı. Lütfen dosya adını güncelleyin.")
