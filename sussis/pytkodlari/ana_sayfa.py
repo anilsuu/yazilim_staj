@@ -174,7 +174,7 @@ def karsilama_sayfasi():
         * İçinde hastalık yapıcı bakteriler ve toksinler bulunmamalıdır.
         * İçinde zararlı kimyasallar, ağır metaller ve diğer kirleticiler bulunmamalıdır.
           """)
-        st.markdown("""Bu parametreler ile suyun içilebilirlik testi yapılabilir.""")
+        st.markdown("""Test ekranında gireceğiniz parametreler ile suyun içilebilirlik testi yapılabilir.""")
         
         st.markdown(""" :blue-background[Güvenilir Sonuçlar:] Model algoritmaları, laboratuvar verileriyle eğitilmiştir.""")
         st.markdown(""" :blue-background[Hızlı Analiz:] Değerleri forma girerek saniyeler içinde analiz sonucuna ulaşabilirsiniz.""")
