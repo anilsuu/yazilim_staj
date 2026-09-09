@@ -18,6 +18,13 @@ st.set_option("client.toolbarMode", "viewer")
 # Mevcut dosyanın bulunduğu tam dizini alma
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+# Sürüm farklılıkları (Cloud vs Yerel) için güvenli resim fonksiyonu eklendi
+def guvenli_resim_goster(resim_yolu):
+    try:
+        st.image(resim_yolu, use_container_width=True)
+    except TypeError:
+        st.image(resim_yolu, use_column_width=True)
+
 # İçilebilirlik test sayfası yolu (Dinamik yol kullanıldı)
 
 test_sayfasi_yolu = os.path.join(BASE_DIR, "icilebilirlik_test_ekranı.py")
@@ -50,8 +57,10 @@ def karsilama_sayfasi():
             background-attachment:fixed;
         }}
 
-        /* Sağ Kolon (İçerik) - Buzlu Cam Efekti */
-        [data-testid="column"]:has(#ana_sayfa_icerik) {{
+        /* Sağ Kolon (İçerik) - Buzlu Cam Efekti - Versiyon uyumluluğu  */
+        [data-testid="column"]:has(#ana_sayfa_icerik),
+        [data-testid="stColumn"]:has(#ana_sayfa_icerik),
+        [data-testid="stVerticalBlock"]:has(#ana_sayfa_icerik) {{
             background: rgba(255, 255, 255, 0.15) !important;
             backdrop-filter: blur(12px) !important; 
             -webkit-backdrop-filter: blur(12px) !important; 
@@ -121,8 +130,10 @@ def karsilama_sayfasi():
             text-shadow: 1px 1px 3px rgba(0,0,0,0.8); 
         }}
 
-        /* Sol Kolon (Resimler) Tasarımı */
-        [data-testid="column"]:has(#sol_gorseller) img {{
+        /* Sol Kolon (Resimler) Tasarımı - Versiyon uyumluluğu için yeni etiketler eklendi */
+        [data-testid="column"]:has(#sol_gorseller) img,
+        [data-testid="stColumn"]:has(#sol_gorseller) img,
+        [data-testid="stVerticalBlock"]:has(#sol_gorseller) img {{
             width: 70% !important; /* Görsellerin boyutunu daralttım */
             margin: 0 auto 1.5rem auto !important; /* Ortala */
             display: block !important;
@@ -156,10 +167,10 @@ def karsilama_sayfasi():
     with sol_kolon:
         st.markdown("<div id='sol_gorseller'></div>", unsafe_allow_html=True)
         try:
-            # use_container_width yerine use_column_width olarak düzeltildi
-            st.image(os.path.join(BASE_DIR, "slider_1.jpg"), use_container_width=True)
-            st.image(os.path.join(BASE_DIR, "saski.jpg"), use_container_width=True)
-            st.image(os.path.join(BASE_DIR, "sakaryabelediye.jpg"), use_container_width=True)
+            # Versiyon uyuşmazlığına karşı güvenli resim fonksiyonu kullanıldı
+            guvenli_resim_goster(os.path.join(BASE_DIR, "slider_1.jpg"))
+            guvenli_resim_goster(os.path.join(BASE_DIR, "saski.jpg"))
+            guvenli_resim_goster(os.path.join(BASE_DIR, "sakaryabelediye.jpg"))
             
         except FileNotFoundError:
             st.info("Lütfen görsellerin doğru klasörde olduğundan emin olun.")
@@ -186,7 +197,8 @@ def karsilama_sayfasi():
         st.markdown("<div style='height: 100px;'></div>", unsafe_allow_html=True)
         # Son görsel için düzeltme
         try:
-            st.image(os.path.join(BASE_DIR, "ai_nedensuicmeliyiz.webp"), use_container_width=True)
+            # Versiyon uyuşmazlığına karşı güvenli resim fonksiyonu kullanıldı
+            guvenli_resim_goster(os.path.join(BASE_DIR, "ai_nedensuicmeliyiz.webp"))
         except FileNotFoundError:
             pass
         

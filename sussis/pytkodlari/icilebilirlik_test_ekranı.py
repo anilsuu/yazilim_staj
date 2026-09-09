@@ -12,11 +12,9 @@ import numpy as np
 import os
 
 # Mevcut dosyanın bulunduğu tam dizin (Bulut ortamındaki yol hatalarını önler)
-
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Modeli medyan_puanlamalıdan ve scaleri yükledim 
-
 try:
     model_path = os.path.join(BASE_DIR, "rf_kural_su_model.pkl")
     scaler_path = os.path.join(BASE_DIR, "scaler_kural.pkl")
@@ -27,13 +25,11 @@ except FileNotFoundError:
     st.error("Model dosyaları (pkl) bulunamadı! Lütfen eğitim kodunuzu çalıştırdığınıza ve aynı klasörde olduğunuza emin olun.")
 
 # session_state - Formun kaybolması için
-
 if 'analiz_tamamlandi' not in st.session_state:
     st.session_state.analiz_tamamlandi = False
     st.session_state.sonuc = 0
 
 # Web arka sayfasına su-bardak resmi yükleme 
-
 def get_base64_of_bin_file(bin_file):
     try:
         with open(bin_file, 'rb') as f:
@@ -42,12 +38,10 @@ def get_base64_of_bin_file(bin_file):
         return ""
 
 # Tüm sayfanın arka planı için kullanılacak resimi yükleme
-
 bg_path = os.path.join(BASE_DIR, "suweb2.webp")
 img_base64 = get_base64_of_bin_file(bg_path)
 
 # CSS Özelleştirme kodları 
-
 if img_base64:
     custom_css = f"""
     <style>
@@ -65,8 +59,10 @@ if img_base64:
     }}
      
         
-    /* Su Bardağı Resmi (Sol) */
-    [data-testid="column"]:has(#su_resmi) {{
+    /* Su Bardağı Resmi (Sol) - Versiyon Uyumluluğu Eklendi */
+    [data-testid="column"]:has(#su_resmi),
+    [data-testid="stColumn"]:has(#su_resmi),
+    [data-testid="stVerticalBlock"]:has(#su_resmi) {{
         display: flex;
         flex-direction: column;
         margin-top: 1rem; 
@@ -75,12 +71,18 @@ if img_base64:
 
     /* Resmi kırparak alanı doldurmasını sağla */
     [data-testid="column"]:has(#su_resmi) > div,
-    [data-testid="column"]:has(#su_resmi) [data-testid="stImage"] {{
+    [data-testid="stColumn"]:has(#su_resmi) > div,
+    [data-testid="stVerticalBlock"]:has(#su_resmi) > div,
+    [data-testid="column"]:has(#su_resmi) [data-testid="stImage"],
+    [data-testid="stColumn"]:has(#su_resmi) [data-testid="stImage"],
+    [data-testid="stVerticalBlock"]:has(#su_resmi) [data-testid="stImage"] {{
         height: 100% !important;
         display: flex;
     }}
         
-    [data-testid="column"]:has(#su_resmi) img {{
+    [data-testid="column"]:has(#su_resmi) img,
+    [data-testid="stColumn"]:has(#su_resmi) img,
+    [data-testid="stVerticalBlock"]:has(#su_resmi) img {{
         height: 100% !important;
         object-fit: cover !important; 
         border-radius: 25px; 
@@ -88,9 +90,10 @@ if img_base64:
     }}
         
         
-
-    /* Form Kolonu (Sağ) - Buzlu  */
-    [data-testid="column"]:has(#su_formu){{
+    /* Form Kolonu (Sağ) - Buzlu Cam Efekti - Versiyon Uyumluluğu */
+    [data-testid="column"]:has(#su_formu),
+    [data-testid="stColumn"]:has(#su_formu),
+    [data-testid="stVerticalBlock"]:has(#su_formu) {{
         background: rgba(255, 255, 255, 0.15) !important;
         backdrop-filter: blur(12px) !important;            /*Kutunun buzlu olması 12px*/
         -webkit-backdrop-filter: blur(12px) !important; 
@@ -104,65 +107,64 @@ if img_base64:
         flex-direction: column;
     }}
     
-        /* streamlit deploy , clear cache olan toolbarı kaldırma */
+    /* streamlit deploy , clear cache olan toolbarı kaldırma */
 
-        [data-testid="stHeader"] {{
-            display: none !important;
-            visibility: hidden !important;
-            height: 0 !important;
-            min-height: 0 !important;
-        }}
+    [data-testid="stHeader"] {{
+        display: none !important;
+        visibility: hidden !important;
+        height: 0 !important;
+        min-height: 0 !important;
+    }}
 
-        .stApp > header {{
-            display: none !important;
-            visibility: hidden !important;
-        }}
+    .stApp > header {{
+        display: none !important;
+        visibility: hidden !important;
+    }}
 
-        .stAppToolbar {{
-            display: none !important;
-            visibility: hidden !important;
-        }}
+    .stAppToolbar {{
+        display: none !important;
+        visibility: hidden !important;
+    }}
 
-        [data-testid="stToolbar"] {{
-            display: none !important;
-            visibility: hidden !important;
-        }}
+    [data-testid="stToolbar"] {{
+        display: none !important;
+        visibility: hidden !important;
+    }}
 
-        .stDeployButton {{
-            display: none !important;
-            visibility: hidden !important;
-        }}
+    .stDeployButton {{
+        display: none !important;
+        visibility: hidden !important;
+    }}
 
-        [data-testid="stDecoration"] {{
-            display: none !important;
-            visibility: hidden !important;
-        }}
+    [data-testid="stDecoration"] {{
+        display: none !important;
+        visibility: hidden !important;
+    }}
 
-        [data-testid="stStatusWidget"] {{
-            display: none !important;
-            visibility: hidden !important;
-        }}
+    [data-testid="stStatusWidget"] {{
+        display: none !important;
+        visibility: hidden !important;
+    }}
 
-        #MainMenu {{
-            display: none !important;
-            visibility: hidden !important;
-            background: #6B8E23 !important;
-            backdrop-filter: blur(12px) !important;
-        }}
+    #MainMenu {{
+        display: none !important;
+        visibility: hidden !important;
+        background: #6B8E23 !important;
+        backdrop-filter: blur(12px) !important;
+    }}
 
-        footer {{
-            display: none !important;
-            visibility: hidden !important;
-            
-        }}
+    footer {{
+        display: none !important;
+        visibility: hidden !important;
         
-       /* Yazı renkleri ve gölgeleri */
-         h1,h2, h4, p, label, .stMarkdown {{
-         color: #ffffff !important;
-         text-shadow: 1px 1px 3px rgba(0,0,0,0.8); 
-         
-         /*Shadow + ile başlıyorsa sağa doğru,- ile başlıyorsa sola doğru*/
-    
+    }}
+        
+    /* Yazı renkleri ve gölgeleri */
+    h1,h2, h4, p, label, .stMarkdown {{
+        color: #ffffff !important;
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.8); 
+        
+        /*Shadow + ile başlıyorsa sağa doğru,- ile başlıyorsa sola doğru*/
     }}
     
     .stSlider [data-testid="stThumbValue"] {{
@@ -181,7 +183,7 @@ if img_base64:
         box-shadow: 0px 5px 15px rgba(255, 255, 255, 0.5);
     }}
 
-    /* Display için css ayarları */
+    /* Display için css ayarları - Mobil görünüm güncellemeleri */
     @media (max-width: 768px) {{
         /* Sadece ana bloğu Grid yap (içerideki 2'li form kolonları etkilenmesin) */
         [data-testid="stHorizontalBlock"]:has(#su_resmi):has(#su_formu) {{
@@ -190,14 +192,20 @@ if img_base64:
         }}
         
         [data-testid="column"]:has(#su_resmi),
-        [data-testid="column"]:has(#su_formu) {{
+        [data-testid="stColumn"]:has(#su_resmi),
+        [data-testid="stVerticalBlock"]:has(#su_resmi),
+        [data-testid="column"]:has(#su_formu),
+        [data-testid="stColumn"]:has(#su_formu),
+        [data-testid="stVerticalBlock"]:has(#su_formu) {{
             grid-column: 1 / 2 !important;
             grid-row: 1 / 2 !important;
             width: 100% !important; 
         }}
 
         /* Form üste gelecek şekilde ayarla */
-        [data-testid="column"]:has(#su_formu) {{
+        [data-testid="column"]:has(#su_formu),
+        [data-testid="stColumn"]:has(#su_formu),
+        [data-testid="stVerticalBlock"]:has(#su_formu) {{
             z-index: 10 !important; 
             width: 95% !important; 
             margin: auto !important; 
@@ -205,22 +213,25 @@ if img_base64:
         }}
         
         /* Soldaki resim kutusunu altta kalacak şekilde ayarla */
-        [data-testid="column"]:has(#su_resmi) {{
+        [data-testid="column"]:has(#su_resmi),
+        [data-testid="stColumn"]:has(#su_resmi),
+        [data-testid="stVerticalBlock"]:has(#su_resmi) {{
             z-index: 1 !important; 
         }}
             
-        [data-testid="column"]:has(#su_resmi) img {{
+        [data-testid="column"]:has(#su_resmi) img,
+        [data-testid="stColumn"]:has(#su_resmi) img,
+        [data-testid="stVerticalBlock"]:has(#su_resmi) img {{
             min-height: 90vh !important; 
         }}
             
-            
         .block-container {{
-               max-width: 95% !important;
-               padding-top: 3rem !important;
-               padding-bottom: 2rem !important;
-               padding-left: 2rem !important;
-               padding-right: 2rem !important;
-           }}
+            max-width: 95% !important;
+            padding-top: 3rem !important;
+            padding-bottom: 2rem !important;
+            padding-left: 2rem !important;
+            padding-right: 2rem !important;
+        }}
             
     }}
     </style>
