@@ -65,6 +65,7 @@ print("-" * 45)
 
 print("-----------------------------------------------------")
 
+# =====================================================
 # hedefleri (y) modele verdiğim için bu denetimli (supervised) bir öğrenmedir.
 # Öğrenme için model eğitim seti
 # =====================================================
@@ -92,7 +93,7 @@ model.fit(X_train_sc, y_train)
 
 print("-----------------------------------------------------")
 
-
+# =====================================================
 # Modeli değerlendirme
 # =====================================================
 
@@ -106,6 +107,7 @@ print("\nSınıflandırma Raporu:\n", classification_report(y_test, y_pred))
 
 print("-----------------------------------------------------")
 
+# =====================================================
 # Web kısmı için dosya kaydetme
 # =====================================================
 
@@ -113,7 +115,7 @@ joblib.dump(scaler, "scaler_kural.pkl")
 joblib.dump(model, "rf_kural_su_model.pkl")
 print("\nModel ve scaler başarıyla kaydedildi!")
 
-
+# =====================================================
 # Modeli ve Scaler'ı Kaydet
 joblib.dump(model, "rf_kural_su_model.joblib")
 joblib.dump(scaler, "scaler_kural.joblib")
@@ -121,6 +123,7 @@ print("model hazır ve kaydedildi!")
 
 # =====================================================
 # Öğrenme eğrisini görselleştirme 
+# =====================================================
 
 train_sizes, train_scores, test_scores = learning_curve(
     estimator=model,
@@ -143,6 +146,7 @@ plt.plot(
     train_sizes, test_mean, "s-", color="green", label="Doğrulama Skoru (Cross-Val)"
 )
 
+# =====================================================
 # Standart sapma alanlarını renklendirerek güven aralığı ekleme
 
 plt.fill_between(
