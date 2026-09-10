@@ -67,7 +67,7 @@ def karsilama_sayfasi():
             justify-content: space-between; 
         }}
         
-        /* Sidebar (Yan Menü) Blur ve Arka Plan Stili */
+        /* Sidebar (Yan Menü) ve Arka Plan Stili */
         [data-testid="stSidebar"] {{
             background-color: rgba(11, 61, 98, 0.75) !important;
             backdrop-filter: blur(15px) !important;
@@ -80,7 +80,7 @@ def karsilama_sayfasi():
             color: #F8F8FF !important;
         }}
         
-        /* Header ve Araç Çubuğu Düzenlemeleri */
+        /* Header ve Araç Çubuğu CSS */
         [data-testid="stHeader"], .stApp > header {{
             background-color: transparent !important;
             background: transparent !important;
@@ -118,9 +118,12 @@ def karsilama_sayfasi():
             text-shadow: 1px 1px 3px rgba(0,0,0,0.8); 
         }}
         
+        /* Masaüstü - Görsel Oranlarının Korunması */
         [data-testid="column"]:has(#sol_gorseller) img,
         [data-testid="stColumn"]:has(#sol_gorseller) img {{
             width: 70% !important; 
+            height: auto !important; /* Boyut bozulmasını (sünmeyi) önler */
+            object-fit: cover !important; 
             margin: 0 auto 1.5rem auto !important; 
             display: block !important;
             border-radius: 15px; 
@@ -140,35 +143,44 @@ def karsilama_sayfasi():
             box-shadow: 0px 5px 15px rgba(255, 255, 255, 0.5);
         }}
         
-        /* Mobil ve Küçük Ekranlar İçin Responsive Ayarları */
+        /* --- Mobil İçin Responsive  --- */
         @media (max-width: 768px) {{
+            /* Yan yana olan bloğu dikey formata zorla */
             [data-testid="stHorizontalBlock"]:has(#sol_gorseller):has(#ana_sayfa_icerik) {{
-                display: grid !important;
-                grid-template-columns: 1fr !important;
+                display: flex !important;
+                flex-direction: column !important;
             }}
             
-            [data-testid="column"]:has(#sol_gorseller),
-            [data-testid="stColumn"]:has(#sol_gorseller),
+            /*  Karşılama sayfası en üste görseller aşağıda  */
             [data-testid="column"]:has(#ana_sayfa_icerik),
             [data-testid="stColumn"]:has(#ana_sayfa_icerik) {{
+                order: 1 !important; /* Elemanı üste taşır */
                 width: 100% !important;
                 max-width: 100% !important;
-            }}
-
-            [data-testid="column"]:has(#ana_sayfa_icerik),
-            [data-testid="stColumn"]:has(#ana_sayfa_icerik) {{
                 padding: 1.5rem !important;
                 margin-top: 0.5rem !important;
                 margin-bottom: 0.5rem !important;
             }}
 
+            /* Görseller alta geçsin */
+            [data-testid="column"]:has(#sol_gorseller),
+            [data-testid="stColumn"]:has(#sol_gorseller) {{
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important; /* Sola yaslanmayı önler, ortalar */
+                order: 2 !important; /* Elemanı alta taşır */
+                width: 100% !important;
+                margin-top: 1rem !important;
+            }}
+
+            /* Mobilde fotoğrafların boyutlandırılması ve tam ortalanması */
             [data-testid="column"]:has(#sol_gorseller) img,
             [data-testid="stColumn"]:has(#sol_gorseller) img {{
-                width: 60% !important;
-                max-width: 250px !important;
-                margin-left: auto !important;
-                margin-right: auto !important;
-                margin-bottom: 1rem !important;
+                width: 80% !important; 
+                max-width: 300px !important;
+                height: auto !important; /* Oranın bozulmasını engeller */
+                object-fit: cover !important;
+                margin: 0 auto 1.5rem auto !important; /* Blok seviyesinde tam ortalar */
                 display: block !important;
             }}
 
@@ -183,9 +195,8 @@ def karsilama_sayfasi():
         </style>
         """
         st.markdown(custom_css, unsafe_allow_html=True)
-
-    sol_kolon, sag_kolon = st.columns([1, 2.5])
-
+        sol_kolon,sag_kolon=st.columns([1,2.5])
+        
     with sol_kolon:
         st.markdown("<div id='sol_gorseller'></div>", unsafe_allow_html=True)
         try:
@@ -207,7 +218,7 @@ def karsilama_sayfasi():
         * Kokusuz ve tatsız olmalıdır.
         * İçinde hastalık yapıcı bakteriler ve toksinler bulunmamalıdır.
         * İçinde zararlı kimyasallar, ağır metaller ve diğer kirleticiler bulunmamalıdır.
-          """)
+        """)
         st.markdown("""Test ekranında gireceğiniz parametreler ile suyun içilebilirlik testi yapılabilir.""")
         st.markdown(""" :blue-background[Güvenilir Sonuçlar:] Model algoritmaları, laboratuvar verileriyle eğitilmiştir.""")
         st.markdown(""" :blue-background[Hızlı Analiz:] Değerlerini su içilebilirlik analiz formuna girerek saniyeler içinde analiz sonucuna ulaşabilirsiniz.""")
