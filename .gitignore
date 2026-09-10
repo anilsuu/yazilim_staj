@@ -70,6 +70,7 @@ ScaffoldingReadMe.txt
 StyleCopReport.xml
 
 # Files built by Visual Studio
+catboost_info/
 *_i.c
 *_p.c
 *_h.h
@@ -97,7 +98,7 @@ StyleCopReport.xml
 *.pidb
 *.svclog
 *.scc
-
+*.spyproject
 # Chutzpah Test files
 _Chutzpah*
 
